@@ -1,0 +1,208 @@
+二级目录                                                       大小
+--------------------------------------------------------------
+Local/Packages                                        8.04 GB
+Local/pip                                             5.29 GB
+Local/Programs                                        3.11 GB
+Local/Microsoft                                       2.60 GB
+Local/MathWorks                                       2.32 GB
+Local/JetBrains                                       2.01 GB
+Roaming/Godot                                         1.90 GB
+LocalLow/NVIDIA                                       1.54 GB
+Roaming/Tencent                                       1.50 GB
+Roaming/Code                                          1.42 GB
+Local/Huawei                                          1.18 GB
+Local/OpenHarmony                                  1002.50 MB
+Local/NVIDIA                                        924.44 MB
+Local/Godot                                         813.27 MB
+Roaming/Microsoft                                   691.16 MB
+Local/OfficePLUS                                    655.98 MB
+Roaming/Huawei                                      590.69 MB
+Roaming/.minecraft                                  588.46 MB
+Local/Steam                                         510.96 MB
+Local/Quark                                         503.22 MB
+Local/ArkUI-X                                       469.44 MB
+Roaming/Troxbox Publish                             461.03 MB
+Local/Temp                                          382.28 MB
+LocalLow/Hypergryph                                 378.61 MB
+Local/Tencent                                       361.46 MB
+Local/Netease                                       329.78 MB
+LocalLow/ZAUM Studio                                320.47 MB
+Local/PlatformProcess                               271.63 MB
+Local/cherrystudio-updater                          265.68 MB
+Local/quark-cloud-drive-updater                     261.05 MB
+Local/FeverGames                                    241.38 MB
+Local/CrashDumps                                    237.53 MB
+LocalLow/Ludeon Studios                             232.55 MB
+Roaming/bilibili                                    201.99 MB
+Roaming/CherryStudio                                181.04 MB
+Local/NuGet                                         147.09 MB
+LocalLow/Mobius Digital                             144.06 MB
+Local/NVIDIA Corporation                            139.25 MB
+Local/chemdrawcollections-updater                   132.08 MB
+Local/un.un.clashrev                                129.54 MB
+LocalLow/Massive Monster                            127.12 MB
+Local/qq-chat-updater                               115.95 MB
+Roaming/SlayTheSpire2                               108.64 MB
+Roaming/NoteExpress                                 104.02 MB
+Roaming/WPFLauncher                                 103.70 MB
+Local/feimaoyun_pc-updater                           93.76 MB
+Local/Downloaded Installations                       74.40 MB
+Local/Games                                          70.46 MB
+LocalLow/Nolla_Games_Noita                           68.87 MB
+Local/com.pvzge.app                                  60.49 MB
+Roaming/QQ                                           58.25 MB
+Local/Package Cache                                  53.78 MB
+Local/QuarkUpdater                                   47.69 MB
+Local/Electronic Arts                                40.60 MB
+Local/Lenovo                                         37.15 MB
+Roaming/StardewValley                                35.96 MB
+Roaming/BakaXL                                       34.18 MB
+Local/gephi                                          31.59 MB
+Local/Epic Games                                     31.35 MB
+Local/EpicGamesLauncher                              28.72 MB
+Roaming/un.un.clashrev                               28.51 MB
+LocalLow/Pengonauts                                  26.34 MB
+Local/assembly                                       24.70 MB
+LocalLow/Team Cherry                                 23.78 MB
+Roaming/quark-cloud-drive                            23.27 MB
+Roaming/Cursor                                       23.18 MB
+Local/Comms                                          21.71 MB
+LocalLow/Unity                                       21.59 MB
+Local/CEF                                            20.68 MB
+Local/.i18nupdatemod                                 19.55 MB
+Local/pypa                                           19.17 MB
+Local/D3DSCache                                      16.21 MB
+LocalLow/CampoSanto                                  14.16 MB
+LocalLow/ManduPod                                    14.03 MB
+Roaming/Paradox Interactive                          13.93 MB
+LocalLow/Microsoft                                   13.31 MB
+Roaming/Netease                                      12.04 MB
+Local/rmmz-game                                      11.77 MB
+Roaming/Lenovo                                       10.67 MB
+LocalLow/niceplay games                               9.88 MB
+Local/Paradox Interactive                             9.70 MB
+Local/npm-cache                                       9.26 MB
+Local/ConnectedDevicesPlatform                        8.78 MB
+Roaming/Adobe                                         6.09 MB
+Local/Siv3D                                           5.96 MB
+Roaming/xlgame                                        5.68 MB
+Roaming/.anaconda                                     5.66 MB
+Local/AMD                                             5.23 MB
+Local/Pal                                             4.33 MB
+Roaming/Glaiel Games                                  3.57 MB
+Roaming/utForpc                                       3.34 MB
+Local/EscapeTheBackrooms                              3.18 MB
+Local/leigod_audio_boost                              3.13 MB
+Roaming/JetBrains                                     2.63 MB
+Local/NhNotifSys                                      2.37 MB
+LocalLow/Videocult                                    2.29 MB
+Roaming/NVIDIA                                        2.27 MB
+Roaming/MathWorks                                     2.18 MB
+Roaming/thunder                                       1.40 MB
+Local/YQXfSIpoDLv                                     1.18 MB
+Roaming/xmp                                           1.07 MB
+LocalLow/SchuBoxGames                               903.69 KB
+Local/Link2EA                                       886.56 KB
+Roaming/Diamond 5                                   765.10 KB
+Local/MuMuPlayer                                    729.66 KB
+Local/MuMuNxDevice                                  694.72 KB
+Roaming/Hypergryph                                  693.42 KB
+LocalLow/RIFF DEV                                   665.43 KB
+LocalLow/tobspr Games                               639.17 KB
+Local/Unity                                         629.45 KB
+Local/dnSpy                                         626.00 KB
+Roaming/EasyAntiCheat                               526.58 KB
+LocalLow/Billy Basso                                468.12 KB
+Roaming/feimaoyun_pc                                435.97 KB
+Local/Origin                                        289.52 KB
+Local/EALaunchHelper                                266.61 KB
+Local/ChromeExtensionCache                          245.96 KB
+LocalLow/Rundisc                                    242.00 KB
+LocalLow/LandCrab                                   229.15 KB
+Local/cache                                         221.97 KB
+LocalLow/Fake Owls                                  180.20 KB
+Local/AFR_Rebirth                                   168.41 KB
+Roaming/gephi                                       156.47 KB
+Local/IWM                                           112.53 KB
+Roaming/com.etalien                                  89.40 KB
+Local/OneDrive                                       86.99 KB
+Local/UnrealEngine                                   86.31 KB
+Local/pnpm-cache                                     83.63 KB
+LocalLow/Orsoniks                                    80.19 KB
+Local/HowManyDudes                                   72.22 KB
+Local/Adobe                                          68.14 KB
+Roaming/MinecraftPE_Netease                          60.00 KB
+Local/Publishers                                     54.51 KB
+LocalLow/JoelG                                       54.36 KB
+Local/GameAnalytics                                  52.00 KB
+Local/tiling_town                                    49.71 KB
+Local/DELTARUNE                                      40.40 KB
+Roaming/Baba_Is_You                                  39.17 KB
+Roaming/TUG                                          38.62 KB
+LocalLow/Thunder Network                             38.56 KB
+LocalLow/QG001                                       30.24 KB
+Local/Windows Master Store                           29.98 KB
+Local/EADesktop                                      29.95 KB
+Roaming/GSE Saves                                    27.32 KB
+Local/CloudDriveDesktopWidget                        24.76 KB
+Roaming/PCL                                          24.40 KB
+Roaming/jupyter                                      18.53 KB
+Roaming/dnSpy                                        14.95 KB
+Local/ToastNotificationManagerCompat                 14.19 KB
+LocalLow/DefaultCompany                              10.94 KB
+LocalLow/Team MDMA                                   10.73 KB
+Local/VEDetector                                      7.46 KB
+Local/speech                                          7.34 KB
+Local/SakuraLauncher                                  4.88 KB
+Local/Microsoft_Corporation                           4.79 KB
+Roaming/TPDownloadProxy                               4.05 KB
+Roaming/SaeraSoft                                     3.55 KB
+Local/UniSDK                                          3.28 KB
+Local/UniCompactView                                  2.72 KB
+Roaming/The Quark Authors                             1.74 KB
+Local/GOG.com                                         1.73 KB
+LocalLow/Sun                                         733.00 B
+Local/BakaXL_Development_Team                        597.00 B
+Local/Sentry                                         360.00 B
+Roaming/mssdk                                        329.00 B
+Local/UnrealEngineLauncher                           220.00 B
+Local/.resourcefullib                                214.00 B
+Roaming/NuGet                                        210.00 B
+Local/DoudouAI                                       199.00 B
+Local/Nahimic                                        196.00 B
+Local/MultiEnchantmentMod                            115.00 B
+Local/ResourceHub Launcher                            86.00 B
+Local/Species Conservation Toolkit Initiative         58.00 B
+Local/lenovoPdf                                       56.00 B
+Local/fenv                                            45.00 B
+Local/acc_kernel                                      38.00 B
+Roaming/Goldberg SteamEmu Saves                       37.00 B
+Local/Backup                                          15.00 B
+Roaming/WinRAR                                        12.00 B
+Local/Application Data                                 0.00 B
+Local/Apps                                             0.00 B
+Local/bilibili-updater                                 0.00 B
+Local/conda                                            0.00 B
+Local/Deployment                                       0.00 B
+Local/Doubao                                           0.00 B
+Local/History                                          0.00 B
+Local/PlaceholderTileLogoFolder                        0.00 B
+Local/RevvitySignalsSoftware                           0.00 B
+Local/SaeraSoft                                        0.00 B
+Local/SafeNet Sentinel                                 0.00 B
+Local/Temporary Internet Files                         0.00 B
+Local/VirtualStore                                     0.00 B
+LocalLow/Adobe                                         0.00 B
+LocalLow/MSLiveSticker                                 0.00 B
+LocalLow/MSLiveStickerWhiteList                        0.00 B
+LocalLow/Temp                                          0.00 B
+LocalLow/TENCENT                                       0.00 B
+Roaming/GameHL                                         0.00 B
+Roaming/mkxp                                           0.00 B
+Roaming/paradox-launcher-v2                            0.00 B
+Roaming/qq_guild                                       0.00 B
+Roaming/Quark                                          0.00 B
+Roaming/VideoOutput                                    0.00 B
+Roaming/WeMeetApp                                      0.00 B
+--------------------------------------------------------------
+总计                                                   43.96 GB

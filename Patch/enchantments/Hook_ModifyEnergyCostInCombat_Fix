@@ -1,0 +1,45 @@
+using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
+using MegaCrit.Sts2.Core.Combat;
+using MegaCrit.Sts2.Core.Hooks;
+using MegaCrit.Sts2.Core.Models;
+
+namespace PengoTarot.Patches
+{
+    [HarmonyPatch(typeof(Hook), nameof(Hook.ModifyEnergyCostInCombat))]
+    public static class Hook_ModifyEnergyCostInCombat_Fix
+    {
+        // 获取私有方法 IterateCombatHookListeners（用于获取监听器列表）
+        private static readonly MethodInfo IterateCombatHookListeners =
+            typeof(Hook).GetMethod("IterateCombatHookListeners", BindingFlags.NonPublic | BindingFlags.Static);
+
+        static bool Prefix(ICombatState combatState, CardModel card, decimal originalCost, ref decimal __result)
+        {
+            // 只有当卡牌本身是不可支付的（Canonical < 0，如状态牌）且 originalCost < 0 时，才跳过修正
+            if (originalCost < 0m && card.EnergyCost.Canonical < 0m)
+            {
+                __result = originalCost;
+                return false; // 跳过原方法，直接返回负值
+            }
+
+            // 普通牌即使 originalCost 被临时减到负数，也强制从 0 开始修正
+            decimal effectiveCost = originalCost < 0m ? 0m : originalCost;
+            decimal modifiedCost = effectiveCost;
+
+            // 获取所有战斗监听器（与原方法完全一致）
+            var listeners = (IEnumerable<AbstractModel>)IterateCombatHookListeners.Invoke(
+                null, new object[] { combatState });
+
+            // 依次调用 TryModifyEnergyCostInCombat 和 ...Late
+            foreach (var model in listeners)
+                model.TryModifyEnergyCostInCombat(card, modifiedCost, out modifiedCost);
+
+            foreach (var model in listeners)
+                model.TryModifyEnergyCostInCombatLate(card, modifiedCost, out modifiedCost);
+
+            __result = modifiedCost;
+            return false;
+        }
+    }
+}

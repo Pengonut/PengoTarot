@@ -1,0 +1,6 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://f967yc4lh"]
+
+[ext_resource type="Texture2D" uid="uid://fgc8ylb0rky" path="res://images/packed/card_portraits/planet/planet_pluto.png" id="1_ira1z"]
+
+[resource]
+atlas = ExtResource("1_ira1z")

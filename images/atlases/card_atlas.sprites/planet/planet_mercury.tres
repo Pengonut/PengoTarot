@@ -1,0 +1,6 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://uccd54qr3"]
+
+[ext_resource type="Texture2D" uid="uid://u956ixb2if1" path="res://images/packed/card_portraits/planet/planet_mercury.png" id="1_mb5sq"]
+
+[resource]
+atlas = ExtResource("1_mb5sq")

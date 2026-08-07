@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" uid="uid://cavettci82n45" path="res://images/card_overlays/tarot/tarot_overlay.png" id="1"]
+
+[node name="TarotOverlay" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="VisualLayer" type="Sprite2D" parent="."]
+position = Vector2(-0.499993, -7.50001)
+scale = Vector2(0.510736, 0.520501)
+texture = ExtResource("1")

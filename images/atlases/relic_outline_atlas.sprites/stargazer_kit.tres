@@ -1,0 +1,6 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://cidbsrvixma6v"]
+
+[ext_resource type="Texture2D" uid="uid://dwdmsbqehv0ib" path="res://images/relics/small_stargazer_kit_outline.png" id="1_l67ve"]
+
+[resource]
+atlas = ExtResource("1_l67ve")

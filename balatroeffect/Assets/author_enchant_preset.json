@@ -1,0 +1,95 @@
+{
+  "Version": 2,
+  "Enchantments": {
+    "ENCHANTMENT.TAR_DEVIL_UPRIGHT_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "ENCHANTMENT.TAR_DEVIL_REVERSED_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "ENCHANTMENT.TAR_STAR_UPRIGHT_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "ENCHANTMENT.TAR_STAR_REVERSED_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "ENCHANTMENT.TAR_MOON_UPRIGHT_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "ENCHANTMENT.TAR_MOON_REVERSED_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "ENCHANTMENT.TAR_SUN_UPRIGHT_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "ENCHANTMENT.TAR_SUN_REVERSED_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "ENCHANTMENT.TAR_WORLD_UPRIGHT_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "ENCHANTMENT.TAR_WORLD_REVERSED_SUB_ENCHANTMENT": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    }
+  }
+}

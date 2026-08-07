@@ -1,0 +1,98 @@
+{
+  "Version": 8,
+  "Cards": {
+    "CARD.TAR_DEVIL_UPRIGHT_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "CARD.TAR_DEVIL_REVERSED_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "CARD.TAR_STAR_UPRIGHT_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "CARD.TAR_STAR_REVERSED_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "CARD.TAR_MOON_UPRIGHT_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "CARD.TAR_MOON_REVERSED_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "CARD.TAR_SUN_UPRIGHT_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "CARD.TAR_SUN_REVERSED_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "CARD.TAR_WORLD_UPRIGHT_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    },
+    "CARD.TAR_WORLD_REVERSED_SUB": {
+      "EditMode": "normal",
+      "Mode": 6,
+      "Intensity": 1.0,
+      "Parts": {
+        "Portrait": 6
+      },
+      "FullCardEffect": 0
+    }
+  },
+  "GlobalDynamicEffect": false,
+  "EnableShaderInNonCombat": false,
+  "ShownTestWarning": false
+}

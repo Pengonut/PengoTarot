@@ -1,0 +1,35 @@
+# ── Godot 4+ ──
+.godot/
+/android/
+
+# ── .NET 构建产物 ──
+bin/
+obj/
+
+# ── Python 虚拟环境 / 工具脚本缓存 ──
+.venv/
+__pycache__/
+*.pyc
+
+# ── IDE / 编辑器个人配置 ──
+.idea/
+.vscode/
+*.suo
+*.user
+*.userprefs
+
+# ── 打包输出与构建产物（由 pack.ps1 / Godot 导出生成）──
+dist/
+*.pck
+*.zip
+
+# ── 设计稿源文件（PSD 等）──
+*.psd
+
+# ── 日志 ──
+*.log
+
+# ── 备份 / 临时文件 ──
+*.bak
+*.orig
+*~

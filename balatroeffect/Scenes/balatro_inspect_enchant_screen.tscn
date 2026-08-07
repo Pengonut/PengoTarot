@@ -1,0 +1,191 @@
+[gd_scene load_steps=16 format=3 uid="uid://bu5bc5u6sslel"]
+
+[ext_resource type="Script" uid="uid://cqssc5tx51pib" path="res://balatroeffect/Scenes/NBalatroInspectEnchantScreen.cs" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://n3lo85d1b1kp" path="res://balatroeffect/Scenes/balatro_inspect_screen.tscn" id="2_base"]
+[ext_resource type="FontVariation" path="res://themes/kreon_bold_glyph_space_one.tres" id="3_font"]
+[ext_resource type="Shader" uid="uid://dqgy1l3tctnay" path="res://shaders/hsv.gdshader" id="3_ubkq6"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1al1x"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 0.9
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1wcg2"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h5k3y"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ugjlx"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qky04"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k5uwd"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1wc8b"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ffjed"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vstx7"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_60f1d"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_x7x7l"]
+resource_local_to_scene = true
+shader = ExtResource("3_ubkq6")
+shader_parameter/h = 1.0
+shader_parameter/s = 0.8
+shader_parameter/v = 0.9
+
+[node name="BalatroInspectEnchantScreen" instance=ExtResource("2_base")]
+script = ExtResource("1_script")
+
+[node name="LeftArrow" parent="CardArea" index="3"]
+offset_left = 349.0
+offset_top = -360.0
+offset_right = 437.00006
+offset_bottom = -272.0
+rotation = -1.5708
+pivot_offset = Vector2(44, 44)
+
+[node name="Icon" parent="CardArea/LeftArrow" index="0"]
+material = SubResource("ShaderMaterial_1al1x")
+flip_h = true
+
+[node name="RightArrow" parent="CardArea" index="4"]
+offset_left = 349.0
+offset_top = 272.0
+offset_right = 437.00006
+offset_bottom = 360.0
+rotation = 1.5708
+pivot_offset = Vector2(44, 44)
+
+[node name="Icon" parent="CardArea/RightArrow" index="0"]
+material = SubResource("ShaderMaterial_1al1x")
+
+[node name="TickboxVisuals" parent="CardArea/EnchantTickbox/TickEnchant" index="0"]
+material = SubResource("ShaderMaterial_1wcg2")
+
+[node name="EnchantNameLabel" type="Label" parent="CardArea" index="6"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -620.0
+offset_top = -300.0
+offset_right = -460.0
+offset_bottom = -180.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.937255, 0.784314, 0.317647, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.501961)
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="EnchantList" type="VBoxContainer" parent="CardArea" index="7"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(55, 543)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 366.0
+offset_top = -272.0
+offset_right = 421.00006
+offset_bottom = 272.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 6
+
+[node name="Icon" parent="PanelArea/PanelMargin/PanelVBox/PaginatorRow/PgLeftBtn" index="0"]
+material = SubResource("ShaderMaterial_1al1x")
+
+[node name="Icon" parent="PanelArea/PanelMargin/PanelVBox/PaginatorRow/PgRightBtn" index="0"]
+material = SubResource("ShaderMaterial_1al1x")
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Portrait/TickPortrait" index="0"]
+material = SubResource("ShaderMaterial_h5k3y")
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Frame/TickFrame" index="0"]
+material = SubResource("ShaderMaterial_ugjlx")
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_TitleBanner/TickTitleBanner" index="0"]
+material = SubResource("ShaderMaterial_qky04")
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_TypePlaque/TickTypePlaque" index="0"]
+material = SubResource("ShaderMaterial_k5uwd")
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_PortraitBorder/TickPortraitBorder" index="0"]
+material = SubResource("ShaderMaterial_1wc8b")
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_EnergyIcon/TickEnergyIcon" index="0"]
+material = SubResource("ShaderMaterial_ffjed")
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_StarIcon/TickStarIcon" index="0"]
+material = SubResource("ShaderMaterial_vstx7")
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Enchantment/TickEnchantment" index="0"]
+material = SubResource("ShaderMaterial_60f1d")
+
+[node name="Bg" parent="PanelArea/PanelMargin/PanelVBox/BtnRow/ExportBtn" index="0"]
+material = SubResource("ShaderMaterial_x7x7l")
+
+[node name="Bg" parent="PanelArea/PanelMargin/PanelVBox/BtnRow/ImportBtn" index="0"]
+material = SubResource("ShaderMaterial_x7x7l")
+
+[node name="Bg" parent="PanelArea/PanelMargin/PanelVBox/MenuBtnHolder" index="0"]
+material = SubResource("ShaderMaterial_x7x7l")

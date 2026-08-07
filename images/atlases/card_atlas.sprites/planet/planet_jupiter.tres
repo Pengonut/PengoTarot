@@ -1,0 +1,6 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://9pk0c8t9h"]
+
+[ext_resource type="Texture2D" uid="uid://eieh0lr3ocs" path="res://images/packed/card_portraits/planet/planet_jupiter.png" id="1_6oa37"]
+
+[resource]
+atlas = ExtResource("1_6oa37")

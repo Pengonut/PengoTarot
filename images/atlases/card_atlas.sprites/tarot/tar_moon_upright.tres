@@ -1,0 +1,6 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://qkcrc2iv"]
+
+[ext_resource type="Texture2D" uid="uid://Y2i8QmPPVwCd" path="res://images/packed/card_portraits/tarot/tar_moon_upright.png" id="1_b6d7t"]
+
+[resource]
+atlas = ExtResource("1_b6d7t")

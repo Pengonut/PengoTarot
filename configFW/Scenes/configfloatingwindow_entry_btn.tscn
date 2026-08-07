@@ -1,0 +1,34 @@
+[gd_scene load_steps=3 format=3 uid="uid://desdibakmh4k0"]
+
+[ext_resource type="Script" uid="uid://dvk5g34xm10mo" path="res://configFW/Scripts/NConfigFloatingWindowEntryButton.cs" id="1_entry"]
+[ext_resource type="Texture2D" uid="uid://bd6us03yxwcux" path="res://configFW/Scenes/images/entry.webp" id="2_tex"]
+
+[node name="ConfigFWEntryBtnRoot" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 1775.0
+offset_top = 189.0
+offset_right = 1899.0
+offset_bottom = 355.0
+mouse_filter = 2
+
+[node name="Button" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_entry")
+
+[node name="Icon" type="TextureRect" parent="Button"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_tex")
+expand_mode = 1
+stretch_mode = 5

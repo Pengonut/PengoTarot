@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>PengoTarot.Loader</AssemblyName>
+        <RootNamespace>PengoTarot.Loader</RootNamespace>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <!-- Compile against oldest supported API -->
+        <Sts2DllRoot>D:\[Tool] Godot\STS2dll\v0.107</Sts2DllRoot>
+        <IntermediateOutputPath>.godot\mono\temp\obj\$(Configuration)\loader\</IntermediateOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="sts2" HintPath="$(Sts2DllRoot)\sts2.dll" Private="False"/>
+        <Reference Include="0Harmony" HintPath="$(Sts2DllRoot)\0Harmony.dll" Private="False"/>
+    </ItemGroup>
+</Project>

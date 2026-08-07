@@ -1,0 +1,6 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3 uid="uid://rprk9cigr"]
+
+[ext_resource type="Texture2D" uid="uid://vc6q3d43m7w" path="res://images/packed/card_portraits/planet/planet_neptune.png" id="1_9cjrd"]
+
+[resource]
+atlas = ExtResource("1_9cjrd")

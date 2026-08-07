@@ -1,0 +1,67 @@
+[gd_scene load_steps=5 format=3 uid="uid://dw1s4ey0r3uqh"]
+
+[ext_resource type="Script" uid="uid://deak8m0w1rrex" path="res://src/Core/Nodes/GodotExtensions/NButton.cs" id="1_nbtn"]
+[ext_resource type="Texture2D" uid="uid://cl2heluxpg3p1" path="res://images/ui/reward_screen/reward_item_button.png" id="2_tex"]
+[ext_resource type="Shader" uid="uid://dqgy1l3tctnay" path="res://shaders/hsv.gdshader" id="3_hsv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blue"]
+resource_local_to_scene = true
+shader = ExtResource("3_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[node name="BalatroEntryBtnRoot" type="Control"]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -398.0
+offset_top = -125.0
+offset_right = -38.0
+offset_bottom = -29.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Button" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nbtn")
+
+[node name="Icon" type="TextureRect" parent="Button"]
+material = SubResource("ShaderMaterial_blue")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -3.0
+offset_right = 101.0
+offset_bottom = 17.333313
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.75, 0.75)
+pivot_offset = Vector2(32, 32)
+mouse_filter = 2
+texture = ExtResource("2_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Button"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 32
+text = "BAL_BTN_ENTRY"
+horizontal_alignment = 1
+vertical_alignment = 1

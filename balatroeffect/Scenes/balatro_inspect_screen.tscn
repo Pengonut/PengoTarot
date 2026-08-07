@@ -1,0 +1,926 @@
+[gd_scene load_steps=22 format=3 uid="uid://n3lo85d1b1kp"]
+
+[ext_resource type="Script" uid="uid://c74jer8uw7xdr" path="res://balatroeffect/Scenes/NBalatroInspectScreen.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://deak8m0w1rrex" path="res://src/Core/Nodes/GodotExtensions/NButton.cs" id="2_nbtn"]
+[ext_resource type="Texture2D" uid="uid://cakri10dsey1d" path="res://images/packed/common_ui/settings_tiny_left_arrow.png" id="3_larrow"]
+[ext_resource type="Texture2D" uid="uid://c7kumcmbdvuji" path="res://images/packed/common_ui/settings_tiny_right_arrow.png" id="4_rarrow"]
+[ext_resource type="Shader" uid="uid://dqgy1l3tctnay" path="res://shaders/hsv.gdshader" id="5_hsv"]
+[ext_resource type="FontVariation" path="res://themes/kreon_bold_glyph_space_one.tres" id="6_font"]
+[ext_resource type="PackedScene" uid="uid://bw8f1jtcj62xv" path="res://scenes/ui/tickbox.tscn" id="7_tickbox"]
+[ext_resource type="PackedScene" path="res://scenes/ui/volume_slider.tscn" id="8_slider"]
+[ext_resource type="Texture2D" uid="uid://cl2heluxpg3p1" path="res://images/ui/reward_screen/reward_item_button.png" id="9_reward"]
+[ext_resource type="Shader" uid="uid://ce83qi4s58k5g" path="res://balatroeffect/Shaders/pengo_starcloud.gdshader" id="10_starcloud"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_starcloud_bg"]
+resource_local_to_scene = true
+shader = ExtResource("10_starcloud")
+shader_parameter/use_black_bg = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gold"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 0.9
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h5k3y"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ugjlx"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qky04"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k5uwd"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1wc8b"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ffjed"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vstx7"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_idmof"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 1.0
+shader_parameter/v = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_btn"]
+resource_local_to_scene = true
+shader = ExtResource("5_hsv")
+shader_parameter/h = 1.0
+shader_parameter/s = 0.8
+shader_parameter/v = 0.9
+
+[node name="BalatroInspectScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_script")
+
+[node name="Backstop" type="ColorRect" parent="."]
+modulate = Color(0, 0, 0, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="CardAreaBg" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_starcloud_bg")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.627451)
+
+[node name="BackstopHit" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.667
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 0.001)
+script = ExtResource("2_nbtn")
+
+[node name="CardArea" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_right = 0.667
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CardAnchor" type="Control" parent="CardArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HoverTipRect" type="Control" parent="CardArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -359.0
+offset_top = -418.0
+offset_right = 347.0
+offset_bottom = 418.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LeftArrow" type="Control" parent="CardArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -476.0
+offset_top = -64.0
+offset_right = -348.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(64, 64)
+script = ExtResource("2_nbtn")
+
+[node name="Icon" type="TextureRect" parent="CardArea/LeftArrow"]
+material = SubResource("ShaderMaterial_gold")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(64, 64)
+mouse_filter = 2
+texture = ExtResource("3_larrow")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RightArrow" type="Control" parent="CardArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 337.0
+offset_top = -64.0
+offset_right = 465.00006
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(64, 64)
+script = ExtResource("2_nbtn")
+
+[node name="Icon" type="TextureRect" parent="CardArea/RightArrow"]
+material = SubResource("ShaderMaterial_gold")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(64, 64)
+mouse_filter = 2
+texture = ExtResource("4_rarrow")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="EnchantTickbox" type="HBoxContainer" parent="CardArea"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -240.0
+offset_top = 470.0
+offset_right = 240.0
+offset_bottom = 534.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="TickEnchant" type="Control" parent="CardArea/EnchantTickbox"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TickboxVisuals" parent="CardArea/EnchantTickbox/TickEnchant" instance=ExtResource("7_tickbox")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="CardArea/EnchantTickbox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.937255, 0.784314, 0.317647, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.501961)
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("6_font")
+theme_override_font_sizes/font_size = 32
+text = "BAL_VIEW_ENCHANTMENTS"
+vertical_alignment = 1
+
+[node name="PanelArea" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.667
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PanelBg" type="ColorRect" parent="PanelArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.182, 0.2604, 0.28, 0.501961)
+
+[node name="PanelShadow" type="ColorRect" parent="PanelArea"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 4.0
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.2346, 0.3259, 0.34, 1)
+
+[node name="PanelMargin" type="MarginContainer" parent="PanelArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 35
+theme_override_constants/margin_bottom = 35
+
+[node name="PanelVBox" type="VBoxContainer" parent="PanelArea/PanelMargin"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="EffectHeader" type="Label" parent="PanelArea/PanelMargin/PanelVBox"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.937255, 0.784314, 0.317647, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.501961)
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("6_font")
+theme_override_font_sizes/font_size = 32
+text = "BAL_LABEL_EFFECT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PaginatorRow" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="PgLeftBtn" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PaginatorRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+script = ExtResource("2_nbtn")
+
+[node name="Icon" type="TextureRect" parent="PanelArea/PanelMargin/PanelVBox/PaginatorRow/PgLeftBtn"]
+material = SubResource("ShaderMaterial_gold")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(32, 32)
+mouse_filter = 2
+texture = ExtResource("3_larrow")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PgLabel" type="Label" parent="PanelArea/PanelMargin/PanelVBox/PaginatorRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 28
+text = "-"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PgRightBtn" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PaginatorRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+script = ExtResource("2_nbtn")
+
+[node name="Icon" type="TextureRect" parent="PanelArea/PanelMargin/PanelVBox/PaginatorRow/PgRightBtn"]
+material = SubResource("ShaderMaterial_gold")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(32, 32)
+mouse_filter = 2
+texture = ExtResource("4_rarrow")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ModeRow" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="NormalModeBtn" type="Label" parent="PanelArea/PanelMargin/PanelVBox/ModeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 22
+text = "BAL_MODE_NORMAL"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Sep1" type="Label" parent="PanelArea/PanelMargin/PanelVBox/ModeRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_font_sizes/font_size = 22
+text = "|"
+vertical_alignment = 1
+
+[node name="SeparatelyModeBtn" type="Label" parent="PanelArea/PanelMargin/PanelVBox/ModeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 22
+text = "BAL_MODE_SEPARATELY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Sep2" type="Label" parent="PanelArea/PanelMargin/PanelVBox/ModeRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_font_sizes/font_size = 22
+text = "|"
+vertical_alignment = 1
+
+[node name="FullyModeBtn" type="Label" parent="PanelArea/PanelMargin/PanelVBox/ModeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 22
+text = "BAL_MODE_FULLY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Divider2" type="ColorRect" parent="PanelArea/PanelMargin/PanelVBox"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0.9098039, 0.85882354, 0.7490196, 0)
+
+[node name="IntensityHeader" type="Label" parent="PanelArea/PanelMargin/PanelVBox"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.937255, 0.784314, 0.317647, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.501961)
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("6_font")
+theme_override_font_sizes/font_size = 32
+text = "BAL_LABEL_INTENSITY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SliderCenter" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="SpacerL" type="Control" parent="PanelArea/PanelMargin/PanelVBox/SliderCenter"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+mouse_filter = 2
+
+[node name="Slider" parent="PanelArea/PanelMargin/PanelVBox/SliderCenter" instance=ExtResource("8_slider")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.8
+focus_behavior_recursive = 0
+mouse_behavior_recursive = 0
+accessibility_name = ""
+accessibility_description = ""
+accessibility_live = 0
+accessibility_controls_nodes = Array[NodePath]([])
+accessibility_described_by_nodes = Array[NodePath]([])
+accessibility_labeled_by_nodes = Array[NodePath]([])
+accessibility_flow_to_nodes = Array[NodePath]([])
+
+[node name="SpacerR" type="Control" parent="PanelArea/PanelMargin/PanelVBox/SliderCenter"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+mouse_filter = 2
+
+[node name="Divider3" type="ColorRect" parent="PanelArea/PanelMargin/PanelVBox"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0.9098039, 0.85882354, 0.7490196, 0)
+
+[node name="PartsHeader" type="Label" parent="PanelArea/PanelMargin/PanelVBox"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.937255, 0.784314, 0.317647, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.501961)
+theme_override_constants/outline_size = 12
+theme_override_fonts/font = ExtResource("6_font")
+theme_override_font_sizes/font_size = 32
+text = "BAL_LABEL_PARTS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PartsHint" type="Label" parent="PanelArea/PanelMargin/PanelVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_font_sizes/font_size = 24
+text = "BAL_HINT_CHECK_PARTS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PartsGrid" type="GridContainer" parent="PanelArea/PanelMargin/PanelVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/v_separation = 4
+columns = 2
+
+[node name="Row_Portrait" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TickPortrait" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Portrait"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Portrait/TickPortrait" instance=ExtResource("7_tickbox")]
+material = SubResource("ShaderMaterial_h5k3y")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Portrait"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 24
+text = "BAL_PART_PORTRAIT"
+vertical_alignment = 1
+
+[node name="Row_Frame" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TickFrame" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Frame"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Frame/TickFrame" instance=ExtResource("7_tickbox")]
+material = SubResource("ShaderMaterial_ugjlx")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Frame"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 24
+text = "BAL_PART_FRAME"
+vertical_alignment = 1
+
+[node name="Row_TitleBanner" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TickTitleBanner" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_TitleBanner"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_TitleBanner/TickTitleBanner" instance=ExtResource("7_tickbox")]
+material = SubResource("ShaderMaterial_qky04")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_TitleBanner"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 24
+text = "BAL_PART_TITLEBANNER"
+vertical_alignment = 1
+
+[node name="Row_TypePlaque" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TickTypePlaque" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_TypePlaque"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_TypePlaque/TickTypePlaque" instance=ExtResource("7_tickbox")]
+material = SubResource("ShaderMaterial_k5uwd")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_TypePlaque"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 24
+text = "BAL_PART_TYPEPLAQUE"
+vertical_alignment = 1
+
+[node name="Row_PortraitBorder" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TickPortraitBorder" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_PortraitBorder"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_PortraitBorder/TickPortraitBorder" instance=ExtResource("7_tickbox")]
+material = SubResource("ShaderMaterial_1wc8b")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_PortraitBorder"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 24
+text = "BAL_PART_PORTRAITBORDER"
+vertical_alignment = 1
+
+[node name="Row_EnergyIcon" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TickEnergyIcon" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_EnergyIcon"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_EnergyIcon/TickEnergyIcon" instance=ExtResource("7_tickbox")]
+material = SubResource("ShaderMaterial_ffjed")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_EnergyIcon"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 24
+text = "BAL_PART_ENERGYICON"
+vertical_alignment = 1
+
+[node name="Row_StarIcon" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TickStarIcon" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_StarIcon"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_StarIcon/TickStarIcon" instance=ExtResource("7_tickbox")]
+material = SubResource("ShaderMaterial_vstx7")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_StarIcon"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 24
+text = "BAL_PART_STARICON"
+vertical_alignment = 1
+
+[node name="Row_Enchantment" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TickEnchantment" type="Control" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Enchantment"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="TickboxVisuals" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Enchantment/TickEnchantment" instance=ExtResource("7_tickbox")]
+material = SubResource("ShaderMaterial_vstx7")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/PartsGrid/Row_Enchantment"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_font_sizes/font_size = 24
+text = "BAL_PART_ENCHANTMENT"
+vertical_alignment = 1
+
+[node name="Divider4" type="ColorRect" parent="PanelArea/PanelMargin/PanelVBox"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0.9098039, 0.85882354, 0.7490196, 0)
+
+[node name="BtnRow" type="HBoxContainer" parent="PanelArea/PanelMargin/PanelVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="ExportBtn" type="Control" parent="PanelArea/PanelMargin/PanelVBox/BtnRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_nbtn")
+
+[node name="Bg" type="TextureRect" parent="PanelArea/PanelMargin/PanelVBox/BtnRow/ExportBtn"]
+material = SubResource("ShaderMaterial_btn")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("9_reward")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/BtnRow/ExportBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.125)
+theme_override_colors/font_outline_color = Color(0.144, 0.331, 0.36, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 24
+text = "BAL_BTN_COPY_CARD"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ImportBtn" type="Control" parent="PanelArea/PanelMargin/PanelVBox/BtnRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_nbtn")
+
+[node name="Bg" type="TextureRect" parent="PanelArea/PanelMargin/PanelVBox/BtnRow/ImportBtn"]
+material = SubResource("ShaderMaterial_btn")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("9_reward")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/BtnRow/ImportBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.125)
+theme_override_colors/font_outline_color = Color(0.144, 0.331, 0.36, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 24
+text = "BAL_BTN_PASTE_CARD"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MenuBtnHolder" type="Control" parent="PanelArea/PanelMargin/PanelVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_nbtn")
+
+[node name="Bg" type="TextureRect" parent="PanelArea/PanelMargin/PanelVBox/MenuBtnHolder"]
+material = SubResource("ShaderMaterial_btn")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("9_reward")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="PanelArea/PanelMargin/PanelVBox/MenuBtnHolder"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.965, 0.886, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.125)
+theme_override_colors/font_outline_color = Color(0.144, 0.331, 0.36, 1)
+theme_override_constants/shadow_offset_x = 4
+theme_override_constants/shadow_offset_y = 4
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 24
+text = "BAL_MENU_TITLE"
+horizontal_alignment = 1
+vertical_alignment = 1
