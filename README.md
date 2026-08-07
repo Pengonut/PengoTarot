@@ -1,43 +1,39 @@
 # PengoTarot
 
-杀戮尖塔2（Slay the Spire 2）的 Mod，添加 **44 张全新塔罗牌** 与 **40 个全新附魔**。
+杀戮尖塔2（Slay the Spire 2）Mod：**44 张塔罗牌 + 40 个附魔**。
+A Slay the Spire 2 mod: **44 tarot cards + 40 enchantments**.
 
-基于 Godot 4.5.1 + C#（net9.0）开发，通过 Harmony 补丁实现，支持多版本游戏 API（0.107.0 / 0.110.0）。
+## 🎮 下载 Download
 
-## ✨ 功能特色
+玩家请通过 **Steam 创意工坊** 订阅下载本 Mod，享受自动更新与反馈。
+> Players: please subscribe via **Steam Workshop** for downloads & updates.
 
-- **44 张全新塔罗牌**
-- **40 个全新附魔**
-- **卡牌视觉特效系统**（balatroeffect）：Foil / 负片 / 多彩 / 镭射 / 各向异性虹光 / VHS / CRT 等 shader 特效，以及 3D 透视倾斜
-- **占卜标记系统**：地图节点标记、6 种标记占卜战斗效果、塔罗奖励
-- **塔罗卡包商人机制**：商店购买与多人购买同步
-- **多人联机同步**：卡牌 / 附魔运行逻辑实时同步
-- **多语言本地化**：简体中文 / 日本語 / 한국어 / English
+本仓库为 **MIT 开源代码**，不提供 Mod 下载。
+> This repo hosts open-source code (MIT) only — no mod downloads.
 
-## 📦 安装
+## ✨ 功能 Features
 
-> 从 [Releases](https://github.com/Pengonut/PengoTarot/releases) 下载最新版本。
+- **44 张全新塔罗牌** / 44 brand-new tarot cards
+- **40 个全新附魔** / 40 brand-new enchantments
+- **卡牌视觉特效**：Foil / 负片 / 多彩 / 镭射 / VHS / CRT 等 shader 特效与 3D 倾斜 / card visual effects
+- **占卜标记系统** / divination marker system
+- **塔罗卡包商人** / tarot pack merchant
+- **多人同步** / multiplayer sync
+- **多语言**：简体中文 / 日本語 / 한국어 / English
 
-1. 下载 Release 中的 `PengoTarot.pck` 与对应版本的 `PengoTarot.dll`
-2. 解压到游戏的 Mod 目录（`SlayTheSpire2/mods/` 下）
-3. 启动游戏，在 Mod 列表中启用 PengoTarot
-
-## 🔧 开发与构建
+## 🔧 面向开发者 For Developers
 
 ```powershell
-# 单版本构建（0.107.0 或 0.110.0）
+# 单版本构建（0.107.0 或 0.110.0） / build for one API version
 dotnet build -c Release /p:Sts2ApiCompat=0.107.0
 
-# 完整打包（构建 Loader + 两个版本 DLL + 生成 manifest）
+# 完整打包（Loader + 两个版本 DLL + manifest） / full packaging
 powershell -ExecutionPolicy Bypass -File pack.ps1
-
-# 工具脚本
-python tools/<脚本名>   # 用法见 tools/README.md
 ```
 
-构建产物输出到 `dist/PengoTarot/`，`.pck` 需在 Godot 编辑器中导出。
+构建产物在 `dist/PengoTarot/`；`.pck` 需在 Godot 编辑器导出。
 
-## 🏗️ 目录结构
+## 🏗️ 目录结构 Structure
 
 | 目录 | 作用 |
 |---|---|
@@ -51,6 +47,6 @@ python tools/<脚本名>   # 用法见 tools/README.md
 | `configFW/` | 难度配置浮动面板 |
 | `tools/` | Python 资产生成脚本 |
 
-## 📄 许可证
+## 📄 许可证 License
 
 本项目使用 [MIT License](LICENSE)。
