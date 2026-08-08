@@ -41,8 +41,13 @@ namespace PengoTarot.Powers
 
         public override async Task AfterCardEnteredCombat(CardModel card)
         {
-            if (card.Owner == Owner.Player)
-                await AfflictCards(Owner);
+            // 本回合已触发过（第一张攻击牌已消耗、其余攻击牌侵蚀已清除）：
+            // 新进入战斗的牌不再上侵蚀，防止同一回合抽到/生成的牌让已消失的图标重新出现。
+            if (_triggeredThisTurn) return;
+            // 只给新进入战斗的这张攻击牌上侵蚀（参照原版 TangledPower/RingingPower 模式：
+            // 只处理 card 本身，而不是重给所有牌上侵蚀，否则会覆盖触发后清除的效果）。
+            if (card.Owner == Owner.Player && card.Type == CardType.Attack && card.Affliction == null)
+                await CardCmd.Afflict<TarJusticeReversedAffliction>(card, 1m);
         }
 
         public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)

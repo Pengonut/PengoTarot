@@ -47,6 +47,7 @@ public sealed class TarLoversReversedEnchantment : EnchantmentModel
         return allCards.FirstOrDefault(c =>
             c != self &&
             c.Pile?.Type != PileType.Hand &&
+            c.Pile?.Type != PileType.Play &&
             (c.Enchantment is TarLoversUprightEnchantment ||
             c.Enchantment is TarLoversReversedEnchantment));
     }

@@ -1,6 +1,6 @@
 ---
 name: github-workflow
-description: 'PengoTarot 的 GitHub 提交/更新/发布流程：仓库 Pengonut/PengoTarot（公开、MIT、main 分支、origin 已配置）、日常提交推送（VS Code 图形化优先，终端 git add+commit+push）、commit message 中文规范与 PowerShell 5.1 乱码规避（-F UTF-8 文件 / 先设 Console 输出编码）、.gitignore 排除清单（.venv/dist/*.pck/*.bak/*.psd 等）与必须提交项（.github/、*.uid、export_presets.cfg）、路径含 [Tool] 方括号的 PowerShell 坑（-LiteralPath / git -C）、Release 发布（玩家下载走 Steam 创意工坊，GitHub 仅代码开源，勿分发 pck/dll）。Use when: 帮用户提交/推送代码、检查或完善 .gitignore、准备 Release、排查 git 中文乱码或路径报错。'
+description: 'PengoTarot 的 GitHub 提交/更新/发布流程：仓库 Pengonut/PengoTarot（公开、MIT、main 分支、origin 已配置）、日常提交推送（VS Code 图形化优先，终端 git add+commit+push）、commit message 中文规范与 PowerShell 5.1 乱码规避（-F UTF-8 文件 / 先设 Console 输出编码）、.gitignore 排除清单（.venv/dist/*.pck/*.bak/*.psd 等）与必须提交项（.github/、*.uid、export_presets.cfg）、项目经 junction D:\PengoTarot 访问（真实路径含 [Tool] 方括号，勿直接用）、PowerShell 通配符规避、Release 发布（玩家下载走 Steam 创意工坊，GitHub 仅代码开源，勿分发 pck/dll）。Use when: 帮用户提交/推送代码、检查或完善 .gitignore、准备 Release、排查 git 中文乱码或路径报错。'
 argument-hint: '如：帮我提交今天的改动并推送、检查 .gitignore 有没有漏掉大文件、提醒我发布 v1.0 的 Release'
 user-invocable: true
 ---
@@ -22,6 +22,7 @@ PengoTarot 的 GitHub 仓库：**Pengonut/PengoTarot**（公开，MIT 协议）�
 
 | 项 | 值 |
 |---|---|
+| 工作路径 | `D:\PengoTarot`（junction → `D:\[Tool] Godot\STS2Mod\PengoTarot`；**所有操作走此路径**） |
 | 远程 | `origin` = `https://github.com/Pengonut/PengoTarot.git` |
 | 分支 | `main`（本地与远程同名，已设上游跟踪） |
 | 身份 | git 全局已配 `user.name=Pengonut` / `user.email=Pengonut@users.noreply.github.com` |
@@ -41,7 +42,7 @@ PengoTarot 的 GitHub 仓库：**Pengonut/PengoTarot**（公开，MIT 协议）�
   - 优先让用户在 VS Code 图形界面提交
   - 或把 message 写入 **UTF-8 文件** 再 `git commit -F <file>`（用 create_file 生成）
   - 查看 git 中文输出前先设 `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8`
-- **路径含 `[Tool]` 方括号**：PowerShell 把 `[` `]` 当通配符，`Set-Location`/`Get-Item` 会失败。改用 `Set-Location -LiteralPath` 或 `git -C "..."`；终端里 `Get-Item` 对含方括号路径还有 5.1 已知 bug，统计文件大小用 Python 更稳。
+- **项目路径 = `D:\PengoTarot`（junction）**：真实路径 `D:\[Tool] Godot\STS2Mod\PengoTarot` 含方括号，PowerShell 会当通配符（`Set-Location`/`Get-Item`/venv 激活都失败）。已建 junction `D:\PengoTarot` 指向真实路径，**所有 git/终端/venv 操作一律走 `D:\PengoTarot`**。⚠️ 不要 `Remove-Item -Recurse` 删 junction（会误删真实文件）；`Resolve-Path`/`os.path.realpath` 仍会露出物理路径但功能正常。
 - **`.gitignore` 关键项**（已配置好，勿删）：
   - 排除：`.godot/`、`.venv/`、`dist/`、`bin/ obj/`、`*.pck`、`*.zip`、`*.psd`、`*.bak`、`*.orig`、`*~`、`*.log`、`.idea/`、`.vscode/`
   - **必须提交**：`.github/`（技能文档 SKILL.md）、`*.uid`、`export_presets.cfg`、`project.godot`、`*.tscn`、`*.gdshader`

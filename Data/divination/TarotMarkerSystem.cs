@@ -256,44 +256,6 @@ namespace PengoTarot.Data.Divination
             return picked;
         }
 
-        /// <summary>
-        /// 防御性补标（房间完成后调用）：若当前幕应有标记（任一开启的标记占卜）却一个都没有
-        /// （被其他破坏性读档 mod 清空/坐标失效），则重新应用标记。幂等：正常情况坐标都在时无副作用，
-        /// 不影响当前玩家游玩体验；只兜底「读档后标记全部丢失」场景。
-        /// </summary>
-        public static void TryRemarker(IRunState runState)
-        {
-            if (runState?.Map == null) return;
-            int actIndex = runState.CurrentActIndex;
-
-            // 配置满足要求：至少一个开启的标记占卜（开关开启即算，失效的占卜也要补供逆图显示）
-            bool anyEnabled = false;
-            foreach (var cfg in Configs)
-            {
-                if (cfg.FlagIndex >= 0 && ConfigFloatingWindowRunData.GetTarFlag(cfg.FlagIndex))
-                {
-                    anyEnabled = true;
-                    break;
-                }
-            }
-            if (!anyEnabled) return;
-
-            // 当前幕是否已有任何标记（含失效保留的）：有则不补（正常游玩零开销）
-            bool anyMarked = false;
-            foreach (var st in _states.Values)
-            {
-                if (st.ActIndex == actIndex && st.Coords.Count > 0)
-                {
-                    anyMarked = true;
-                    break;
-                }
-            }
-            if (anyMarked) return;
-
-            // 全部消失（读档 mod 破坏）→ 重新应用标记（ApplyMarkers 幂等：已有保留、缺失补上）
-            ApplyMarkers(runState, runState.Map, actIndex);
-        }
-
         /// <summary>重置所有标记状态（新局起点）。</summary>
         public static void Reset()
         {

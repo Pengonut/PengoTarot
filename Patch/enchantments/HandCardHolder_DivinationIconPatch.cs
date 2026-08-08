@@ -39,6 +39,13 @@ public static class HandCardHolder_DivinationIconPatch
     [HarmonyPatch(typeof(NHandCardHolder), "_Ready"), HarmonyPostfix]
     private static void OnReady(NHandCardHolder __instance)
     {
+        // 补订阅：原版 SubscribeToEvents 在 SetCard（节点尚未进树）时因 IsInsideTree() 为 false 而订阅失败，
+        // 导致清除侵蚀时 AfflictionChanged → Flash 链路断裂、右上角图标不消失。
+        // 此处进树后（_Ready）补订阅 Flash，确保侵蚀变化（上牌/清除）时图标即时刷新。
+        var card = __instance.CardModel;
+        if (card != null)
+            card.AfflictionChanged += __instance.Flash;
+
         // 避免重复添加（pool 复用场景）
         if (__instance.FindChild(IconNodeName, recursive: false, owned: false) != null)
             return;
@@ -101,6 +108,24 @@ public static class HandCardHolder_DivinationIconPatch
     [HarmonyPatch(typeof(NHandCardHolder), "Flash"), HarmonyPostfix]
     private static void Flash_Postfix(NHandCardHolder __instance)
         => UpdateIcon(__instance);
+
+    // _ExitTree：取消 OnReady 补订阅，避免卡牌 Affliction 变化仍引用已出树的 holder。
+    [HarmonyPatch(typeof(NHandCardHolder), "_ExitTree"), HarmonyPostfix]
+    private static void OnExitTree(NHandCardHolder __instance)
+    {
+        var card = __instance.CardModel;
+        if (card != null)
+            card.AfflictionChanged -= __instance.Flash;
+    }
+
+    // Clear（pool 复用）：与 _ExitTree 相同，取消补订阅。
+    [HarmonyPatch(typeof(NHandCardHolder), "Clear"), HarmonyPostfix]
+    private static void Clear_Postfix(NHandCardHolder __instance)
+    {
+        var card = __instance.CardModel;
+        if (card != null)
+            card.AfflictionChanged -= __instance.Flash;
+    }
 }
 
 /// <summary>

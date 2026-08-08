@@ -50,7 +50,7 @@ PengoTarot 的「占卜」难度开关体系：在地图上**标记房间**（Ta
   - `IsFlagEnabled`（= GetTarFlag && !Expired）/ `IsExpired` / `GetMarkedCoords` / `RecordCompletion` / `Expire`
 - **发放**：`OnMarkedCombatVictory(coord, room, players)` → 对每个标记占卜 `CompletedCount++` → 精英类完成 `RewardInterval`(2) 个发 1 次 + `Expire`；普通类每完成 `RewardInterval` 个发 1 次（`RewardsAwarded` 防重复，持久化）。`RewardInterval=2` 常量（发放与角标共用）
 - **持久化**：markers 并入 `_pengotarot_cfw.markers`（含 `RewardsAwarded`）
-  - **防御性补标（2026-08-06）**：`TarotMarkerSystem.TryRemarker(runState)` + 新文件 `Patch/divination/AfterCombatRemarkerPatch.cs`（挂 `Hook.AfterCombatVictory` Postfix，与塔罗奖励同触发点）——某些读档类 mod 破坏性代码会让回档后标记全消失；每次战斗胜利后检查：**有开启标记占卜但当前幕无任何标记坐标** → 调 `ApplyMarkers` 补标。幂等（坐标都在时无副作用、正常游玩零开销）；失效占卜也算「开启」以补逆图显示。`ApplyMarkers` 本身幂等：`st.ActIndex==actIndex && st.Coords.All(map.HasPoint)` 时保留、否则重新 PickCoords
+  - **防御性补标已移除（2026-08-08）**：原 `TarotMarkerSystem.TryRemarker` + 新文件 `Patch/divination/AfterCombatRemarkerPatch.cs`（挂 `Hook.AfterCombatVictory` Postfix）已删除——实测无效果且对游戏进程破坏性严重（每次战斗胜利后做地图检查/重标，风险大于收益）。回档丢标记改由「读档恢复 `_pengotarot_cfw.markers`」与 configFW 存档注入自愈（`RunSaveInjectPatch` 无字段时从 JSON 快照恢复）兜底。**勿重新引入「房间完成后检查/重标」逻辑**
 ## 塔罗奖励（TarotReward）
 
 - **`TarotReward : Reward`**（`Data/tarotcard/`）：动态 `RewardType = 0x4000_0000 + flagIndex`（高位区间避开原版枚举，**借鉴 RitsuLib DynamicEnumValueMinter 思路但自研**，不依赖 RitsuLib）；`IconPath=GetMarkerIconPath(flag)`；`Description` 键 `BAL_CFW_TAROT_REWARD_DESC`；构造函数调 `ConfigFloatingWindowLoc.Inject()`（防未开面板时描述键缺失）
