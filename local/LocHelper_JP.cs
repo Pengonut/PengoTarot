@@ -336,9 +336,9 @@ namespace PengoTarot
                 { "TAR_TEMPERANCE_UPRIGHT_ENCHANTMENT.title", "節制-正" },
                 { "TAR_TEMPERANCE_UPRIGHT_ENCHANTMENT.extraCardText", "戦闘中初めてプレイした時、10[gold]ゴールド[/gold]を獲得する。" },
                 
-                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.description", "プレイ後、このターンに受けるブロックされていないダメージ1につき、[blue]5[/blue][gold]ゴールド[/gold]を得る。" },
+                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.description", "プレイ後、このターンに失ったHP1につき、戦闘終了時に[blue]5[/blue][gold]ゴールド[/gold]を得る。" },
                 { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.title", "節制-逆" },
-                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.extraCardText", "このターンに受けるブロックされていないダメージ1につき、5[gold]ゴールド[/gold]を得る。" },
+                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.extraCardText", "このターンに失ったHP1につき、戦闘終了時に5[gold]ゴールド[/gold]を得る。" },
 
                 
                 { "TAR_DEVIL_UPRIGHT_ENCHANTMENT.description", "コストが{energyPrefix:energyIcons(1)}減少。手札にある間、他のカードより先にプレイしなければならない。" },
@@ -490,16 +490,20 @@ namespace PengoTarot
             powersTable.MergeWith(new Dictionary<string, string>
             {
                 { "TAR_TEMPERANCE_REVERSED_POWER.title", "節制-逆" },
-                { "TAR_TEMPERANCE_REVERSED_POWER.description", "このターンに受けるブロックされていないダメージ1につき、[blue]5[/blue][gold]ゴールド[/gold]を得る。" },
-                { "TAR_TEMPERANCE_REVERSED_POWER.smartDescription", "このターンに受けるブロックされていないダメージ1につき、[blue]{Amount}[/blue][gold]ゴールド[/gold]を得る。" },
+                { "TAR_TEMPERANCE_REVERSED_POWER.description", "このターンに失ったHP[blue]1[/blue]につき、戦闘終了時に等量の[gold]ゴールド[/gold]を得る。" },
+                { "TAR_TEMPERANCE_REVERSED_POWER.smartDescription", "このターンに失ったHP[blue]1[/blue]につき、戦闘終了時に[blue]{Amount}[/blue][gold]ゴールド[/gold]を得る。" },
 
                 { "TAR_CHARIOT_REVERSED_POWER.title", "戦車-逆" },
-                { "TAR_CHARIOT_REVERSED_POWER.description", "この敵が初めてあなたに[gold]ブロックされていない[/gold]ダメージを与えた後、あなたは[gold]脆弱[/gold]を[blue]1[/blue]得る。" },
-                { "TAR_CHARIOT_REVERSED_POWER.smartDescription", "この敵が初めてあなたに[gold]ブロックされていない[/gold]ダメージを与えた後、あなたは[gold]脆弱[/gold]を[blue]{Amount}[/blue]得る。" },
+                { "TAR_CHARIOT_REVERSED_POWER.description", "この敵が初めてあなたにブロックされていないダメージを与えた後、あなたは[gold]脆弱[/gold]を[blue]1[/blue]得る。" },
+                { "TAR_CHARIOT_REVERSED_POWER.smartDescription", "この敵が初めてあなたにブロックされていないダメージを与えた後、あなたは[gold]脆弱[/gold]を[blue]{Amount}[/blue]得る。" },
 
                 { "TAR_STRENGTH_REVERSED_POWER.title", "力-逆" },
-                { "TAR_STRENGTH_REVERSED_POWER.description", "この敵が初めてあなたに[gold]ブロックされていない[/gold]ダメージを与えた後、あなたは[gold]脱力[/gold]を[blue]1[/blue]得る。" },
-                { "TAR_STRENGTH_REVERSED_POWER.smartDescription", "この敵が初めてあなたに[gold]ブロックされていない[/gold]ダメージを与えた後、あなたは[gold]脱力[/gold]を[blue]{Amount}[/blue]得る。" },
+                { "TAR_STRENGTH_REVERSED_POWER.description", "この敵が初めてあなたにブロックされていないダメージを与えた後、あなたは[gold]脱力[/gold]を[blue]1[/blue]得る。" },
+                { "TAR_STRENGTH_REVERSED_POWER.smartDescription", "この敵が初めてあなたにブロックされていないダメージを与えた後、あなたは[gold]脱力[/gold]を[blue]{Amount}[/blue]得る。" },
+
+                { "TAR_HERMIT_REVERSED_POWER.title", "隠者-逆" },
+                { "TAR_HERMIT_REVERSED_POWER.description", "ターン終了時、この層数に等しい[gold]ブロック[/gold]を得る。ブロックされていないダメージを受けるたびに、[blue]1[/blue]減少する。" },
+                { "TAR_HERMIT_REVERSED_POWER.smartDescription", "ターン終了時、[blue]{Amount}[/blue]の[gold]ブロック[/gold]を得る。ブロックされていないダメージを受けるたびに、[blue]1[/blue]減少する。" },
 
                 { "TAR_JUSTICE_REVERSED_POWER.title", "正義-逆" },
                 { "TAR_JUSTICE_REVERSED_POWER.description", "毎ターン最初にプレイしたアタックが[gold]廃棄[/gold]される。" },

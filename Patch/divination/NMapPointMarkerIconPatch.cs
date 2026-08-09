@@ -13,6 +13,7 @@ using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using PengoTarot.ConfigFW;
 using PengoTarot.Data.Divination;
+using PengoTarot.Powers;
 
 namespace PengoTarot.Patches
 {
@@ -271,13 +272,13 @@ namespace PengoTarot.Patches
         private static string GetFlagName(int flag)
             => flag >= 0 && flag < _flagNames.Length ? _flagNames[flag] : string.Empty;
 
-        /// <summary>标记占卜在动态描述之外追加的状态/关键词 hovertip（易伤/虚弱/覆甲/消耗等词条说明，随描述一起堆叠显示）。</summary>
-        private static IHoverTip[] ExtraTipsForFlag(int flag)
+        /// <summary>标记占卜在动态描述之外追加的状态/关键词 hovertip（易伤/虚弱/隐者逆/消耗等词条说明，随描述一起堆叠显示）。</summary>
+        internal static IHoverTip[] ExtraTipsForFlag(int flag)
             => flag switch
             {
                 7 => new IHoverTip[] { HoverTipFactory.FromPower<VulnerablePower>() },
                 8 => new IHoverTip[] { HoverTipFactory.FromPower<WeakPower>() },
-                9 => new IHoverTip[] { HoverTipFactory.FromPower<PlatingPower>() },
+                9 => new IHoverTip[] { HoverTipFactory.FromPower<TarHermitReversedPower>() },
                 11 => new IHoverTip[] { HoverTipFactory.FromKeyword(CardKeyword.Exhaust) },
                 12 => new IHoverTip[] { HoverTipFactory.FromKeyword(CardKeyword.Exhaust) },
                 _ => Array.Empty<IHoverTip>(),
@@ -288,18 +289,20 @@ namespace PengoTarot.Patches
         {
             string name = GetFlagName(flag);
             if (string.IsNullOrEmpty(name)) return;
-            // 标记占卜：地图 hovertip 用分状态动态键（精英三态 0/1/已失效、普通两态 0/1）；非标记类用静态描述键
-            string key = ConfigFloatingWindowLoc.BuildMapDescriptionKey(flag)
-                         ?? "BAL_CFW_FLAG_" + name + "_DESC";
+            // 标记占卜：地图 hovertip 用动态描述 LocString（SmartFormat 条件，已注入 Expired/Completed）；非标记类用静态描述键
+            var mapDesc = ConfigFloatingWindowLoc.BuildMapDescription(flag);
             Texture2D? tex = null;
             string p = TarotMarkerSystem.GetMarkerIconPath(flag);
             if (!string.IsNullOrEmpty(p) && ResourceLoader.Exists(p))
                 tex = GD.Load<Texture2D>(p);
+            HoverTip main = mapDesc != null
+                ? new HoverTip(mapDesc, tex)
+                : new HoverTip(new LocString("gameplay_ui", "BAL_CFW_FLAG_" + name + "_DESC"), tex);
             // 标记占卜：动态描述 + 关键词/状态词条 hovertip 一起堆叠显示
             var extras = ExtraTipsForFlag(flag);
             NHoverTipSet? tip = extras.Length > 0
-                ? NHoverTipSet.CreateAndShow(icon, TipsWithExtras(new HoverTip(new LocString("gameplay_ui", key), tex), extras))
-                : NHoverTipSet.CreateAndShow(icon, new HoverTip(new LocString("gameplay_ui", key), tex));
+                ? NHoverTipSet.CreateAndShow(icon, TipsWithExtras(main, extras))
+                : NHoverTipSet.CreateAndShow(icon, main);
             if (tip != null)
             {
                 // 布局完成后重新对齐到图标旁（否则默认停在屏幕左上角）

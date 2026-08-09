@@ -5,7 +5,6 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
-using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Runs;
 using PengoTarot.Data.Divination;
 using PengoTarot.Powers;
@@ -16,8 +15,8 @@ namespace PengoTarot.Patches
     /// 精英标记占卜的战斗效果（进入被标记精英房间的战斗时生效）：
     /// - 战车(7)：给每个敌人挂 <see cref="TarChariotReversedPower"/>（未格挡伤害 → 玩家易伤）
     /// - 力量(8)：给每个敌人挂 <see cref="TarStrengthReversedPower"/>（未格挡伤害 → 玩家虚弱）
-    /// - 隐者(9)：给每个敌人挂游戏自带 <see cref="PlatingPower"/>，Amount = 最大生命×10%
-    ///   （PlatingPower 自带第 1 回合开始时获得等量格挡，与青蛙骑士同款）。
+    /// - 隐者(9)：给每个敌人挂 <see cref="TarHermitReversedPower"/>，Amount = 最大生命×10%
+    ///   （塔1 Plated Armor 机制：回合结束获得等量格挡，受到未格挡攻击伤害时减 1 层）。
     ///
     /// 挂在 <see cref="Hook.BeforeCombatStart"/> Postfix：此时敌人已生成并加入 combatState、战斗未开始，
     /// 两端确定性执行（同幕标记同坐标，多人可复现）。
@@ -55,7 +54,7 @@ namespace PengoTarot.Patches
                 if (strength)
                     await PowerCmd.Apply<TarStrengthReversedPower>(context, enemy, 1m, enemy, null);
                 if (hermit)
-                    await PowerCmd.Apply<PlatingPower>(
+                    await PowerCmd.Apply<TarHermitReversedPower>(
                         context, enemy, decimal.Round(enemy.MaxHp * HermitPlatingRatio), enemy, null);
             }
         }

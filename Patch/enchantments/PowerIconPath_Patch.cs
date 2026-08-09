@@ -50,6 +50,12 @@ namespace PengoTarot.Patches
                     "enchantments/tar_death_reversed_enchantment.png");
                 return false;
             }
+            if (__instance is TarHermitReversedPower)
+            {
+                __result = ImageHelper.GetImagePath(
+                    "enchantments/tar_hermit_reversed_enchantment.png");
+                return false;
+            }
             if (__instance is PlanetGoldPower)
             {
                 __result = GoldIconPath;
@@ -142,6 +148,12 @@ namespace PengoTarot.Patches
             {
                 __result = ImageHelper.GetImagePath(
                     "enchantments/tar_death_reversed_enchantment.png");
+                return false;
+            }
+            if (__instance is TarHermitReversedPower)
+            {
+                __result = ImageHelper.GetImagePath(
+                    "enchantments/tar_hermit_reversed_enchantment.png");
                 return false;
             }
             if (__instance is PlanetGoldPower)

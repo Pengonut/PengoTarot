@@ -4,12 +4,19 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using MegaCrit.Sts2.Core.ControllerInput;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Localization.Fonts;
+using MegaCrit.Sts2.Core.Models.Cards;
+using MegaCrit.Sts2.Core.Models.Powers;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
+using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 using PengoTarot.BalatroEffect;
+using PengoTarot.Patches;
+using PengoTarot.Powers;
 
 namespace PengoTarot.ConfigFW
 {
@@ -119,10 +126,10 @@ namespace PengoTarot.ConfigFW
             var progress = LocString.GetIfExists("gameplay_ui", "BAL_CFW_PROGRESS_LINE");
             if (progress != null)
             {
+                progress.Add("Expired", false);
                 progress.Add("Count", 3);
                 all.Add(progress.GetFormattedText() ?? string.Empty);
             }
-            all.Add(SafeLoc("CFW_EXPIRED_LINE"));
 
             var chunks = new Queue<string>();
             var chunk = new List<string>();
@@ -173,6 +180,8 @@ namespace PengoTarot.ConfigFW
         private readonly List<Control> _rightButtons = new();
         /// <summary>右侧按钮的开关动画 tween（快速开关时先 Kill 旧的）。</summary>
         private readonly List<Tween> _rightTweens = new();
+        /// <summary>中央面板（hover 标记占卜开关时，右上角额外词条 hovertip 的定位锚点）。</summary>
+        private Control? _panel;
 
         /// <summary>左侧塔罗大按钮（RefreshFromRunData 用）。</summary>
         private Control? _tarotBtn;
@@ -180,6 +189,9 @@ namespace PengoTarot.ConfigFW
         private Control? _planetBtn;
         /// <summary>右侧难度按钮 → 索引（RefreshFromRunData 用）。</summary>
         private readonly Dictionary<Control, int> _rightButtonIndices = new();
+
+        /// <summary>当前 hover 中有额外词条 hovertip 的开关按钮（用于切换开关后立即刷新「塔罗包」等动态词条）。</summary>
+        private Control? _hoveredTipButton;
 
         // ── 底部设置入口位置 toggle（节点在 .tscn 中定义，完全独立于本局配置） ──
         private HBoxContainer _settingsToggle = null!;
@@ -231,6 +243,7 @@ namespace PengoTarot.ConfigFW
             var body = panelVBox.GetNode<HBoxContainer>("Body");
             var leftColumn = body.GetNode<VBoxContainer>("LeftColumn");
             _rightGrid = body.GetNode<GridContainer>("RightGrid");
+            _panel = GetNodeOrNull<Control>("CenterPanel");
 
             BindLeftButtons(leftColumn);
             BindRightButtons(_rightGrid);
@@ -455,6 +468,14 @@ namespace PengoTarot.ConfigFW
                     // 本地化键为全大写（BAL_CFW_FLAG_<NAME>_DESC），FlagNames 是 PascalCase，需转大写匹配
                     AddHover(btn, $"CFW_FLAG_{FlagNames[idx].ToUpperInvariant()}_DESC");
 
+                // 有额外词条 hovertip 的开关（战车→易伤、力量→虚弱、隐者→隐者逆、节制→节制-逆、正义/倒吊人→消耗）：
+                // hover 时从面板右上角顶点开始、向右下方向创建额外词条 hovertip
+                if (ExtraTipsForConfigFlag(idx).Length > 0)
+                {
+                    btn.MouseEntered += () => { _hoveredTipButton = btn; ShowRightTopExtras(idx, btn); };
+                    btn.MouseExited += () => { if (_hoveredTipButton == btn) _hoveredTipButton = null; HideRightTopExtras(btn); };
+                }
+
                 if (btn is NButton nb)
                 {
                     nb.Connect(NClickableControl.SignalName.Released,
@@ -466,6 +487,9 @@ namespace PengoTarot.ConfigFW
                             ConfigFloatingWindowRunData.SetDifficultyFlag(idx, next);
                             ConfigFloatingWindow.BroadcastConfig();
                             ApplyToggleVisual(btn, next);
+                            // 切换开关后，若鼠标仍停在该开关上，立即刷新右上角的动态词条（「塔罗包」内容随开关状态变化）
+                            if (_hoveredTipButton == btn)
+                                ShowRightTopExtras(idx, btn);
                         }));
                 }
 
@@ -517,11 +541,7 @@ namespace PengoTarot.ConfigFW
             btn.MouseEntered += () =>
             {
                 _hintLabel.Text = ToLabelBbcode(FlagHintText(hintKey));
-                ScaleTo(btn, 1.05f);
-                // 仅可编辑（主机）时 hover 恢复亮度作为可点反馈；
-                // 只读（客机/局内）保持压暗，避免悬停时「像点亮」的误导
-                if (_editable)
-                    btn.Modulate = Colors.White;
+                ScaleTo(btn, 1.05f);   // hover 仅轻微放大：不改亮度也不加描边（避免与开关开/关的亮度动画冲突）
             };
             btn.MouseExited += () =>
             {
@@ -532,6 +552,75 @@ namespace PengoTarot.ConfigFW
                     ApplyToggleVisual(btn, _toggleState[btn]);
             };
         }
+
+        /// <summary>配置面板 hover 时右上角显示的额外词条 hovertip：标记占卜复用地图词条（易伤/虚弱/隐者逆/消耗），节制-逆单独提供。</summary>
+        /// <summary>配置面板 hover 时右上角显示的额外词条 hovertip 列表。顺序与开关描述文本一致（自上而下）：原版房间词条（精英/敌人）在前、效果词条在后、效果子词条（如隐者逆带的格挡）最后。</summary>
+        private static IHoverTip[] ExtraTipsForConfigFlag(int flag) => flag switch
+        {
+            0 => new IHoverTip[] { TarotPackTip() },   // 愚者：塔罗包
+            1 => new IHoverTip[] { TarotPackTip() },   // 魔术师：塔罗包
+            2 => new IHoverTip[] { TarotPackTip() },   // 女祭司：塔罗包
+            3 => new IHoverTip[] { TarotPackTip() },   // 皇后：塔罗包
+            4 => new IHoverTip[] { TarotPackTip() },   // 皇帝：塔罗包
+            5 => new IHoverTip[] { TarotPackTip() },   // 教皇：塔罗包
+            6 => new IHoverTip[] { RoomTip("ROOM_ELITE") },   // 恋人：精英
+            7 => new IHoverTip[] { RoomTip("ROOM_ELITE"), HoverTipFactory.FromPower<VulnerablePower>() },   // 战车：精英、易伤
+            8 => new IHoverTip[] { RoomTip("ROOM_ELITE"), HoverTipFactory.FromPower<WeakPower>() },   // 力量：精英、虚弱
+            9 => new IHoverTip[] { RoomTip("ROOM_ELITE"), HoverTipFactory.FromPower<TarHermitReversedPower>(), HoverTipFactory.Static(StaticHoverTip.Block) },   // 隐者：精英、隐者逆、格挡
+            11 => new IHoverTip[] { RoomTip("ROOM_ENEMY"), HoverTipFactory.FromKeyword(CardKeyword.Exhaust) },   // 正义：敌人、消耗
+            12 => new IHoverTip[] { RoomTip("ROOM_ENEMY"), HoverTipFactory.FromKeyword(CardKeyword.Exhaust) },   // 倒吊人：敌人、消耗
+            13 => new IHoverTip[] { RoomTip("ROOM_ENEMY") },   // 死神：敌人
+            14 => new IHoverTip[] { HoverTipFactory.FromPower<TarTemperanceReversedPower>() },   // 节制：节制-逆
+            16 => new IHoverTip[] { HoverTipFactory.FromKeyword(CardKeyword.Exhaust), HoverTipFactory.FromCard<AscendersBane>() },   // 高塔：消耗、进阶之灾
+            _ => Array.Empty<IHoverTip>(),
+        };
+
+        /// <summary>游戏原版房间类型词条（static_hover_tips 表，如 ROOM_ELITE 精英 / ROOM_ENEMY 敌人）。</summary>
+        private static IHoverTip RoomTip(string prefix)
+            => new HoverTip(
+                new LocString("static_hover_tips", prefix + ".title"),
+                new LocString("static_hover_tips", prefix + ".description"));
+
+        /// <summary>「塔罗包」信息词条（愚者~教皇 6 个开关 hover 时右上角显示）。内容随开关状态动态变化，
+        /// 用 SmartFormat 条件语法（{BoolVar:true值|false值}）在本地化文本里做判断：
+        /// 愚者未开→（商店中未启用）；魔术师→抽取 3/1；教皇→价格 75~100/175~200；女祭司→涨幅 0/+50。</summary>
+        private static IHoverTip TarotPackTip()
+        {
+            ConfigFloatingWindowLoc.Inject();   // 幂等：确保 BAL_CFW_TAROT_PACK_* 键已注入
+            var desc = new LocString("gameplay_ui", "BAL_CFW_TAROT_PACK_DESC");
+            desc.Add("FoolOn", ConfigFloatingWindowRunData.GetTarFlag(0));
+            desc.Add("MagicianOn", ConfigFloatingWindowRunData.GetTarFlag(1));
+            desc.Add("HierophantOn", ConfigFloatingWindowRunData.GetTarFlag(5));
+            desc.Add("PriestessOn", ConfigFloatingWindowRunData.GetTarFlag(2));
+            return new HoverTip(
+                new LocString("gameplay_ui", "BAL_CFW_TAROT_PACK_TITLE"),
+                desc);
+        }
+
+        /// <summary>鼠标移到有额外词条 hovertip 的开关上：从配置面板右上角顶点开始、向右下方向创建额外词条 hovertip（易伤/虚弱/隐者逆/节制-逆/消耗）。
+        /// 面板已在 tscn 左右对称预留固定边距（约 380px，略大于 hovertip 宽度），SetAlignment(Right) 不会因超屏被拉偏。</summary>
+        private void ShowRightTopExtras(int flag, Control owner)
+        {
+            var extras = ExtraTipsForConfigFlag(flag);
+            if (extras.Length == 0 || _panel == null) return;
+
+            NHoverTipSet.Remove(owner);   // 防御：同 owner 旧 tip 先清（重复 hover 覆盖）
+            var tip = NHoverTipSet.CreateAndShow(owner, extras);
+            if (tip == null) return;
+
+            // 布局完成后对齐到面板右上角（否则默认停在屏幕左上角），tip 垂直向右下排列；再往右移 5px
+            var panel = _panel;
+            Callable.From(() =>
+            {
+                if (GodotObject.IsInstanceValid(tip) && GodotObject.IsInstanceValid(panel))
+                {
+                    tip.SetAlignment(panel, HoverTipAlignment.Right);
+                    tip.GlobalPosition += new Vector2(10f, 0f);
+                }
+            }).CallDeferred();
+        }
+
+        private void HideRightTopExtras(Control owner) => NHoverTipSet.Remove(owner);
 
         private void ScaleTo(Control target, float scale)
         {

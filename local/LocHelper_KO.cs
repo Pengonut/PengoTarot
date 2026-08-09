@@ -325,9 +325,9 @@ namespace PengoTarot
                 { "TAR_TEMPERANCE_UPRIGHT_ENCHANTMENT.description", "전투마다 이 카드를 처음 사용하면, [blue]10[/blue] [gold]골드[/gold]를 얻습니다." },
                 { "TAR_TEMPERANCE_UPRIGHT_ENCHANTMENT.title", "절제" },
                 { "TAR_TEMPERANCE_UPRIGHT_ENCHANTMENT.extraCardText", "전투마다 처음 사용 시 [blue]10[/blue] [gold]골드[/gold]를 얻습니다." },
-                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.description", "이 카드가 사용된 후, 이번 턴 동안 방어도로 막지 못한 피해를 [blue]1[/blue] 받을 때마다 [blue]5[/blue] [gold]골드[/gold]를 얻습니다." },
+                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.description", "이 카드가 사용된 후, 이번 턴에 잃은 체력 [blue]1[/blue]마다 전투 종료 시 [blue]5[/blue] [gold]골드[/gold]를 얻습니다." },
                 { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.title", "절제" },
-                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.extraCardText", "이번 턴 방어되지 않은 피해 [blue]1[/blue]당 [blue]5[/blue] [gold]골드[/gold]를 얻습니다." },
+                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.extraCardText", "이번 턴에 잃은 체력 [blue]1[/blue]마다 전투 종료 시 [blue]5[/blue] [gold]골드[/gold]를 얻습니다." },
 
                 // XV The Devil
                 { "TAR_DEVIL_UPRIGHT_ENCHANTMENT.description", "비용이 {energyPrefix:energyIcons(1)} 감소합니다. 손패에 있을 때, 이 카드를 다른 카드보다 먼저 사용해야 합니다." },
@@ -469,8 +469,8 @@ namespace PengoTarot
             powersTable.MergeWith(new Dictionary<string, string>
             {
                 { "TAR_TEMPERANCE_REVERSED_POWER.title", "절제 - 역방향" },
-                { "TAR_TEMPERANCE_REVERSED_POWER.description", "이번 턴 동안 방어도로 막지 못한 피해를 [blue]1[/blue] 받을 때마다 [blue]5[/blue] [gold]골드[/gold]를 얻습니다." },
-                { "TAR_TEMPERANCE_REVERSED_POWER.smartDescription", "이번 턴 동안 방어도로 막지 못한 피해를 [blue]1[/blue] 받을 때마다 [blue]{Amount}[/blue] [gold]골드[/gold]를 얻습니다." },
+                { "TAR_TEMPERANCE_REVERSED_POWER.description", "이번 턴에 잃은 체력 [blue]1[/blue]마다 전투 종료 시 같은 양의 [gold]골드[/gold]를 얻습니다." },
+                { "TAR_TEMPERANCE_REVERSED_POWER.smartDescription", "이번 턴에 잃은 체력 [blue]1[/blue]마다 전투 종료 시 [blue]{Amount}[/blue] [gold]골드[/gold]를 얻습니다." },
 
                 { "TAR_CHARIOT_REVERSED_POWER.title", "전차 - 역방향" },
                 { "TAR_CHARIOT_REVERSED_POWER.description", "이 적이 처음으로 방어도로 막지 못한 피해를 주면, 당신은 [gold]취약[/gold]을 [blue]1[/blue] 얻습니다." },
@@ -479,6 +479,10 @@ namespace PengoTarot
                 { "TAR_STRENGTH_REVERSED_POWER.title", "힘 - 역방향" },
                 { "TAR_STRENGTH_REVERSED_POWER.description", "이 적이 처음으로 방어도로 막지 못한 피해를 주면, 당신은 [gold]약화[/gold]를 [blue]1[/blue] 얻습니다." },
                 { "TAR_STRENGTH_REVERSED_POWER.smartDescription", "이 적이 처음으로 방어도로 막지 못한 피해를 주면, 당신은 [gold]약화[/gold]를 [blue]{Amount}[/blue] 얻습니다." },
+
+                { "TAR_HERMIT_REVERSED_POWER.title", "은둔자 - 역방향" },
+                { "TAR_HERMIT_REVERSED_POWER.description", "턴 종료 시 이 수치에 해당하는 [gold]방어도[/gold]를 얻습니다. 방어도로 막지 못한 피해를 받을 때마다 [blue]1[/blue] 감소합니다." },
+                { "TAR_HERMIT_REVERSED_POWER.smartDescription", "턴 종료 시 [blue]{Amount}[/blue]만큼 [gold]방어도[/gold]를 얻습니다. 방어도로 막지 못한 피해를 받을 때마다 [blue]1[/blue] 감소합니다." },
 
                 { "TAR_JUSTICE_REVERSED_POWER.title", "정의 - 역방향" },
                 { "TAR_JUSTICE_REVERSED_POWER.description", "매 턴 처음 사용하는 공격 카드가 [gold]소멸[/gold]됩니다." },

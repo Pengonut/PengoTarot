@@ -303,9 +303,9 @@ namespace PengoTarot
                 { "TAR_TEMPERANCE_UPRIGHT_ENCHANTMENT.title", "节制-正" },
                 { "TAR_TEMPERANCE_UPRIGHT_ENCHANTMENT.extraCardText", "第一次打出时，获得10[gold]金币[/gold]。" },
                 
-                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.description", "这张牌打出后，本回合你每受到1点未被格挡的伤害，获得[blue]5[/blue][gold]金币[/gold]。" },
+                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.description", "这张牌打出后，本回合你失去的每点生命，使你在战斗结束后获得[blue]5[/blue][gold]金币[/gold]。" },
                 { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.title", "节制-逆" },
-                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.extraCardText", "你在本回合受到的每点未被格挡的伤害，使你获得5[gold]金币[/gold]。" },
+                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.extraCardText", "你在本回合失去的每点生命，使你在战斗结束后获得5[gold]金币[/gold]。" },
                 
                 { "TAR_DEVIL_UPRIGHT_ENCHANTMENT.description", "这张牌费用减少{energyPrefix:energyIcons(1)}。这张牌在[gold]手牌[/gold]中时，你必须优先打出这张牌。" },
                 { "TAR_DEVIL_UPRIGHT_ENCHANTMENT.title", "恶魔-正" },
@@ -452,16 +452,20 @@ namespace PengoTarot
             powersTable.MergeWith(new Dictionary<string, string>
             {
                 { "TAR_TEMPERANCE_REVERSED_POWER.title", "节制-逆" },
-                { "TAR_TEMPERANCE_REVERSED_POWER.description", "你在本回合每受到[blue]1[/blue]点未被格挡的伤害，获得[blue]5[/blue][gold]金币[/gold]。" },
-                { "TAR_TEMPERANCE_REVERSED_POWER.smartDescription", "你在本回合每受到1点未被格挡的伤害，获得[blue]{Amount}[/blue][gold]金币[/gold]。" },
+                { "TAR_TEMPERANCE_REVERSED_POWER.description", "本回合内，你失去的每点生命，使你在战斗结束后获得等量的[gold]金币[/gold]。" },
+                { "TAR_TEMPERANCE_REVERSED_POWER.smartDescription", "本回合内，你失去的每点生命，使你在战斗结束后获得[blue]{Amount}[/blue][gold]金币[/gold]。" },
 
                 { "TAR_CHARIOT_REVERSED_POWER.title", "战车-逆" },
-                { "TAR_CHARIOT_REVERSED_POWER.description", "该敌人首次对你造成[gold]未被格挡[/gold]的伤害后，你获得[blue]1[/blue]层[gold]易伤[/gold]。" },
-                { "TAR_CHARIOT_REVERSED_POWER.smartDescription", "该敌人首次对你造成[gold]未被格挡[/gold]的伤害后，你获得[blue]{Amount}[/blue]层[gold]易伤[/gold]。" },
+                { "TAR_CHARIOT_REVERSED_POWER.description", "该敌人首次对你造成未被格挡的伤害后，你获得[blue]1[/blue]层[gold]易伤[/gold]。" },
+                { "TAR_CHARIOT_REVERSED_POWER.smartDescription", "该敌人首次对你造成未被格挡的伤害后，你获得[blue]{Amount}[/blue]层[gold]易伤[/gold]。" },
 
                 { "TAR_STRENGTH_REVERSED_POWER.title", "力量-逆" },
-                { "TAR_STRENGTH_REVERSED_POWER.description", "该敌人首次对你造成[gold]未被格挡[/gold]的伤害后，你获得[blue]1[/blue]层[gold]虚弱[/gold]。" },
-                { "TAR_STRENGTH_REVERSED_POWER.smartDescription", "该敌人首次对你造成[gold]未被格挡[/gold]的伤害后，你获得[blue]{Amount}[/blue]层[gold]虚弱[/gold]。" },
+                { "TAR_STRENGTH_REVERSED_POWER.description", "该敌人首次对你造成未被格挡的伤害后，你获得[blue]1[/blue]层[gold]虚弱[/gold]。" },
+                { "TAR_STRENGTH_REVERSED_POWER.smartDescription", "该敌人首次对你造成未被格挡的伤害后，你获得[blue]{Amount}[/blue]层[gold]虚弱[/gold]。" },
+
+                { "TAR_HERMIT_REVERSED_POWER.title", "隐者-逆" },
+                { "TAR_HERMIT_REVERSED_POWER.description", "回合结束时，获得等于层数的[gold]格挡[/gold]。每次受到未被格挡的伤害时，减少[blue]1[/blue]层。" },
+                { "TAR_HERMIT_REVERSED_POWER.smartDescription", "回合结束时，获得[blue]{Amount}[/blue]点[gold]格挡[/gold]。每次受到未被格挡的伤害时，减少[blue]1[/blue]层。" },
 
                 { "TAR_JUSTICE_REVERSED_POWER.title", "正义-逆" },
                 { "TAR_JUSTICE_REVERSED_POWER.description", "每回合打出的第一张[gold]攻击牌[/gold]在打出时被[gold]消耗[/gold]。" },

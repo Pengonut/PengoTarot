@@ -336,9 +336,9 @@ namespace PengoTarot
                 { "TAR_TEMPERANCE_UPRIGHT_ENCHANTMENT.title", "Temperance" },
                 { "TAR_TEMPERANCE_UPRIGHT_ENCHANTMENT.extraCardText", "The first time you play this each combat, gain 10 [gold]Gold[/gold]." },
                 
-                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.description", "After this card is played, for each point of unblocked damage you take this turn, gain [blue]5[/blue] [gold]Gold[/gold]." },
+                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.description", "After this card is played, for each point of HP you lose this turn, gain [blue]5[/blue] [gold]Gold[/gold] at the end of combat." },
                 { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.title", "XIV" },
-                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.extraCardText", "For each point of unblocked damage you take this turn, gain 5 [gold]Gold[/gold]." },
+                { "TAR_TEMPERANCE_REVERSED_ENCHANTMENT.extraCardText", "For each point of HP you lose this turn, gain 5 [gold]Gold[/gold] at the end of combat." },
 
                 
                 { "TAR_DEVIL_UPRIGHT_ENCHANTMENT.description", "Costs {energyPrefix:energyIcons(1)} less. While in your hand, you must play this before other cards." },
@@ -490,16 +490,20 @@ namespace PengoTarot
             powersTable.MergeWith(new Dictionary<string, string>
             {
                 { "TAR_TEMPERANCE_REVERSED_POWER.title", "Temperance - Reversed" },
-                { "TAR_TEMPERANCE_REVERSED_POWER.description", "For each point of unblocked damage you take this turn, gain [blue]5[/blue] [gold]Gold[/gold]." },
-                { "TAR_TEMPERANCE_REVERSED_POWER.smartDescription", "For each point of unblocked damage you take this turn, gain [blue]{Amount}[/blue] [gold]Gold[/gold]." },
+                { "TAR_TEMPERANCE_REVERSED_POWER.description", "For each point of HP you lose this turn, gain an equal amount of [gold]Gold[/gold] at the end of combat." },
+                { "TAR_TEMPERANCE_REVERSED_POWER.smartDescription", "For each point of HP you lose this turn, gain [blue]{Amount}[/blue] [gold]Gold[/gold] at the end of combat." },
 
                 { "TAR_CHARIOT_REVERSED_POWER.title", "Chariot - Reversed" },
-                { "TAR_CHARIOT_REVERSED_POWER.description", "The first time this enemy deals [gold]unblocked[/gold] damage to you, you gain [blue]1[/blue] [gold]Vulnerable[/gold]." },
-                { "TAR_CHARIOT_REVERSED_POWER.smartDescription", "The first time this enemy deals [gold]unblocked[/gold] damage to you, you gain [blue]{Amount}[/blue] [gold]Vulnerable[/gold]." },
+                { "TAR_CHARIOT_REVERSED_POWER.description", "The first time this enemy deals unblocked damage to you, you gain [blue]1[/blue] [gold]Vulnerable[/gold]." },
+                { "TAR_CHARIOT_REVERSED_POWER.smartDescription", "The first time this enemy deals unblocked damage to you, you gain [blue]{Amount}[/blue] [gold]Vulnerable[/gold]." },
 
                 { "TAR_STRENGTH_REVERSED_POWER.title", "Strength - Reversed" },
-                { "TAR_STRENGTH_REVERSED_POWER.description", "The first time this enemy deals [gold]unblocked[/gold] damage to you, you gain [blue]1[/blue] [gold]Weak[/gold]." },
-                { "TAR_STRENGTH_REVERSED_POWER.smartDescription", "The first time this enemy deals [gold]unblocked[/gold] damage to you, you gain [blue]{Amount}[/blue] [gold]Weak[/gold]." },
+                { "TAR_STRENGTH_REVERSED_POWER.description", "The first time this enemy deals unblocked damage to you, you gain [blue]1[/blue] [gold]Weak[/gold]." },
+                { "TAR_STRENGTH_REVERSED_POWER.smartDescription", "The first time this enemy deals unblocked damage to you, you gain [blue]{Amount}[/blue] [gold]Weak[/gold]." },
+
+                { "TAR_HERMIT_REVERSED_POWER.title", "Hermit - Reversed" },
+                { "TAR_HERMIT_REVERSED_POWER.description", "At the end of your turn, gain [gold]Block[/gold] equal to this. Each time you receive unblocked damage, reduce this by [blue]1[/blue]." },
+                { "TAR_HERMIT_REVERSED_POWER.smartDescription", "At the end of your turn, gain [blue]{Amount}[/blue] [gold]Block[/gold]. Each time you receive unblocked damage, reduce this by [blue]1[/blue]." },
 
                 { "TAR_JUSTICE_REVERSED_POWER.title", "Justice - Reversed" },
                 { "TAR_JUSTICE_REVERSED_POWER.description", "The first Attack you play each turn is [gold]Exhausted[/gold]." },
