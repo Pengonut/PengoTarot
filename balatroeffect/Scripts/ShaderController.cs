@@ -77,7 +77,10 @@ namespace PengoTarot.BalatroEffect
         //   4. Other card      → immediate tilt (original behavior)
         public static void ApplyShader(NCard card)
         {
-            
+            // 卡已被释放（回收进池 / 界面关闭 / 移除）时直接跳过：
+            // Model 克隆（MutableClone → DeepCloneFields → EnchantInternal）触发 EnchantmentChanged
+            // 事件回调时可能带着已释放的 NCard，访问 card.Model / card.Body 会抛 ObjectDisposedException。
+            if (!GodotObject.IsInstanceValid(card)) return;
             if (card?.Model == null) return;
             if (card.Body == null)
             {

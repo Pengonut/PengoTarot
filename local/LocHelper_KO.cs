@@ -89,9 +89,9 @@ namespace PengoTarot
 
                 // XI Justice
                 { "TAR_JUSTICE_UPRIGHT.title", "XI - 정의" },
-                { "TAR_JUSTICE_UPRIGHT.description", "[gold]소멸[/gold]이 없는 공격 카드 [blue]1[/blue]장을 선택해 [gold]인챈트[/gold]\n[purple]정의 - 정방향[/purple]" },
+                { "TAR_JUSTICE_UPRIGHT.description", "광역 공격이 아닌 [gold]소멸[/gold]이 없는 공격 카드 [blue]1[/blue]장을 선택해 [gold]인챈트[/gold]\n[purple]정의 - 정방향[/purple]" },
                 { "TAR_JUSTICE_REVERSED.title", "XI - 정의" },
-                { "TAR_JUSTICE_REVERSED.description", "\n[gold]소멸[/gold]이 없는 공격 카드 [blue]1[/blue]장을 선택해 [gold]인챈트[/gold]\n[purple]정의 - 역방향[/purple]" },
+                { "TAR_JUSTICE_REVERSED.description", "\n광역 공격이 아닌 [gold]소멸[/gold]이 없는 공격 카드 [blue]1[/blue]장을 선택해 [gold]인챈트[/gold]\n[purple]정의 - 역방향[/purple]" },
 
                 // XII The Hanged Man
                 { "TAR_HANGED_MAN_UPRIGHT.title", "XII - 매달린 남자" },
@@ -574,6 +574,16 @@ namespace PengoTarot
             {
                 { "OPTION_STARGAZE.description", "무작위 행성 카드 [blue]3[/blue]장 중 [blue]1[/blue]장을 골라 [gold]덱[/gold]의 비멀티플레이 카드 한 장에 [gold]인챈트[/gold]합니다." },
                 { "OPTION_STARGAZE.name", "천체관측" },
+            });
+
+            var mainMenuUiTable = loc.GetTable("main_menu_ui");
+            mainMenuUiTable.MergeWith(new Dictionary<string, string>
+            {
+                { "HEXTECH_WARNING_TITLE", "PengoTarot × Hextech 호환성 안내" },
+                { "HEXTECH_WARNING_PAGE1", "PengoTarot과 Hextech 모드를 동시에 설치했습니다. PengoTarot 제작자의 안내:\n\nHextech는 구식이고 과격한 다중 인챈트 구현을 사용하며, 원본의 인챈트 판정을 하드코딩으로 수정해서 대부분의 인챈트 콘텐츠 모드와 호환되지 않습니다." },
+                { "HEXTECH_WARNING_PAGE2", "더 안정적인 다중 인챈트 경험을 원하시면 MultiEnchantment 사용을 권장합니다.\n\n문의 사항이 있으시면 먼저 Hextech 모드 제작자에게 연락해 구식 구현을 수정해 주시기 바랍니다. 본 모드는 효과적인 호환을 제공할 수 없습니다." },
+                { "HEXTECH_WARNING_NEXT", "다음" },
+                { "HEXTECH_WARNING_ACK", "알겠습니다" },
             });
         }
     }

@@ -15,7 +15,7 @@ public static class Bootstrap
     private const string RealDllName = "PengoTarot.dll";
 
     // Hardcoded variant versions (newest first for scanning)
-    private static readonly string[] KnownVersions = ["0.110.0", "0.107.0"];
+    private static readonly string[] KnownVersions = ["0.111.0", "0.107.0"];
 
     private static readonly Lock VariantAssembliesLock = new();
     private static readonly List<Assembly> VariantAssemblies = [];

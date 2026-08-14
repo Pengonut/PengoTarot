@@ -1,0 +1,17 @@
+{
+  "current_version": "v1.4.11",
+  "versions": {
+    "v1.4.10": {
+      "released": "2026-08-14",
+      "changes": [
+        "fixed compatibility with HextechRunesSponsorPack",
+        "added a one-time popup warning about Hextech mod incompatibility",
+        "Justice now cannot enchant AoE attacks"
+      ]
+    },
+    "v1.4.11": {
+      "released": null,
+      "changes": []
+    }
+  }
+}

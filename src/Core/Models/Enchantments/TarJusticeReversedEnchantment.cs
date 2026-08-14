@@ -36,6 +36,7 @@ public sealed class TarJusticeReversedEnchantment : EnchantmentModel
     {
         if (!base.CanEnchant(card)) return false;
         if (card.Keywords.Contains(CardKeyword.Exhaust)) return false;
+        if (card.TargetType == TargetType.AllEnemies) return false; // 群攻(全体敌人)不可附魔
         return card.Type == CardType.Attack;
     }
 

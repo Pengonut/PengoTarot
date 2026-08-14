@@ -24,7 +24,7 @@ A Slay the Spire 2 mod: **44 tarot cards + 40 enchantments**.
 ## 🔧 面向开发者 For Developers
 
 ```powershell
-# 单版本构建（0.107.0 或 0.110.0） / build for one API version
+# 单版本构建（0.107.0 或 0.111.0） / build for one API version
 dotnet build -c Release /p:Sts2ApiCompat=0.107.0
 
 # 完整打包（Loader + 两个版本 DLL + manifest） / full packaging

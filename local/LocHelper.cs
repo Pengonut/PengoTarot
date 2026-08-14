@@ -79,9 +79,9 @@ namespace PengoTarot
                 { "TAR_WHEEL_OF_FORTUNE_REVERSED.description", "\n随机[red]摧毁[/red]两个非先古遗物，然后将一个随机非先古遗物[gold]复制[/gold]三次。" },
                 
                 { "TAR_JUSTICE_UPRIGHT.title", "XI-正义-正" },
-                { "TAR_JUSTICE_UPRIGHT.description", "选择一张没有[gold]消耗[/gold]的攻击牌，为其[gold]附魔[/gold]\n[purple]正义-正[/purple]。" },
+                { "TAR_JUSTICE_UPRIGHT.description", "选择一张没有[gold]消耗[/gold]的非群攻攻击牌，为其[gold]附魔[/gold]\n[purple]正义-正[/purple]。" },
                 { "TAR_JUSTICE_REVERSED.title", "XI-正义-逆" },
-                { "TAR_JUSTICE_REVERSED.description", "\n选择一张没有[gold]消耗[/gold]的攻击牌，为其[gold]附魔[/gold]\n[purple]正义-逆[/purple]。" },
+                { "TAR_JUSTICE_REVERSED.description", "\n选择一张没有[gold]消耗[/gold]的非群攻攻击牌，为其[gold]附魔[/gold]\n[purple]正义-逆[/purple]。" },
                 
                 { "TAR_HANGED_MAN_UPRIGHT.title", "XII-倒吊人-正" },
                 { "TAR_HANGED_MAN_UPRIGHT.description", "选择一张带[gold]消耗[/gold]的牌，为其[gold]附魔[/gold]\n[purple]倒吊人-正[/purple]。" },
@@ -558,6 +558,16 @@ namespace PengoTarot
             {
                 { "OPTION_STARGAZE.description", "从3张随机星球牌中选择1张，为[gold]牌组[/gold]中的一张非多人联机牌[gold]附魔[/gold]。" },
                 { "OPTION_STARGAZE.name", "观星" },
+            });
+
+            var mainMenuUiTable = loc.GetTable("main_menu_ui");
+            mainMenuUiTable.MergeWith(new Dictionary<string, string>
+            {
+                { "HEXTECH_WARNING_TITLE", "PengoTarot与Hextech兼容性提示" },
+                { "HEXTECH_WARNING_PAGE1", "检测到塔罗附魔mod和海克斯mod同时安装，来自前者的作者提示：\n\nHextech模组使用了社区陈旧暴力的多重附魔代码实现，仅通过硬编码修复了原版的附魔问题，而与绝大多数附魔内容mod不兼容；" },
+                { "HEXTECH_WARNING_PAGE2", "如果希望获得更加稳定的多重附魔体验，建议使用MultiEnchantment作为替代；\n\n如有疑问，建议优先反馈给Hextech模组作者，敦促其修正其陈旧的实现，本mod无法对其做出有效兼容。" },
+                { "HEXTECH_WARNING_NEXT", "下一页" },
+                { "HEXTECH_WARNING_ACK", "我知道了" },
             });
         }
     }

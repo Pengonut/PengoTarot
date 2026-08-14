@@ -90,9 +90,9 @@ namespace PengoTarot
 
                 
                 { "TAR_JUSTICE_UPRIGHT.title", "XI-正義-正" },
-                { "TAR_JUSTICE_UPRIGHT.description", "[gold]廃棄[/gold]を持たないアタックを1枚選び、[gold]エンチャント[/gold]する\n[purple]正義-正[/purple]。" },
+                { "TAR_JUSTICE_UPRIGHT.description", "[gold]廃棄[/gold]を持たない全体攻撃ではないアタックを1枚選び、[gold]エンチャント[/gold]する\n[purple]正義-正[/purple]。" },
                 { "TAR_JUSTICE_REVERSED.title", "XI-正義-逆" },
-                { "TAR_JUSTICE_REVERSED.description", "\n[gold]廃棄[/gold]を持たないアタックを1枚選び、[gold]エンチャント[/gold]する\n[purple]正義-逆[/purple]。" },
+                { "TAR_JUSTICE_REVERSED.description", "\n[gold]廃棄[/gold]を持たない全体攻撃ではないアタックを1枚選び、[gold]エンチャント[/gold]する\n[purple]正義-逆[/purple]。" },
 
                 
                 { "TAR_HANGED_MAN_UPRIGHT.title", "XII-吊された男-正" },
@@ -596,6 +596,16 @@ namespace PengoTarot
             {
                 { "OPTION_STARGAZE.description", "ランダムな惑星カード3枚から1枚を選び、[gold]デッキ[/gold]の非マルチプレイカード1枚に[gold]エンチャント[/gold]する。" },
                 { "OPTION_STARGAZE.name", "天体観測" },
+            });
+
+            var mainMenuUiTable = loc.GetTable("main_menu_ui");
+            mainMenuUiTable.MergeWith(new Dictionary<string, string>
+            {
+                { "HEXTECH_WARNING_TITLE", "PengoTarot × Hextech 互換性のお知らせ" },
+                { "HEXTECH_WARNING_PAGE1", "PengoTarot と Hextech モッドが同時にインストールされています。PengoTarot 作者からのお知らせ：\n\nHextech は旧式で強引な多重エンチャント実装を使用しており、原版のエンチャント判定をハードコードで修正しているため、ほとんどのエンチャント追加モッドと互換性がありません。" },
+                { "HEXTECH_WARNING_PAGE2", "より安定した多重エンチャント体験をご希望の場合は、MultiEnchantment の使用をお勧めします。\n\nご不明な点があれば、まず Hextech モッド作者に連絡して旧式の実装を修正してもらうことをお勧めします。本モッドでは有効な互換性を提供できません。" },
+                { "HEXTECH_WARNING_NEXT", "次へ" },
+                { "HEXTECH_WARNING_ACK", "わかりました" },
             });
         }
     }

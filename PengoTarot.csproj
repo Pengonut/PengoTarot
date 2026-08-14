@@ -9,9 +9,9 @@
 
   <!-- ===== Multi-version compatibility ===== -->
   <PropertyGroup>
-    <!-- Default: build for 110; override with /p:Sts2ApiCompat=0.107.0 -->
-    <Sts2ApiCompat Condition="'$(Sts2ApiCompat)' == ''">0.110.0</Sts2ApiCompat>
-    <!-- Strip patch version: 0.107.0 → 0.107, 0.110.0 → 0.110 -->
+    <!-- Default: build for 111; override with /p:Sts2ApiCompat=0.107.0 -->
+    <Sts2ApiCompat Condition="'$(Sts2ApiCompat)' == ''">0.111.0</Sts2ApiCompat>
+    <!-- Strip patch version: 0.107.0 → 0.107, 0.111.0 → 0.111 -->
     <_PengoTarotCompatFolder>$([System.Version]::Parse('$(Sts2ApiCompat)').ToString(2))</_PengoTarotCompatFolder>
     <Sts2DllRoot>D:\[Tool] Godot\STS2dll\v$(_PengoTarotCompatFolder)</Sts2DllRoot>
     <!-- Isolate output per version (both obj and bin) -->

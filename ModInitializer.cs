@@ -19,7 +19,9 @@ namespace PengoTarot
     [ModInitializer(nameof(Initialize))]
     public static class ModInitializer
     {
-#if STS2_AT_LEAST_0_110_0
+#if STS2_AT_LEAST_0_111_0
+        private const string CompatVersion = "0.111.0";
+#elif STS2_AT_LEAST_0_110_0
         private const string CompatVersion = "0.110.0";
 #else
         private const string CompatVersion = "0.107.0";

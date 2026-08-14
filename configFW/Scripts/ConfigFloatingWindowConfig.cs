@@ -54,6 +54,8 @@ namespace PengoTarot.ConfigFW
             public List<bool> DifficultyFlags { get; set; } = NewFlags();
             /// <summary>仅在游戏设置界面显示配置入口（不在选人界面/游戏过程中出现）。默认关闭。</summary>
             public bool ShowInSettingsOnly { get; set; } = false;
+            /// <summary>Hextech 不兼容提示弹窗已确认过（不再弹出）。默认 false。</summary>
+            public bool HextechWarningDismissed { get; set; } = false;
         }
 
         private static List<bool> NewFlags()
@@ -71,6 +73,8 @@ namespace PengoTarot.ConfigFW
         public static int TarotBasePriceMax => _data.TarotBasePriceMax;
         /// <summary>仅在游戏设置界面显示配置入口（不在选人界面/游戏过程中出现）。</summary>
         public static bool ShowInSettingsOnly => _data.ShowInSettingsOnly;
+        /// <summary>Hextech 不兼容提示弹窗已确认过（不再弹出）。</summary>
+        public static bool HextechWarningDismissed => _data.HextechWarningDismissed;
 
         /// <summary>
         /// 读取全局 JSON 配置的难度开关原始值（无塔罗总开关门控）。
@@ -113,6 +117,13 @@ namespace PengoTarot.ConfigFW
             Save();
         }
 
+        public static void SetHextechWarningDismissed(bool value)
+        {
+            if (_data.HextechWarningDismissed == value) return;
+            _data.HextechWarningDismissed = value;
+            Save();
+        }
+
         // ── 序列化 ───────────────────────────────────────────────
         private static void Load()
         {
@@ -132,6 +143,7 @@ namespace PengoTarot.ConfigFW
                 TryRead(root, "TarotBasePriceMin", (int v) => data.TarotBasePriceMin = v);
                 TryRead(root, "TarotBasePriceMax", (int v) => data.TarotBasePriceMax = v);
                 TryRead(root, "ShowInSettingsOnly", (bool v) => data.ShowInSettingsOnly = v);
+                TryRead(root, "HextechWarningDismissed", (bool v) => data.HextechWarningDismissed = v);
 
                 if (root["DifficultyFlags"] is JsonArray arr)
                 {

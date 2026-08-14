@@ -11,7 +11,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 # ===== Mod metadata (bump this when releasing a new version) =====
-$ModVersion = "v1.4.9"
+$ModVersion = "v1.4.10"
 $ModAuthor = "Pengo"
 $ModDescription = "Adds 44 Tarot cards and 40 new enchantments.`nAuthor: Pengo | QQ: 3411737922"
 
@@ -22,11 +22,11 @@ $DistDir = "$ProjectRoot\dist\PengoTarot"
 if (Test-Path -LiteralPath $DistDir) { Remove-Item -Recurse -Force -LiteralPath $DistDir }
 
 # ===== Build main DLL for each version =====
-$Versions = @("0.107.0", "0.110.0")
+$Versions = @("0.107.0", "0.111.0")
 # Corresponding DLL directories (without patch version suffix)
 $VersionDllRoots = @{
     "0.107.0" = "D:\[Tool] Godot\STS2dll\v0.107"
-    "0.110.0" = "D:\[Tool] Godot\STS2dll\v0.110"
+    "0.111.0" = "D:\[Tool] Godot\STS2dll\v0.111"
 }
 
 # ===== Build Loader =====
@@ -61,7 +61,7 @@ foreach ($ver in $Versions) {
 }
 
 # ===== Generate build timestamp suffix (for multiplayer version check) =====
-$buildSuffix = (Get-Date).ToUniversalTime().ToString("MMddHH")
+$buildSuffix = (Get-Date).ToString("MMddHH")
 $fullVersion = "$ModVersion-b$buildSuffix"
 Write-Host "  Version: $fullVersion" -ForegroundColor Green
 
@@ -112,5 +112,15 @@ Get-ChildItem -Recurse -File -LiteralPath $DistDir | ForEach-Object {
     $rel = $_.FullName.Replace($DistDir, "").TrimStart("\")
     Write-Host "  $rel"
 }
+
+# ===== Copy to game mods dir (quick local test) =====
+$GameModsDir = "D:\[Game] Steam\steamapps\common\Slay the Spire 2\mods\PengoTarot"
+Write-Host ""
+Write-Host "=== Copying to game mods dir ===" -ForegroundColor Cyan
+New-Item -ItemType Directory -Force -Path $GameModsDir | Out-Null
+Get-ChildItem -LiteralPath $DistDir | ForEach-Object {
+    Copy-Item -LiteralPath $_.FullName -Destination $GameModsDir -Recurse -Force
+}
+Write-Host "  Copied -> $GameModsDir" -ForegroundColor Green
 
 Write-Host "Perfectly Finished!" -ForegroundColor Yellow

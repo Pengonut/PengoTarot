@@ -6,14 +6,15 @@
     -->
 
     <PropertyGroup>
-        <_PengoTarotSupportedApiVersions>0.107.0;0.110.0</_PengoTarotSupportedApiVersions>
-        <_PengoTarotSupportedApiList>|0.107.0|0.110.0|</_PengoTarotSupportedApiList>
+        <_PengoTarotSupportedApiVersions>0.107.0;0.111.0</_PengoTarotSupportedApiVersions>
+        <_PengoTarotSupportedApiList>|0.107.0|0.111.0|</_PengoTarotSupportedApiList>
     </PropertyGroup>
 
     <PropertyGroup>
         <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(Sts2ApiCompat)', '0.107.0'))">$(DefineConstants);STS2_AT_LEAST_0_107_0</DefineConstants>
         <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(Sts2ApiCompat)', '0.108.0'))">$(DefineConstants);STS2_AT_LEAST_0_108_0</DefineConstants>
         <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(Sts2ApiCompat)', '0.110.0'))">$(DefineConstants);STS2_AT_LEAST_0_110_0</DefineConstants>
+        <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(Sts2ApiCompat)', '0.111.0'))">$(DefineConstants);STS2_AT_LEAST_0_111_0</DefineConstants>
     </PropertyGroup>
 
     <Target Name="ValidatePengoTarotCompatTarget" BeforeTargets="CoreCompile">

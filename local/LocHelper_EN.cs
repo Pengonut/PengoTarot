@@ -90,9 +90,9 @@ namespace PengoTarot
 
                 
                 { "TAR_JUSTICE_UPRIGHT.title", "XI - Justice" },
-                { "TAR_JUSTICE_UPRIGHT.description", "Choose an Attack without [gold]Exhaust[/gold] to [gold]Enchant[/gold] with\n[purple]Justice - Upright[/purple]." },
+                { "TAR_JUSTICE_UPRIGHT.description", "Choose a non-AoE Attack without [gold]Exhaust[/gold] to [gold]Enchant[/gold] with\n[purple]Justice - Upright[/purple]." },
                 { "TAR_JUSTICE_REVERSED.title", "XI - Justice" },
-                { "TAR_JUSTICE_REVERSED.description", "\nChoose an Attack without [gold]Exhaust[/gold] to [gold]Enchant[/gold] with\n[purple]Justice - Reversed[/purple]." },
+                { "TAR_JUSTICE_REVERSED.description", "\nChoose a non-AoE Attack without [gold]Exhaust[/gold] to [gold]Enchant[/gold] with\n[purple]Justice - Reversed[/purple]." },
 
                 
                 { "TAR_HANGED_MAN_UPRIGHT.title", "XII - The Hanged Man" },
@@ -595,6 +595,16 @@ namespace PengoTarot
             {
                 { "OPTION_STARGAZE.description", "Choose 1 of 3 random Planet cards to [gold]Enchant[/gold] a non-multiplayer card in your [gold]Deck[/gold]." },
                 { "OPTION_STARGAZE.name", "Stargaze" },
+            });
+
+            var mainMenuUiTable = loc.GetTable("main_menu_ui");
+            mainMenuUiTable.MergeWith(new Dictionary<string, string>
+            {
+                { "HEXTECH_WARNING_TITLE", "PengoTarot × Hextech Compatibility Notice" },
+                { "HEXTECH_WARNING_PAGE1", "Both PengoTarot and the Hextech mod are installed. A note from the PengoTarot author:\n\nHextech uses an outdated and heavy-handed multi-enchantment implementation that hard-codes fixes for the base game's enchantment checks, making it incompatible with the vast majority of enchantment content mods." },
+                { "HEXTECH_WARNING_PAGE2", "For a more stable multi-enchantment experience, we recommend using MultiEnchantment instead;\n\nIf you have questions, please report them to the Hextech mod author first to fix its outdated implementation, as this mod cannot provide effective compatibility." },
+                { "HEXTECH_WARNING_NEXT", "Next" },
+                { "HEXTECH_WARNING_ACK", "OK" },
             });
         }
     }

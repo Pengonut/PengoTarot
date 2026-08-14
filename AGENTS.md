@@ -1,27 +1,27 @@
 # AGENTS.md — PengoTarot
 
 杀戮尖塔2 (Slay the Spire 2) 的 Mod 项目：添加 44 张塔罗牌 + 40 个附魔。
-技术栈：Godot 4.5.1 + C# (net9.0)、Harmony 补丁、支持多版本游戏 API（0.107.0 / 0.110.0）。
+技术栈：Godot 4.5.1 + C# (net9.0)、Harmony 补丁、支持多版本游戏 API（0.107.0 / 0.111.0）。
 代码库使用中文注释/文档，回复与代码注释请保持中文。
 
 ## 常用命令
 
 在项目根目录（本目录）运行：
 
-- **单版本构建**：`dotnet build -c Release /p:Sts2ApiCompat=0.107.0`（或 `0.110.0`）
+- **单版本构建**：`dotnet build -c Release /p:Sts2ApiCompat=0.107.0`（或 `0.111.0`）
 - **完整打包**：`powershell -ExecutionPolicy Bypass -File pack.ps1` → 输出到 `dist/PengoTarot/`
 - **工具脚本**：`python tools/<脚本名>`（资产生成/图片转换/UID 修复，详见 `tools/README.md`）
 
 ## 多版本兼容机制（核心！）
 
-- `PengoTarot.csproj` 通过 `Sts2ApiCompat` 属性切换目标游戏 API（默认 `0.110.0`）
-- 条件编译符号：`STS2_AT_LEAST_0_107_0` / `STS2_AT_LEAST_0_108_0` / `STS2_AT_LEAST_0_110_0`
+- `PengoTarot.csproj` 通过 `Sts2ApiCompat` 属性切换目标游戏 API（默认 `0.111.0`）
+- 条件编译符号：`STS2_AT_LEAST_0_107_0` / `STS2_AT_LEAST_0_108_0` / `STS2_AT_LEAST_0_110_0` / `STS2_AT_LEAST_0_111_0`
   （由 `build/PengoTarot.CompatDefines.targets` 根据版本自动生成，源码里用 `#if STS2_AT_LEAST_0_110_0` 写版本分支）
 - 各版本 DLL 输出到 `.godot/mono/temp/bin/<Configuration>/<Sts2ApiCompat>/`
 - `loader/` 是独立子项目（`PengoTarot.Loader.csproj`）：运行时检测宿主版本，用 `AssemblyLoadContext` 加载 `lib/<version>/PengoTarot.dll`
 - **改任何 API 调用前**，务必在两个版本的游戏源码中核对签名。参考源码：
   - `d:\[Tool] Godot\STS2v0.107\`（v0.107）
-  - `d:\[Tool] Godot\STS2v0.109\`（v0.109，约等于 v0.110 API）
+  - `d:\[Tool] Godot\STS2v0.111\`（v0.111）
 - **Loader 对版本相关 API 只能用反射**，不能直接引用。`pack.ps1` 会针对最新版本做 dry-run 编译验证，直接引用改名 API 会在构建期失败。
 
 ## 目录结构
@@ -50,9 +50,9 @@
 
 ## 参考源码（只读，勿改）
 
-- 游戏本体源码：`d:\[Tool] Godot\STS2v0.107\` / `d:\[Tool] Godot\STS2v0.109\`（`src/Core/` 为 C# 源码）
+- 游戏本体源码：`d:\[Tool] Godot\STS2v0.107\` / `d:\[Tool] Godot\STS2v0.111\`（`src/Core/` 为 C# 源码）
 - 依赖框架：`d:\[Download] Edge\STS2-RitsuLib-0.4.62\`（`README.md` 与 `docs/` 有 API 文档）
-- 编译用 DLL：`d:\[Tool] Godot\STS2dll\v0.107` / `v0.109` / `v0.110`
+- 编译用 DLL：`d:\[Tool] Godot\STS2dll\v0.107` / `v0.111`
 - 游戏日志：`c:\Users\Pengo\AppData\Roaming\SlayTheSpire2\logs`
 
 ## 发布流程

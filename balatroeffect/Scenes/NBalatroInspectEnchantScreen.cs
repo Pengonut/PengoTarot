@@ -490,6 +490,18 @@ public partial class NBalatroInspectEnchantScreen : Control, IScreenContext
         return 4_000_000;
     }
 
+    /// <summary>
+    /// 安全调用 <see cref="EnchantmentModel.CanEnchant"/>：canonical 模板卡先 clone 成 mutable 再判定。
+    /// 兼容在 CanEnchant 内访问 <c>card.Owner</c> 的第三方 mod（如 HextechRunesSponsorPack 的
+    /// CanEnchantPrefix），避免在模板卡上触发 CanonicalModelException。
+    /// </summary>
+    private static bool SafeCanEnchant(EnchantmentModel ench, CardModel card)
+    {
+        if (!card.IsCanonical) return ench.CanEnchant(card);
+        var clone = (CardModel)card.MutableClone();
+        return ench.CanEnchant(clone);
+    }
+
     private CardModel? FindDisplayCard(EnchantmentModel ench)
     {
         // 优先当前切换列表里的卡（卡牌屏上下文）：以当前停留索引为中心交替向两边找最近的可用卡
@@ -497,7 +509,7 @@ public partial class NBalatroInspectEnchantScreen : Control, IScreenContext
         if (nearest != null) return nearest;
         // 兜底：全卡第一张可附魔的
         foreach (var c in ModelDb.AllCards)
-            if (ench.CanEnchant(c)) return c;
+            if (SafeCanEnchant(ench, c)) return c;
         return null;
     }
 
@@ -514,15 +526,15 @@ public partial class NBalatroInspectEnchantScreen : Control, IScreenContext
         {
             if (dist == 0)
             {
-                if (ench.CanEnchant(_returnCards[start])) return _returnCards[start];
+                if (SafeCanEnchant(ench, _returnCards[start])) return _returnCards[start];
             }
             else
             {
                 int forward = start + dist;
-                if (forward < count && ench.CanEnchant(_returnCards[forward]))
+                if (forward < count && SafeCanEnchant(ench, _returnCards[forward]))
                     return _returnCards[forward];
                 int backward = start - dist;
-                if (backward >= 0 && ench.CanEnchant(_returnCards[backward]))
+                if (backward >= 0 && SafeCanEnchant(ench, _returnCards[backward]))
                     return _returnCards[backward];
             }
         }

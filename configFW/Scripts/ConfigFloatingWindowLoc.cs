@@ -350,7 +350,7 @@ namespace PengoTarot.ConfigFW
             { "BAL_CFW_TOWER_CARD_DESC", "When this card is [gold]Exhausted[/gold], also [gold]Exhaust[/gold] all cards in your hand. (In Development)" },
 
             // ── 标记占卜动态文本（设置界面动态行 + 地图 hovertip 分状态文本） ──
-            { "BAL_CFW_PROGRESS_LINE", "{Expired:Expired.|Currently completed: [blue]{Count}[/blue].}" },
+            { "BAL_CFW_PROGRESS_LINE", "{Expired:Expired.|Completed [blue]{Count}[/blue] so far.}" },
             { "BAL_CFW_MAP_CHARIOT", "{Expired:This marker has expired.|The first time enemies in this room deal unblocked damage to you, gain [blue]1[/blue] [gold]Vulnerable[/gold].{Completed:\nAfter completing the next combat, gain a special [gold]tarot reward[/gold].|}}" },
             { "BAL_CFW_MAP_STRENGTH", "{Expired:This marker has expired.|The first time enemies in this room deal unblocked damage to you, gain [blue]1[/blue] [gold]Weak[/gold].{Completed:\nAfter completing the next combat, gain a special [gold]tarot reward[/gold].|}}" },
             { "BAL_CFW_MAP_HERMIT", "{Expired:This marker has expired.|Enemies in this room start combat with [gold]Hermit - Reversed[/gold] equal to [blue]10%[/blue] of their Max HP.{Completed:\nAfter completing the next combat, gain a special [gold]tarot reward[/gold].|}}" },
@@ -442,7 +442,7 @@ namespace PengoTarot.ConfigFW
             { "BAL_CFW_TOWER_CARD_DESC", "이 카드가 [gold]소멸[/gold]될 때, 손에 있는 모든 카드를 추가로 [gold]소멸[/gold]시킵니다.「개발 중」" },
 
             // ── 标记占卜动态文本（设置界面动态行 + 地图 hovertip 分状态文本） ──
-            { "BAL_CFW_PROGRESS_LINE", "{Expired:비활성화됨.|현재 완료 수: [blue]{Count}[/blue].}" },
+            { "BAL_CFW_PROGRESS_LINE", "{Expired:비활성화됨.|지금까지 [blue]{Count}[/blue]개 완료.}" },
             { "BAL_CFW_MAP_CHARIOT", "{Expired:이 마커는 비활성화되었습니다.|이 방의 적이 처음으로 방어도로 막지 못한 피해를 준 경우, 추가로 [gold]취약[/gold] [blue]1[/blue]을 부여합니다.{Completed:\n다음 전투를 완료하면 특별한 [gold]타로 보상[/gold]을 한 번 획득합니다.|}}" },
             { "BAL_CFW_MAP_STRENGTH", "{Expired:이 마커는 비활성화되었습니다.|이 방의 적이 처음으로 방어도로 막지 못한 피해를 준 경우, 추가로 [gold]약화[/gold] [blue]1[/blue]을 부여합니다.{Completed:\n다음 전투를 완료하면 특별한 [gold]타로 보상[/gold]을 한 번 획득합니다.|}}" },
             { "BAL_CFW_MAP_HERMIT", "{Expired:이 마커는 비활성화되었습니다.|이 방의 적은 전투 시작 시 최대 체력의 [blue]10%[/blue]만큼 [gold]은둔자-역방향[/gold]을 얻습니다.{Completed:\n다음 전투를 완료하면 특별한 [gold]타로 보상[/gold]을 한 번 획득합니다.|}}" },
