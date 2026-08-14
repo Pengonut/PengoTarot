@@ -1,5 +1,5 @@
 {
-  "current_version": "v1.4.11",
+  "current_version": "v1.4.12",
   "versions": {
     "v1.4.10": {
       "released": "2026-08-14",
@@ -10,6 +10,13 @@
       ]
     },
     "v1.4.11": {
+      "released": "2026-08-15",
+      "changes": [
+        "implemented the Devil divination",
+        "fixed Death and Sun reversed enchantments not zeroing star cost"
+      ]
+    },
+    "v1.4.12": {
       "released": null,
       "changes": []
     }

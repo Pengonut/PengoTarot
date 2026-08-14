@@ -571,6 +571,7 @@ namespace PengoTarot.ConfigFW
             12 => new IHoverTip[] { RoomTip("ROOM_ENEMY"), HoverTipFactory.FromKeyword(CardKeyword.Exhaust) },   // 倒吊人：敌人、消耗
             13 => new IHoverTip[] { RoomTip("ROOM_ENEMY") },   // 死神：敌人
             14 => new IHoverTip[] { HoverTipFactory.FromPower<TarTemperanceReversedPower>() },   // 节制：节制-逆
+            15 => new IHoverTip[] { RoomTip("ROOM_REST") },   // 恶魔：休息处
             16 => new IHoverTip[] { HoverTipFactory.FromKeyword(CardKeyword.Exhaust), HoverTipFactory.FromCard<AscendersBane>() },   // 高塔：消耗、进阶之灾
             _ => Array.Empty<IHoverTip>(),
         };
