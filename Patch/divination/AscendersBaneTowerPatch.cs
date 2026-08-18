@@ -33,8 +33,11 @@ public static class AscendersBaneTowerPatch
     /// <summary>Tower 在 FlagNames 中的索引。</summary>
     private const int TowerFlagIndex = 16;
 
-    /// <summary>是否应生效：配置开启 且 当前在一局游戏中（主菜单/图鉴不生效）。</summary>
-    private static bool ShouldApply()
+    /// <summary>
+    /// 是否应生效：配置开启 且 当前在一局游戏中（主菜单/图鉴不生效）。
+    /// internal 供 AscendersBaneEndTurnWarningPatch（结束回合预警）复用。
+    /// </summary>
+    internal static bool ShouldApply()
         => ConfigFloatingWindowRunData.GetTarFlag(TowerFlagIndex)
            && RunManager.Instance.IsInProgress;
 

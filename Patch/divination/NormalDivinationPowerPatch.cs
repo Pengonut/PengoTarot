@@ -5,6 +5,7 @@ using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Hooks;
+using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Runs;
 using PengoTarot.Data.Divination;
 using PengoTarot.Powers;
@@ -35,8 +36,10 @@ namespace PengoTarot.Patches
             if (!RunManager.Instance.IsInProgress) return;
             if (combatState == null) return;
             if (runState.CurrentMapCoord is not { } coord) return;
+            // 严格条件：只对「本幕」的普通战斗房间生效（防止旧幕残留标记 + 跨幕坐标重叠时误伤当前幕房间）
+            if (runState.CurrentMapPoint is not { PointType: MapPointType.Monster }) return;
 
-            var flags = TarotMarkerSystem.GetMarkedFlagsAt(coord);
+            var flags = TarotMarkerSystem.GetMarkedFlagsAt(coord, runState.CurrentActIndex);
             bool justice = flags.Contains(JusticeFlag);
             bool hanged = flags.Contains(HangedManFlag);
             bool death = flags.Contains(DeathFlag);

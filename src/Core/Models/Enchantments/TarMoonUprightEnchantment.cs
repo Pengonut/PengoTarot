@@ -15,6 +15,8 @@ public sealed class TarMoonUprightEnchantment : EnchantmentModel
 {
     public override bool HasExtraCardText => true;
 
+    public override bool CanEnchantCardType(CardType cardType) => cardType != CardType.Power;
+
     private bool _triggered;
 
     public override async Task BeforeFlush(PlayerChoiceContext choiceContext, Player player)

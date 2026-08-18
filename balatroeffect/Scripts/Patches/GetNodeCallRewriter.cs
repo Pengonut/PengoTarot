@@ -23,6 +23,10 @@ namespace PengoTarot.BalatroEffect
         private static readonly MethodInfo NonGenericGetNode;
         private static readonly MethodInfo RedirectGenericMethod;
         private static readonly MethodInfo RedirectNonGenericMethod;
+        private static readonly MethodInfo GenericGetNodeOrNullDef;
+        private static readonly MethodInfo NonGenericGetNodeOrNull;
+        private static readonly MethodInfo RedirectGenericOrNullMethod;
+        private static readonly MethodInfo RedirectNonGenericOrNullMethod;
 
         private static Harmony? _harmony;
         private static bool _hasRun;
@@ -46,6 +50,22 @@ namespace PengoTarot.BalatroEffect
             RedirectGenericMethod = typeof(GetNodeCallRewriter).GetMethod(nameof(RedirectGetNodeGeneric),
                 BindingFlags.NonPublic | BindingFlags.Static)!;
             RedirectNonGenericMethod = typeof(GetNodeCallRewriter).GetMethod(nameof(RedirectGetNode),
+                BindingFlags.NonPublic | BindingFlags.Static)!;
+
+            // GetNodeOrNull（泛型 + 非泛型）：Godot 4.5.1 Node 均存在（GodotSharp.xml 已核实）
+            GenericGetNodeOrNullDef = typeof(Node).GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                .First(m => m.IsGenericMethod && m.Name == "GetNodeOrNull" &&
+                            m.GetParameters().Length == 1 &&
+                            m.GetParameters()[0].ParameterType == typeof(NodePath));
+
+            NonGenericGetNodeOrNull = typeof(Node).GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                .First(m => !m.IsGenericMethod && m.Name == "GetNodeOrNull" &&
+                            m.GetParameters().Length == 1 &&
+                            m.GetParameters()[0].ParameterType == typeof(NodePath));
+
+            RedirectGenericOrNullMethod = typeof(GetNodeCallRewriter).GetMethod(nameof(RedirectGetNodeOrNullGeneric),
+                BindingFlags.NonPublic | BindingFlags.Static)!;
+            RedirectNonGenericOrNullMethod = typeof(GetNodeCallRewriter).GetMethod(nameof(RedirectGetNodeOrNull),
                 BindingFlags.NonPublic | BindingFlags.Static)!;
         }
 
@@ -162,7 +182,7 @@ namespace PengoTarot.BalatroEffect
             {
                 if ((pair.Key == OpCodes.Callvirt || pair.Key == OpCodes.Call) &&
                     pair.Value is MethodInfo called &&
-                    (IsGenericGetNode(called) || called.Equals(NonGenericGetNode)))
+                    IsGetNodeLike(called))
                 {
                     hasGetNode = true;
                     break;
@@ -177,12 +197,16 @@ namespace PengoTarot.BalatroEffect
             catch { }
         }
 
-        private static bool IsGenericGetNode(MethodInfo method)
+        /// <summary>是否 GetNode / GetNodeOrNull（泛型或非泛型）之一。</summary>
+        private static bool IsGetNodeLike(MethodInfo method)
         {
-            return method.IsGenericMethod && method.GetGenericMethodDefinition().Equals(GenericGetNodeDef);
+            if (!method.IsGenericMethod)
+                return method.Equals(NonGenericGetNode) || method.Equals(NonGenericGetNodeOrNull);
+            var def = method.GetGenericMethodDefinition();
+            return def.Equals(GenericGetNodeDef) || def.Equals(GenericGetNodeOrNullDef);
         }
 
-        // Transpiler: replace every GetNode call with our static redirect
+        // Transpiler: replace every GetNode/GetNodeOrNull call with our static redirect
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original)
         {
             var codes = instructions.ToList();
@@ -191,13 +215,9 @@ namespace PengoTarot.BalatroEffect
                 CodeInstruction instr = codes[i];
                 if (instr.opcode != OpCodes.Callvirt && instr.opcode != OpCodes.Call) continue;
                 if (instr.operand is not MethodInfo method) continue;
-                if (!IsGenericGetNode(method) && !method.Equals(NonGenericGetNode)) continue;
 
-                MethodInfo targetMethod;
-                if (IsGenericGetNode(method))
-                    targetMethod = RedirectGenericMethod.MakeGenericMethod(method.GetGenericArguments());
-                else
-                    targetMethod = RedirectNonGenericMethod;
+                MethodInfo? targetMethod = ResolveRedirectTarget(method);
+                if (targetMethod == null) continue;
 
                 var newInstr = new CodeInstruction(OpCodes.Call, targetMethod);
                 newInstr.labels.AddRange(instr.labels);
@@ -205,6 +225,25 @@ namespace PengoTarot.BalatroEffect
                 codes[i] = newInstr;
             }
             return codes;
+        }
+
+        // 根据被调用方法选择重定向目标（GetNode / GetNodeOrNull 各自泛型与非泛型）
+        private static MethodInfo? ResolveRedirectTarget(MethodInfo method)
+        {
+            if (method.IsGenericMethod)
+            {
+                var def = method.GetGenericMethodDefinition();
+                if (def.Equals(GenericGetNodeDef))
+                    return RedirectGenericMethod.MakeGenericMethod(method.GetGenericArguments());
+                if (def.Equals(GenericGetNodeOrNullDef))
+                    return RedirectGenericOrNullMethod.MakeGenericMethod(method.GetGenericArguments());
+                return null;
+            }
+            if (method.Equals(NonGenericGetNode))
+                return RedirectNonGenericMethod;
+            if (method.Equals(NonGenericGetNodeOrNull))
+                return RedirectNonGenericOrNullMethod;
+            return null;
         }
 
         // ── Redirects ─────────────────────────────────────────────────────
@@ -219,6 +258,42 @@ namespace PengoTarot.BalatroEffect
             Node? result = RedirectGetNodeInternal<T>(instance, path, generic: true);
             if (result is T typed) return typed;
             return instance.GetNode<T>(path);
+        }
+
+        // ── GetNodeOrNull redirects（崩坠 CardOverlayPatches.Sync 等依赖） ────────────
+
+        private static Node? RedirectGetNodeOrNull(Node instance, NodePath path)
+        {
+            Node? result = RedirectGetNodeOrNullInternal(instance, path);
+            return result ?? instance.GetNodeOrNull(path);
+        }
+
+        private static T? RedirectGetNodeOrNullGeneric<T>(Node instance, NodePath path) where T : class
+        {
+            Node? result = RedirectGetNodeOrNullInternal(instance, path);
+            if (result is T typed) return typed;
+            return instance.GetNodeOrNull<T>(path);
+        }
+
+        // GetNodeOrNull 语义：找不到返回 null。
+        // 只在 NCard 相关 + 单段路径时做递归 FindChild；不触发性能节流（找不到是判空常态）。
+        private static Node? RedirectGetNodeOrNullInternal(Node instance, NodePath path)
+        {
+            string pathStr = path.ToString();
+            if (pathStr.Contains('/')) return null;
+            if (!(instance is NCard || instance.GetParent() is NCard)) return null;
+
+            string searchName = pathStr.StartsWith("%") ? pathStr.Substring(1) : pathStr;
+            Node? found = instance.FindChild(searchName, recursive: true, owned: false);
+
+            string caller = GetCallerDescription();
+            string key = $"{caller}|or-null:{pathStr}";
+            if (found != null && LoggedSites.TryAdd(key, 0))
+            {
+                string location = found.IsInsideTree() ? found.GetPath().ToString() : "(not in tree)";
+                GD.Print($"[PengoTarot] GetNodeOrNull{{\"{pathStr}\"}} from [{caller}] -> found '{found.Name}' at {location}");
+            }
+            return found;
         }
 
         // Common logic: if instance is a card Body, try recursive FindChild.

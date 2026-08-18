@@ -11,6 +11,7 @@ using MegaCrit.Sts2.Core.Runs;
 using PengoTarot.BalatroEffect;
 using PengoTarot.ConfigFW;
 using PengoTarot.Network;
+using PengoTarot.Patch.Card;
 using PengoTarot.Relics;
 
 
@@ -42,7 +43,8 @@ namespace PengoTarot
             EffectRegistry.Initialize();
 
             GetNodeCallRewriter.ScheduleAfterAllModsLoaded();
-            // 预热配置界面提示文本的字体 glyph（后台逐帧，消除首次 hover 卡顿）
+            MintyRestHPRenderRewriter.ScheduleAfterModsLoaded();
+
             NConfigFloatingWindow.ScheduleHintFontsWarmUp();
 
             Log.Info($"[PengoTarot] Initialization complete. Loaded for STS2 v{CompatVersion}.");

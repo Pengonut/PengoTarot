@@ -67,8 +67,10 @@ public static class TarDevilDivinationPatch
     /// <summary>恶魔超额生命数字的深色描边（与暖橙搭配）。</summary>
     private static readonly Color DevilOverflowOutlineColor = new Color("7A3B00");
 
-    /// <summary>是否应生效：配置开启 且 当前在一局游戏中（主菜单/图鉴不生效）。</summary>
-    private static bool ShouldApply()
+    /// <summary>是否应生效：配置开启 且 当前在一局游戏中（主菜单/图鉴不生效）。
+    /// internal：供 <see cref="MintyRestHPRenderRewriter"/>（同程序集）在恶魔开启时
+    /// 重算 Minty 的休息后生命值预览。</summary>
+    internal static bool ShouldApply()
         => ConfigFloatingWindowRunData.GetTarFlag(DevilFlagIndex)
            && RunManager.Instance.IsInProgress;
 
@@ -348,24 +350,36 @@ public static class TarDevilDivinationPatch
         {
             if (__state <= 0f)
             {
-                // 不超额 → 移除超额 shader + 恢复底框原始宽度（完全原版）
+                // 不超额 → 移除超额 shader + 恢复两个底框原始宽度（完全原版）
                 RestoreOverflowShader(__instance);
                 if (__instance.GetNodeOrNull<Control>("%HpBarContainer/HpBackground") is Control hpBg)
                     hpBg.OffsetRight = BgDefaultOffsetRight;
+                if (__instance.GetNodeOrNull<Control>("%BlockOutline") is Control blockOutline)
+                    blockOutline.OffsetRight = BgDefaultOffsetRight;
                 return;
             }
 
             // 底框 = 红色区（正常生命 0~MaxHp）长度：右端对齐 MaxHp 位置（绝对坐标 5+maxHpEdge），
             // 橙色超额段始终在底框之外；ratio≤2 底框保持 1x；ratio>2 压缩时随 MaxHp 位置左移。
+            // ⚠️ 必须同时调两个底框：%HpBackground（无格挡青色外框）与 %BlockOutline（有格挡时
+            // 显示的淡蓝白外框，树序在 HpBackground 之上）。只调 HpBackground 会导致玩家获得
+            // 格挡后底框不压缩（用户实测）。
             float ratio = __state;
             float W = __instance.HpBarContainer.Size.X;
             float baseFgW = W - 10f;
             float maxHpEdge = baseFgW * Math.Min(1f, 2f / ratio);   // MaxHp 位置（容器坐标）
+            float newFgW = baseFgW * Math.Min(ratio, 2f);   // 扩展后前景宽度（供顺延 Minty 数字用）
+            float targetRight = 5f + maxHpEdge - W;
             if (__instance.GetNodeOrNull<Control>("%HpBarContainer/HpBackground") is Control hpBg2)
-                hpBg2.OffsetRight = 5f + maxHpEdge - W;
+                hpBg2.OffsetRight = targetRight;
+            if (__instance.GetNodeOrNull<Control>("%BlockOutline") is Control blockOutline2)
+                blockOutline2.OffsetRight = targetRight;
 
             // 超额生命 shader：%HpForeground 右端（超出最大生命值的部分）染暖橙
             ApplyOverflowShader(__instance, maxHpEdge);
+
+            // 顺延 Minty-Spire-2 伤害预测数字到血条新右端之后（避免被橙色超额段遮挡）
+            ShiftMintyIncomingDamageLabel(__instance, newFgW);
         }
 
         /// <summary>
@@ -396,6 +410,37 @@ public static class TarDevilDivinationPatch
             if (bar.GetNodeOrNull<Control>("%HpForeground") is Control hpFg)
                 hpFg.Material = null;
             DevilOverflowMaterials.Remove(bar);
+        }
+
+        /// <summary>Minty 伤害预测数字与原血条右缘的间距（对齐 Minty 自己的 RightPadding=6）。</summary>
+        private const float MintyRightPadding = 6f;
+
+        /// <summary>
+        /// 顺延 Minty-Spire-2 的伤害预测数字（方案 A，2026-08-15）：
+        /// Minty 的 SummedIncomingDamageRender 把「←伤害」label（MintyIncomingDamageText）钉在
+        /// %HpBarContainer 右缘右侧 6px（RepositionLabel，父节点=HealthBar 根）。超额时我们的
+        /// %HpForegroundContainer 向右延伸（最长 2×）→ 橙色超额段会穿过该数字区域。
+        /// 这里把 label 顺延到扩展后前景容器（%HpForegroundContainer）新右端右侧 6px，
+        /// Y 不动（Minty 已垂直居中）。
+        /// ① label 挂在 HealthBar 根下（bar 即根），按节点名查找：Minty 未装 / 玩家血条 label
+        ///    未创建 → null → 无操作，天然无副作用，不依赖 Minty 是否加载。
+        /// ② 仅超额时顺延；不超额时不动，位置由 Minty 自己管理。
+        /// ③ Minty 的 RefreshVisibilityAndText 只改文字/可见性不改位置；RepositionLabel 仅在
+        ///    SetHpBarContainerSizeWithOffsetsImmediately（血条尺寸变化）时触发，玩家血条尺寸
+        ///    固定几乎不触发 → 本修正不会被 Minty 覆盖；即便被覆盖，下次 RefreshValues 也会再修正。
+        /// ④ newFgW 用本帧已算好的值（不依赖 fgContainer.Size，避免 layout 延迟）。
+        /// </summary>
+        private static void ShiftMintyIncomingDamageLabel(NHealthBar bar, float newFgW)
+        {
+            if (bar.GetNodeOrNull<Label>("MintyIncomingDamageText") is not Label mintyLabel)
+                return;   // Minty 未装 / 玩家血条 label 未创建 → 无操作
+            if (bar.GetNodeOrNull<Control>("%HpForegroundContainer") is not Control fgContainer)
+                return;
+
+            // 仅需 X：前景容器全局左端 + 扩展后宽度 + 间距；Y 保持 Minty 已设好的垂直居中
+            mintyLabel.GlobalPosition = new Vector2(
+                fgContainer.GlobalPosition.X + newFgW + MintyRightPadding,
+                mintyLabel.GlobalPosition.Y);
         }
     }
 
@@ -444,6 +489,12 @@ public static class TarDevilDivinationPatch
         /// <summary>恶魔逆小图标再往右偏移量（用户追加：显示在选项右上角）。</summary>
         private const float DevilIconRightOffset = 54f;
 
+        /// <summary>呼吸动画：最低不透明度（0~1，1=完全不透明）。</summary>
+        private const float DevilIconBreathMinAlpha = 0.6f;
+
+        /// <summary>呼吸动画：单程时长（秒），一个完整呼吸 = 2× 此值。</summary>
+        private const float DevilIconBreathHalfPeriod = 1.4f;
+
         [HarmonyPostfix]
         static void Postfix(NRestSiteButton __instance)
         {
@@ -474,6 +525,14 @@ public static class TarDevilDivinationPatch
                 MouseFilter = Control.MouseFilterEnum.Ignore,
             };
             visuals.AddChild(devilIcon);
+
+            // 呼吸：不透明度周期性变化（MinAlpha ↔ 1.0，无限循环，sine 平滑）。
+            // Tween 绑定 devilIcon，节点销毁（按钮退出场景）时自动停止。
+            Tween breath = devilIcon.CreateTween().SetLoops(0);
+            breath.TweenProperty(devilIcon, "modulate:a", DevilIconBreathMinAlpha, DevilIconBreathHalfPeriod)
+                 .SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
+            breath.TweenProperty(devilIcon, "modulate:a", 1f, DevilIconBreathHalfPeriod)
+                 .SetTrans(Tween.TransitionType.Sine).SetEase(Tween.EaseType.InOut);
         }
     }
 }

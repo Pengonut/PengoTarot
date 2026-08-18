@@ -25,7 +25,7 @@ namespace PengoTarot.Patches
                 return;
 
             var players = runState.Players.ToList();
-            TarotMarkerSystem.OnMarkedCombatVictory(coord, room, players);
+            TarotMarkerSystem.OnMarkedCombatVictory(coord, runState.CurrentActIndex, room, players);
         }
     }
 }

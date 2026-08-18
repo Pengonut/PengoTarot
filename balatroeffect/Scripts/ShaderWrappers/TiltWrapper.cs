@@ -77,6 +77,10 @@ namespace PengoTarot.BalatroEffect
         // ========================================================================
         public static TiltContainer? CreateTilt(NCard card, string cid, bool fullCard = false)
         {
+            // 判空：卡/模型/Body 未就绪时直接返回（调用方已判过，这里双保险）
+            if (card == null || !GodotObject.IsInstanceValid(card)) return null;
+            if (card.Model == null || card.Body == null) return null;
+
             var m = new ShaderMaterial { Shader = TiltShader.Value };
             if (m.Shader == null) return null;
             m.SetShaderParameter(SeedKey, card.GetHashCode() % 10000 / 10.0f);
@@ -122,6 +126,15 @@ namespace PengoTarot.BalatroEffect
                 card.Body.RemoveChild(k);
                 root.AddChild(k);
             }
+
+            // 单独纳入第三方卡牌 overlay（崩坠宝石槽位 _card_overlay_ 挂在 NCard 根而非 Body 下）。
+            // 判空：不存在 / 非 NCard 直接子节点时跳过。坐标按 Body 偏移换算，保持视觉位置不变。
+            if (card.GetNodeOrNull<Control>("_card_overlay_") is Control overlay && overlay.GetParent() == card)
+            {
+                overlay.Position += card.Body.Position; // NCard 根坐标 → Body(=TiltRoot) 坐标
+                card.RemoveChild(overlay);
+                root.AddChild(overlay);
+            }
             return t;
         }
         
@@ -135,6 +148,18 @@ namespace PengoTarot.BalatroEffect
             // 2. 解包并移回所有子节点到 body
             Control root = (Control)vp.GetChild(0);
             PartWrapper.UnwrapParts(root);
+
+            // 还原第三方卡牌 overlay（崩坠宝石槽位 _card_overlay_）回 NCard 根
+            // 判空：Tilt 内不存在该节点时跳过；NCard 已失效时兜底放回 Body。
+            if (root.GetNodeOrNull<Control>("_card_overlay_") is Control overlay)
+            {
+                overlay.Position -= body.Position; // Body(=TiltRoot) 坐标 → NCard 根坐标
+                root.RemoveChild(overlay);
+                if (tilt._nCard is NCard nc && GodotObject.IsInstanceValid(nc))
+                    nc.AddChild(overlay);
+                else
+                    body.AddChild(overlay);
+            }
 
             var movedChildren = new Node[root.GetChildCount()];
             for (int i = 0; i < root.GetChildCount(); i++)

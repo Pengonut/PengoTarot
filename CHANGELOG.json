@@ -1,5 +1,5 @@
 {
-  "current_version": "v1.4.12",
+  "current_version": "v1.4.13",
   "versions": {
     "v1.4.10": {
       "released": "2026-08-14",
@@ -17,8 +17,25 @@
       ]
     },
     "v1.4.12": {
+      "released": "2026-08-15",
+      "changes": [
+        "implemented the Moon divination",
+        "added an end turn hover warning tinting the hand red and flashing Ascenders Bane",
+        "fixed Moon upright and reversed enchantments not filtering out Power cards",
+        "fixed tarot and planet library sorting breaking the default sort of other filters",
+        "lovers map icon no longer blocks clicking map nodes",
+        "expired elite divination markers no longer show status extra tips",
+        "shifted Minty incoming damage text out of the Devil overflow health bar",
+        "fixed the Devil overflow frame not compressing while the player has block",
+        "gated marked-room effects and rewards to the current act and room type"
+      ]
+    },
+    "v1.4.13": {
       "released": null,
-      "changes": []
+      "changes": [
+        "made Minty rest HP preview account for the Devil uncapped heal",
+        "included Downfall gem socket overlay in 3D tilt"
+      ]
     }
   }
 }

@@ -298,8 +298,12 @@ namespace PengoTarot.Patches
             HoverTip main = mapDesc != null
                 ? new HoverTip(mapDesc, tex)
                 : new HoverTip(new LocString("gameplay_ui", "BAL_CFW_FLAG_" + name + "_DESC"), tex);
-            // 标记占卜：动态描述 + 关键词/状态词条 hovertip 一起堆叠显示
-            var extras = ExtraTipsForFlag(flag);
+            // 标记占卜：动态描述 + 关键词/状态词条 hovertip 一起堆叠显示；
+            // 精英标记（战车/力量/隐者）失效后不再追加状态词条（易伤/虚弱/隐者逆）——
+            // 该占卜已失效、战斗不再触发这些效果，避免误导
+            var extras = ConfigFloatingWindowLoc.IsEliteDivination(flag) && TarotMarkerSystem.IsExpired(flag)
+                ? Array.Empty<IHoverTip>()
+                : ExtraTipsForFlag(flag);
             NHoverTipSet? tip = extras.Length > 0
                 ? NHoverTipSet.CreateAndShow(icon, TipsWithExtras(main, extras))
                 : NHoverTipSet.CreateAndShow(icon, main);
@@ -440,10 +444,11 @@ namespace PengoTarot.Patches
                 // 容器中心局部（与光束 Position 同基准 OrbitSize/2）+ 左下偏移 - icon 半尺寸 = icon 左上角
                 lovers.Position = new Vector2(OrbitSize / 2f, OrbitSize / 2f) + new Vector2(left, down)
                                   - new Vector2(IconSize / 2f, IconSize / 2f);
+                // 关键：恋人 hitbox 不拦截鼠标（Ignore）→ 点击穿透到地图节点，避免恋人图标遮挡点击进房间；
+                // 恋人 hover 放大与 hovertip 改由 OnProcess 每帧手动检测鼠标位置维护（见 OnProcess）。
+                lovers.MouseFilter = Control.MouseFilterEnum.Ignore;
                 container.AddChild(lovers);          // 加容器末尾 = 渲染在 Icon/sparkle 之上
                 state.LoversItem = (lovers, loversSprite, LoversFlag);
-                lovers.MouseEntered += () => { _iconHovered.Add(lovers); ShowIconTip(lovers, LoversFlag); };
-                lovers.MouseExited += () => { _iconHovered.Remove(lovers); HideIconTip(lovers); };
             }
 
             // 5) hover 挂钩：进入 → 展开+旋转；离开 → 进入粘滞（保持展开不旋转，距离超阈值才收起，由 _Process 检测）
@@ -482,6 +487,24 @@ namespace PengoTarot.Patches
             bool rotating = state.Hovered || (!inOverview && !state.Sticky && state.Progress > 0f);
             if (rotating)
                 state.Time += (float)delta * Mathf.SmoothStep(0f, 1f, state.Progress);
+
+            // 恋人 hover（手动检测）：hitbox 已 Ignore 不接收鼠标，改由每帧检测鼠标是否落在恋人命中区
+            // （恒为 IconSize，不随容器呼吸缩放），负责 hover 放大（_iconHovered）与 hovertip 显隐；
+            // 必须放在 progress 提前 return 之前：图标收起（不可见）时也要清理已显示的 hovertip，避免残留。
+            if (state.LoversItem is { } loversHover && GodotObject.IsInstanceValid(loversHover.Icon))
+            {
+                bool overLovers = loversHover.Icon.GetGlobalRect().HasPoint(loversHover.Icon.GetGlobalMousePosition());
+                if (overLovers && !_iconHovered.Contains(loversHover.Icon))
+                {
+                    _iconHovered.Add(loversHover.Icon);
+                    ShowIconTip(loversHover.Icon, LoversFlag);
+                }
+                else if (!overLovers && _iconHovered.Contains(loversHover.Icon))
+                {
+                    _iconHovered.Remove(loversHover.Icon);
+                    HideIconTip(loversHover.Icon);
+                }
+            }
 
             if (state.Progress <= 0f) return;
 
@@ -532,8 +555,7 @@ namespace PengoTarot.Patches
             // 恋人：不旋转，固定左下角（位置已在 OnReady 用容器局部坐标设好）；不加连接线
             if (state.LoversItem is { } li && GodotObject.IsInstanceValid(li.Icon))
             {
-                bool visible = iconScale > 0f;
-                li.Icon.MouseFilter = visible ? Control.MouseFilterEnum.Stop : Control.MouseFilterEnum.Ignore;
+                // hitbox 恒为 Ignore（点击穿透地图节点），hover 状态由上方手动检测维护，无需按可见性切换 MouseFilter
                 li.Icon.PivotOffset = new Vector2(IconSize / 2f, IconSize / 2f);   // 缩放锚点 = 恋人自身中心
                 float hov = _iconHovered.Contains(li.Icon) ? IconHoverScale : 1f;
                 // 容器呼吸缩放 C 与地图图标 hover 缩放 H（%Icon 1→1.45）都只作用于 sprite 视觉，hitbox 不随之变化

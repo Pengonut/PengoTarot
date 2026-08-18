@@ -63,25 +63,27 @@ namespace PengoTarot.Patches
             if (!allPlanets)
                 return;
 
-            // 将 IReadOnlyList 转回 List<CardModel> 并就地排序
-            if (cardsToDisplay is List<CardModel> list)
+            // 复制一份再排序，避免就地修改调用方持有的列表（如 NDeckViewScreen._cards）
+            var sortedList = new List<CardModel>(cardsToDisplay);
+            sortedList.Sort(ComparePlanetCards);
+            __args[0] = sortedList;
+
+            // 用新的 [Ascending] 列表替换 sortingPriority，避免清空调用方持有的排序状态
+            // （如图鉴 NCardLibrary._sortingPriority）。Harmony 的 __args 改写会传给原方法，
+            // SetCards 见 sortingPriority[0]==Ascending 即跳过内部排序，从而保留我们的自定义顺序。
+            var sortingPriority = __args[2];
+            if (sortingPriority != null)
             {
-                list.Sort(ComparePlanetCards);
+                var listType = sortingPriority.GetType();
+                var addMethod = listType.GetMethod("Add")!;
 
-                // 将 sortingPriority 设为 [Ascending] 以保留我们的自定义顺序
-                // 通过反射操作，避免对内部 SortingOrders 枚举的编译时依赖
-                var sortingPriority = __args[2];
-                if (sortingPriority != null)
-                {
-                    var listType = sortingPriority.GetType();
-                    listType.GetMethod("Clear")!.Invoke(sortingPriority, null);
-                    var addMethod = listType.GetMethod("Add")!;
+                // SortingOrders.Ascending — 通过名称解析，避免硬编码底层整数值
+                var enumType = listType.GetGenericArguments()[0];
+                var ascendingValue = Enum.Parse(enumType, "Ascending");
 
-                    // SortingOrders.Ascending — 通过名称解析，避免硬编码底层整数值
-                    var enumType = listType.GetGenericArguments()[0];
-                    var ascendingValue = Enum.Parse(enumType, "Ascending");
-                    addMethod.Invoke(sortingPriority, new[] { ascendingValue });
-                }
+                var newPriority = (System.Collections.IList)Activator.CreateInstance(listType)!;
+                newPriority.Add(ascendingValue);
+                __args[2] = newPriority;
             }
         }
 

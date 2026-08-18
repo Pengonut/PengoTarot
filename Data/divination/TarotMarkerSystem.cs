@@ -64,15 +64,18 @@ namespace PengoTarot.Data.Divination
         private static readonly Dictionary<int, MarkState> _states = new();
 
         // ── 查询接口（节点图标 / 后续战斗效果用） ───────────────
-        /// <summary>返回某坐标被哪些占卜标记（flagIndex 升序，仅统计启用且未失效的）。战斗效果等「未失效判定」用此接口。</summary>
-        public static List<int> GetMarkedFlagsAt(MapCoord coord)
+        /// <summary>
+        /// 返回某坐标被哪些占卜标记（flagIndex 升序，仅统计启用且未失效的）。战斗效果等「未失效判定」用此接口。
+        /// <paramref name="actIndex"/> 严格绑定当前幕：防止旧幕残留坐标在当前幕同坐标房间上误触发效果。
+        /// </summary>
+        public static List<int> GetMarkedFlagsAt(MapCoord coord, int actIndex)
         {
             var result = new List<int>();
             foreach (var cfg in Configs)
             {
                 if (cfg.FlagIndex < 0) continue;
                 if (!IsFlagEnabled(cfg.FlagIndex)) continue;
-                if (!_states.TryGetValue(cfg.FlagIndex, out var st) || st.ActIndex < 0) continue;
+                if (!_states.TryGetValue(cfg.FlagIndex, out var st) || st.ActIndex != actIndex) continue;
                 if (st.Coords.Contains(coord)) result.Add(cfg.FlagIndex);
             }
             return result;
@@ -95,8 +98,8 @@ namespace PengoTarot.Data.Divination
             return result;
         }
 
-        /// <summary>某坐标是否被任一占卜标记。</summary>
-        public static bool IsMarkedAt(MapCoord coord) => GetMarkedFlagsAt(coord).Count > 0;
+        /// <summary>某坐标是否被任一占卜标记（当前幕）。</summary>
+        public static bool IsMarkedAt(MapCoord coord, int actIndex) => GetMarkedFlagsAt(coord, actIndex).Count > 0;
 
         /// <summary>某占卜当前是否启用（难度开关开启 且 未失效）。</summary>
         public static bool IsFlagEnabled(int flagIndex)
@@ -155,7 +158,7 @@ namespace PengoTarot.Data.Divination
         /// - 精英类（战车/力量/隐者）：完成 2 个标记后失效，并获得一次塔罗奖励；
         /// - 普通类（正义/倒吊人/死神）：每完成 2 个标记，获得一次塔罗奖励（不失效）。
         /// </summary>
-        public static void OnMarkedCombatVictory(MapCoord coord, CombatRoom room, IReadOnlyList<Player> players)
+        public static void OnMarkedCombatVictory(MapCoord coord, int actIndex, CombatRoom room, IReadOnlyList<Player> players)
         {
             foreach (var cfg in Configs)
             {
@@ -163,7 +166,8 @@ namespace PengoTarot.Data.Divination
                 // 恋人：标记放大器，无战斗效果、不计数、不发塔罗奖励
                 if (cfg.FlagIndex == LoversFlagIndex) continue;
                 if (!_states.TryGetValue(cfg.FlagIndex, out var st)) continue;
-                if (st.ActIndex < 0 || !st.Coords.Contains(coord)) continue;
+                // 严格绑定当前幕：防止旧幕残留坐标在当前幕同坐标房间上误计数/误发奖励
+                if (st.ActIndex != actIndex || !st.Coords.Contains(coord)) continue;
                 if (!IsFlagEnabled(cfg.FlagIndex)) continue;
 
                 st.CompletedCount++;

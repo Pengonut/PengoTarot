@@ -14,6 +14,8 @@ public sealed class TarMoonReversedEnchantment : EnchantmentModel
 {
     public override bool HasExtraCardText => true;
 
+    public override bool CanEnchantCardType(CardType cardType) => cardType != CardType.Power;
+
     private bool _allowDiscard;
     private bool _endOfTurnDiscard;
     private bool _slyReturnPending;
