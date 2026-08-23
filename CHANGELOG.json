@@ -34,7 +34,8 @@
       "released": null,
       "changes": [
         "made Minty rest HP preview account for the Devil uncapped heal",
-        "included Downfall gem socket overlay in 3D tilt"
+        "included Downfall gem socket overlay in 3D tilt",
+        "kept Runesmith2 EnhanceTabContainer out of 3D tilt to avoid reparent conflict"
       ]
     }
   }

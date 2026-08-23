@@ -77,6 +77,7 @@ namespace PengoTarot.BalatroEffect
 
             var m = new ShaderMaterial { Shader = sh };
             m.SetShaderParameter(TiltWrapper.SeedKey, pc.GetHashCode() % 10000 / 10.0f);
+            // EffectRegistry.ApplyNoiseTexture(m); // TODO: 噪声纹理功能未完成，暂时注释
             m.SetShaderParameter(TiltWrapper.EffectModeKey, em);
             m.SetShaderParameter(TiltWrapper.IntensityKey, Config.GetIntensity(cid));
             m.SetShaderParameter(TiltWrapper.UvOffsetKey, gp / TiltWrapper.UvRefSize);
@@ -131,6 +132,7 @@ namespace PengoTarot.BalatroEffect
                 {
                     var nm = new ShaderMaterial { Shader = ts };
                     nm.SetShaderParameter(TiltWrapper.SeedKey, m.GetShaderParameter(TiltWrapper.SeedKey));
+                    // EffectRegistry.ApplyNoiseTexture(nm); // TODO: 噪声纹理功能未完成，暂时注释
                     nm.SetShaderParameter(TiltWrapper.EffectModeKey, e);
                     nm.SetShaderParameter(TiltWrapper.IntensityKey, Config.GetIntensity(CardId));
                     nm.SetShaderParameter(TiltWrapper.UvOffsetKey, m.GetShaderParameter(TiltWrapper.UvOffsetKey));

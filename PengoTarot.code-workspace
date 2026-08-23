@@ -1,0 +1,40 @@
+{
+	"folders": [
+		{
+			"name": "PengoTarot",
+			"path": "."
+		},
+		{
+			"name": "STS2-RitsuLib-0.4.62",
+			"path": "../[Download] Edge/STS2-RitsuLib-0.4.62"
+		},
+		{
+			"name": "[Tool] Godot",
+			"path": "../[Tool] Godot"
+		},
+		{
+			"name": "CardFusion",
+			"path": "C:/Users/Pengo/Downloads/CardFusion"
+		},
+		{
+			"name": "logs",
+			"path": "C:/Users/Pengo/AppData/Roaming/SlayTheSpire2/logs"
+		}
+	],
+	"settings": {
+		"chat.tools.terminal.autoApprove": {
+			"ForEach-Object": true,
+			"Test-Path": true,
+			"/^Set-Location -LiteralPath \"D:\\\\\\[Tool\\] Godot\\\\STS2Mod\\\\PengoTarot\"; \\.\\\\pack\\.ps1 2>&1$/": {
+				"approve": true,
+				"matchCommandLine": true
+			},
+			"/^Set-Location -LiteralPath \"D:\\\\\\[Tool\\] Godot\\\\STS2Mod\\\\PengoTarot\"; powershell -ExecutionPolicy Bypass -File \\.\\\\pack\\.ps1 2>&1$/": {
+				"approve": true,
+				"matchCommandLine": true
+			},
+			"Get-Item": true
+		},
+		"powershell.cwd": "PengoTarot"
+	}
+}

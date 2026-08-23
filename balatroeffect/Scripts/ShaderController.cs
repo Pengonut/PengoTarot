@@ -381,6 +381,7 @@ tiltPath:
             {
                 m = new ShaderMaterial { Shader = sh };
                 m.SetShaderParameter(TiltWrapper.SeedKey, pn.GetHashCode() % 10000 / 10.0f);
+                // EffectRegistry.ApplyNoiseTexture(m); // TODO: 噪声纹理功能未完成，暂时注释
                 if (pn.Material != null && !IsOurs(pn.Material)) m.NextPass = pn.Material;
                 pn.Material = m;
             }
@@ -717,7 +718,7 @@ tiltPath:
             Vector2 gp = pn.Position + TiltWrapper.UvRefHalf;
             ShaderMaterial m;
             if (pn.Material is ShaderMaterial ex && ex.Shader == sh) m = ex;
-            else { m = new ShaderMaterial { Shader = sh }; m.SetShaderParameter(TiltWrapper.SeedKey, pn.GetHashCode() % 10000 / 10.0f); if (pn.Material != null && !IsOurs(pn.Material)) m.NextPass = pn.Material; pn.Material = m; }
+            else { m = new ShaderMaterial { Shader = sh }; m.SetShaderParameter(TiltWrapper.SeedKey, pn.GetHashCode() % 10000 / 10.0f); /* EffectRegistry.ApplyNoiseTexture(m); TODO: 噪声纹理功能未完成，暂时注释 */ if (pn.Material != null && !IsOurs(pn.Material)) m.NextPass = pn.Material; pn.Material = m; }
             m.SetShaderParameter(TiltWrapper.EffectModeKey, e); m.SetShaderParameter(TiltWrapper.IntensityKey, Config.GetIntensity(cid));
             m.SetShaderParameter(TiltWrapper.UvOffsetKey, gp / TiltWrapper.UvRefSize); m.SetShaderParameter(TiltWrapper.UvScaleKey, pn.Size / TiltWrapper.UvRefSize);
             m.SetShaderParameter(TiltWrapper.FoilAltUvOffsetKey, (gp - TiltWrapper.UvRefHalf) / TiltWrapper.UvRefSize);

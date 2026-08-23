@@ -17,6 +17,7 @@ namespace PengoTarot.BalatroEffect
             Shader? sh = EffectRegistry.GetShader(mode) ?? EffectRegistry.GetShader(1);
             var fm = new ShaderMaterial { Shader = sh };
             fm.SetShaderParameter(TiltWrapper.SeedKey, card.GetHashCode() % 10000 / 10.0f);
+            // EffectRegistry.ApplyNoiseTexture(fm); // TODO: 噪声纹理功能未完成，暂时注释
 
             var fc = new FullCardEffectContainer
             {
@@ -76,6 +77,7 @@ namespace PengoTarot.BalatroEffect
                 {
                     var nm = new ShaderMaterial { Shader = ts };
                     nm.SetShaderParameter(TiltWrapper.SeedKey, m.GetShaderParameter(TiltWrapper.SeedKey));
+                    // EffectRegistry.ApplyNoiseTexture(nm); // TODO: 噪声纹理功能未完成，暂时注释
                     nm.SetShaderParameter(TiltWrapper.UvOffsetKey, m.GetShaderParameter(TiltWrapper.UvOffsetKey));
                     nm.SetShaderParameter(TiltWrapper.UvScaleKey, m.GetShaderParameter(TiltWrapper.UvScaleKey));
                     Material = nm; m = nm;

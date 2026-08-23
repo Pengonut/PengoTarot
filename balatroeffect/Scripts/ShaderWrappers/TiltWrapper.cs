@@ -23,6 +23,7 @@ namespace PengoTarot.BalatroEffect
         public static readonly StringName UvOffsetKey = "uv_offset";
         public static readonly StringName UvScaleKey = "uv_scale";
         public static readonly StringName FoilAltUvOffsetKey = "foil_alt_uv_offset";
+        public static readonly StringName NoiseTexKey = "noise_tex";
 
         // ── Node names ──
         public const string TcName = "BalatroTiltContainer";
@@ -59,13 +60,24 @@ namespace PengoTarot.BalatroEffect
         };
 
         /// <summary>
+        /// 第三方 Mod 注入、依赖固定父级关系（会被宿主反复 re-parent）的交互容器黑名单。
+        /// 这类节点被搬进 Tilt SubViewport 会导致宿主重新挂载失败（例如 Runesmith2 的
+        /// EnhanceTabContainer 父级必须保持 CardContainer），因此始终留在 Body。
+        /// </summary>
+        public static readonly HashSet<string> ThirdPartyContainerNames = new()
+        {
+            "EnhanceTabContainer"
+        };
+
+        /// <summary>
         /// 决定一个非模板、非跳过列表的外部节点是否应该被纳入 Tilt 包裹。
-        /// 默认排除名称中含有特效关键词的节点。
+        /// 默认排除名称中含有特效关键词、或属于第三方容器黑名单的节点。
         /// </summary>
         private static bool ShouldIncludeExternalNode(Node node)
         {
             if (!(node is Control)) return false;
             string name = node.Name.ToString();
+            if (ThirdPartyContainerNames.Contains(name)) return false;
             foreach (var keyword in VfxKeywords)
                 if (name.Contains(keyword, StringComparison.OrdinalIgnoreCase))
                     return false;
