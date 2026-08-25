@@ -1,6 +1,9 @@
 #nullable enable
 
 using System.Collections.Generic;
+using System.Linq;
+using MegaCrit.Sts2.Core.Context;
+using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Runs;
 using PengoTarot.Data.Divination;
@@ -206,6 +209,10 @@ namespace PengoTarot.ConfigFW
         public static bool IsMarkedDivination(int flagIndex)
             => flagIndex is 7 or 8 or 9 or 11 or 12 or 13;
 
+        /// <summary>该占卜是否在配置悬浮窗中追加跑局动态状态。</summary>
+        public static bool HasDynamicSettingsDescription(int flagIndex)
+            => flagIndex == 10 || IsMarkedDivination(flagIndex);
+
         /// <summary>该 flagIndex 是否精英类标记占卜（完成 <see cref="TarotMarkerSystem.RewardInterval"/> 个后失效）。</summary>
         public static bool IsEliteDivination(int flagIndex)
             => flagIndex is 7 or 8 or 9;
@@ -232,6 +239,9 @@ namespace PengoTarot.ConfigFW
         /// </summary>
         public static string BuildSettingsDescription(int flagIndex)
         {
+            if (flagIndex == 10)
+                return BuildWheelOfFortuneSettingsDescription();
+
             string name = MarkedDivinationName(flagIndex);
             if (string.IsNullOrEmpty(name)) return string.Empty;   // 仅标记类占卜；调用方应先判 IsMarkedDivination
             string baseText = Loc("BAL_CFW_FLAG_" + name + "_DESC");
@@ -243,6 +253,33 @@ namespace PengoTarot.ConfigFW
             ls.Add("Count", completed);
             string line = ls.GetFormattedText() ?? "BAL_CFW_PROGRESS_LINE";
             return baseText + "\n" + line;
+        }
+
+        /// <summary>命运之轮动态行：显示距离下一次移除的战斗数与将被移除的最早遗物。</summary>
+        private static string BuildWheelOfFortuneSettingsDescription()
+        {
+            string baseText = Loc("BAL_CFW_FLAG_WHEELOFFORTUNE_DESC");
+            var runState = RunManager.Instance.DebugOnlyGetState();
+            if (!RunManager.Instance.IsInProgress || runState == null)
+                return baseText;
+
+            var player = LocalContext.GetMe(runState);
+            if (player == null)
+                return baseText;
+            var relic = player.Relics.FirstOrDefault(candidate =>
+                candidate.Rarity is RelicRarity.Common
+                    or RelicRarity.Uncommon
+                    or RelicRarity.Rare
+                    or RelicRarity.Shop);
+            if (relic == null)
+                return baseText + "\n" + Loc("BAL_CFW_WHEEL_NO_RELIC");
+
+            int remainder = ConfigFloatingWindowRunData.WheelOfFortuneCombatCount % 4;
+            int combatsRemaining = 4 - remainder;
+            var line = new LocString("gameplay_ui", "BAL_CFW_WHEEL_PROGRESS");
+            line.Add("Count", combatsRemaining);
+            line.Add("Relic", relic.Title);
+            return baseText + "\n" + (line.GetFormattedText() ?? "BAL_CFW_WHEEL_PROGRESS");
         }
 
         /// <summary>
@@ -287,7 +324,7 @@ namespace PengoTarot.ConfigFW
             { "BAL_CFW_FLAG_CHARIOT_DESC", "在每一幕标记[blue]1[/blue]个[gold]精英敌人房间[/gold]，房间内的敌人首次对你造成未被格挡的伤害后，额外给予[blue]1[/blue]层[gold]易伤[/gold]。\n完成[blue]2[/blue]个标记后失效，获得一次[gold]塔罗牌奖励[/gold]。「开发中」" },
             { "BAL_CFW_FLAG_STRENGTH_DESC", "在每一幕标记[blue]1[/blue]个[gold]精英敌人房间[/gold]，房间内的敌人首次对你造成未被格挡的伤害后，额外给予[blue]1[/blue]层[gold]虚弱[/gold]。\n完成[blue]2[/blue]个标记后失效，获得一次[gold]塔罗牌奖励[/gold]。「开发中」" },
             { "BAL_CFW_FLAG_HERMIT_DESC", "在每一幕标记[blue]1[/blue]个[gold]精英敌人房间[/gold]，房间内的敌人在战斗开始时，获得[blue]10%[/blue]生命值上限的[gold]隐者-逆[/gold]。\n完成[blue]2[/blue]个标记后失效，获得一次[gold]塔罗牌奖励[/gold]。「开发中」" },
-            { "BAL_CFW_FLAG_WHEELOFFORTUNE_DESC", "占卜-命运之轮。「开发中」" },
+            { "BAL_CFW_FLAG_WHEELOFFORTUNE_DESC", "在游戏开始时获得[blue]2[/blue]件随机遗物，每经过[blue]4[/blue]场战斗，[red]失去[/red]最早获得的普通、罕见或稀有遗物。" },
             { "BAL_CFW_FLAG_JUSTICE_DESC", "在每一幕标记[blue]3[/blue]个[gold]普通敌人房间[/gold]，在这场战斗中，每回合打出的第一张[gold]攻击牌[/gold]被[gold]消耗[/gold]。\n每完成[blue]2[/blue]个标记，获得一次[gold]塔罗牌奖励[/gold]。「开发中」" },
             { "BAL_CFW_FLAG_HANGEDMAN_DESC", "在每一幕标记[blue]3[/blue]个[gold]普通敌人房间[/gold]，在这场战斗中，每回合打出的第一张[gold]技能牌[/gold]被[gold]消耗[/gold]。\n每完成[blue]2[/blue]个标记，获得一次[gold]塔罗牌奖励[/gold]。「开发中」" },
             { "BAL_CFW_FLAG_DEATH_DESC", "在每一幕标记[blue]3[/blue]个[gold]普通敌人房间[/gold]，在这场战斗中，每当你打出[gold]能力牌[/gold]时，立刻[red]结束你的回合[/red]。\n每完成[blue]2[/blue]个标记，获得一次[gold]塔罗牌奖励[/gold]。「开发中」" },
@@ -306,6 +343,8 @@ namespace PengoTarot.ConfigFW
 
             // ── 标记占卜动态文本（设置界面动态行 + 地图 hovertip 分状态文本） ──
             { "BAL_CFW_PROGRESS_LINE", "{Expired:已失效。|当前已完成[blue]{Count}[/blue]。}" },
+            { "BAL_CFW_WHEEL_PROGRESS", "将在完成下[blue]{Count}[/blue]场战斗后[red]移除[/red][gold]{Relic}[/gold]。" },
+            { "BAL_CFW_WHEEL_NO_RELIC", "当前没有可以移除的遗物。" },
             { "BAL_CFW_MAP_CHARIOT", "{Expired:这个标记已失效。|这个房间的敌人首次对你造成未被格挡的伤害时，额外给予[blue]1[/blue]层[gold]易伤[/gold]。{Completed:\n完成下一场战斗后，获得[blue]1[/blue]次特殊的[gold]塔罗牌奖励[/gold]。|}}" },
             { "BAL_CFW_MAP_STRENGTH", "{Expired:这个标记已失效。|这个房间的敌人首次对你造成未被格挡的伤害时，额外给予[blue]1[/blue]层[gold]虚弱[/gold]。{Completed:\n完成下一场战斗后，获得[blue]1[/blue]次特殊的[gold]塔罗牌奖励[/gold]。|}}" },
             { "BAL_CFW_MAP_HERMIT", "{Expired:这个标记已失效。|这个房间的敌人在战斗开始时，获得[blue]10%[/blue]生命值上限的[gold]隐者-逆[/gold]。{Completed:\n完成下一场战斗后，获得[blue]1[/blue]次特殊的[gold]塔罗牌奖励[/gold]。|}}" },
@@ -334,7 +373,7 @@ namespace PengoTarot.ConfigFW
             { "BAL_CFW_FLAG_CHARIOT_DESC", "Marks [blue]1[/blue] [gold]elite enemy room[/gold] per act.\nEnemies there inflict [blue]1[/blue] [gold]Vulnerable[/gold] the first time they deal unblocked damage to you.\nAfter [blue]2[/blue] marks, this divination expires and you gain a [gold]tarot reward[/gold]. (In Development)" },
             { "BAL_CFW_FLAG_STRENGTH_DESC", "Marks [blue]1[/blue] [gold]elite enemy room[/gold] per act.\nEnemies there inflict [blue]1[/blue] [gold]Weak[/gold] the first time they deal unblocked damage to you.\nAfter [blue]2[/blue] marks, this divination expires and you gain a [gold]tarot reward[/gold]. (In Development)" },
             { "BAL_CFW_FLAG_HERMIT_DESC", "Marks [blue]1[/blue] [gold]elite enemy room[/gold] per act.\nEnemies there start combat with [gold]Hermit - Reversed[/gold] equal to [blue]10%[/blue] of their Max HP.\nAfter [blue]2[/blue] marks, this divination expires and you gain a [gold]tarot reward[/gold]. (In Development)" },
-            { "BAL_CFW_FLAG_WHEELOFFORTUNE_DESC", "Divination - Wheel of Fortune. (In Development)" },
+            { "BAL_CFW_FLAG_WHEELOFFORTUNE_DESC", "At the start of the run, gain [blue]2[/blue] random relics. After every [blue]4[/blue] combats, [red]lose[/red] the earliest obtained Common, Uncommon, or Rare relic." },
             { "BAL_CFW_FLAG_JUSTICE_DESC", "Marks [blue]3[/blue] [gold]normal enemy rooms[/gold] per act.\nIn that combat, the first [gold]Attack[/gold] you play each turn is [gold]Exhausted[/gold].\nFor every [blue]2[/blue] marks completed, gain a [gold]tarot reward[/gold]. (In Development)" },
             { "BAL_CFW_FLAG_HANGEDMAN_DESC", "Marks [blue]3[/blue] [gold]normal enemy rooms[/gold] per act.\nIn that combat, the first [gold]Skill[/gold] you play each turn is [gold]Exhausted[/gold].\nFor every [blue]2[/blue] marks completed, gain a [gold]tarot reward[/gold]. (In Development)" },
             { "BAL_CFW_FLAG_DEATH_DESC", "Marks [blue]3[/blue] [gold]normal enemy rooms[/gold] per act.\nIn that combat, whenever you play a [gold]Power[/gold] card, [red]end your turn[/red] immediately.\nFor every [blue]2[/blue] marks completed, gain a [gold]tarot reward[/gold]. (In Development)" },
@@ -353,6 +392,8 @@ namespace PengoTarot.ConfigFW
 
             // ── 标记占卜动态文本（设置界面动态行 + 地图 hovertip 分状态文本） ──
             { "BAL_CFW_PROGRESS_LINE", "{Expired:Expired.|Completed [blue]{Count}[/blue] so far.}" },
+            { "BAL_CFW_WHEEL_PROGRESS", "After completing the next [blue]{Count}[/blue] combats, [red]remove[/red] [gold]{Relic}[/gold]." },
+            { "BAL_CFW_WHEEL_NO_RELIC", "There are currently no relics that can be removed." },
             { "BAL_CFW_MAP_CHARIOT", "{Expired:This marker has expired.|The first time enemies in this room deal unblocked damage to you, gain [blue]1[/blue] [gold]Vulnerable[/gold].{Completed:\nAfter completing the next combat, gain a special [gold]tarot reward[/gold].|}}" },
             { "BAL_CFW_MAP_STRENGTH", "{Expired:This marker has expired.|The first time enemies in this room deal unblocked damage to you, gain [blue]1[/blue] [gold]Weak[/gold].{Completed:\nAfter completing the next combat, gain a special [gold]tarot reward[/gold].|}}" },
             { "BAL_CFW_MAP_HERMIT", "{Expired:This marker has expired.|Enemies in this room start combat with [gold]Hermit - Reversed[/gold] equal to [blue]10%[/blue] of their Max HP.{Completed:\nAfter completing the next combat, gain a special [gold]tarot reward[/gold].|}}" },
@@ -381,7 +422,7 @@ namespace PengoTarot.ConfigFW
             { "BAL_CFW_FLAG_CHARIOT_DESC", "各層で[gold]エリートの部屋[/gold]を[blue]1[/blue]つマークする。\nその部屋の敵が初めてブロックされていないダメージを与えた後、さらに[gold]弱体[/gold][blue]1[/blue]を付与する。\nマークを[blue]2[/blue]つ完了すると失効し、[gold]タロット報酬[/gold]を一回獲得する。「開発中」" },
             { "BAL_CFW_FLAG_STRENGTH_DESC", "各層で[gold]エリートの部屋[/gold]を[blue]1[/blue]つマークする。\nその部屋の敵が初めてブロックされていないダメージを与えた後、さらに[gold]脱力[/gold][blue]1[/blue]を付与する。\nマークを[blue]2[/blue]つ完了すると失効し、[gold]タロット報酬[/gold]を一回獲得する。「開発中」" },
             { "BAL_CFW_FLAG_HERMIT_DESC", "各層で[gold]エリートの部屋[/gold]を[blue]1[/blue]つマークする。\nその部屋の敵は戦闘開始時、最大HPの[blue]10%[/blue]分の[gold]隠者-逆[/gold]を得る。\nマークを[blue]2[/blue]つ完了すると失効し、[gold]タロット報酬[/gold]を一回獲得する。「開発中」" },
-            { "BAL_CFW_FLAG_WHEELOFFORTUNE_DESC", "占い-運命の輪。「開発中」" },
+            { "BAL_CFW_FLAG_WHEELOFFORTUNE_DESC", "ゲーム開始時にランダムなレリックを[blue]2[/blue]個獲得する。[blue]4[/blue]回戦闘するたび、最も早く獲得したコモン、アンコモン、またはレアのレリックを[red]失う[/red]。" },
             { "BAL_CFW_FLAG_JUSTICE_DESC", "各層で[gold]通常の敵の部屋[/gold]を[blue]3[/blue]つマークする。\nこの戦闘中、毎ターン最初にプレイした[gold]アタック[/gold]が[gold]廃棄[/gold]される。\nマークを[blue]2[/blue]つ完了するごとに、[gold]タロット報酬[/gold]を一回獲得する。「開発中」" },
             { "BAL_CFW_FLAG_HANGEDMAN_DESC", "各層で[gold]通常の敵の部屋[/gold]を[blue]3[/blue]つマークする。\nこの戦闘中、毎ターン最初にプレイした[gold]スキル[/gold]が[gold]廃棄[/gold]される。\nマークを[blue]2[/blue]つ完了するごとに、[gold]タロット報酬[/gold]を一回獲得する。「開発中」" },
             { "BAL_CFW_FLAG_DEATH_DESC", "各層で[gold]通常の敵の部屋[/gold]を[blue]3[/blue]つマークする。\nこの戦闘中、[gold]パワー[/gold]をプレイするたびに、即座に[red]ターンを終了[/red]する。\nマークを[blue]2[/blue]つ完了するごとに、[gold]タロット報酬[/gold]を一回獲得する。「開発中」" },
@@ -400,6 +441,8 @@ namespace PengoTarot.ConfigFW
 
             // ── 标记占卜动态文本（设置界面动态行 + 地图 hovertip 分状态文本） ──
             { "BAL_CFW_PROGRESS_LINE", "{Expired:失効済み。|現在の完了数：[blue]{Count}[/blue]。}" },
+            { "BAL_CFW_WHEEL_PROGRESS", "あと[blue]{Count}[/blue]回の戦闘を完了すると、[gold]{Relic}[/gold]を[red]失う[/red]。" },
+            { "BAL_CFW_WHEEL_NO_RELIC", "現在、失うことのできるレリックはない。" },
             { "BAL_CFW_MAP_CHARIOT", "{Expired:このマーカーは失効しました。|この部屋の敵が初めてブロックされていないダメージを与えた時、さらに[gold]弱体[/gold][blue]1[/blue]を付与する。{Completed:\n次の戦闘を完了すると、特別な[gold]タロット報酬[/gold]を一回獲得する。|}}" },
             { "BAL_CFW_MAP_STRENGTH", "{Expired:このマーカーは失効しました。|この部屋の敵が初めてブロックされていないダメージを与えた時、さらに[gold]脱力[/gold][blue]1[/blue]を付与する。{Completed:\n次の戦闘を完了すると、特別な[gold]タロット報酬[/gold]を一回獲得する。|}}" },
             { "BAL_CFW_MAP_HERMIT", "{Expired:このマーカーは失効しました。|この部屋の敵は戦闘開始時、最大HPの[blue]10%[/blue]分の[gold]隠者-逆[/gold]を得る。{Completed:\n次の戦闘を完了すると、特別な[gold]タロット報酬[/gold]を一回獲得する。|}}" },
@@ -428,7 +471,7 @@ namespace PengoTarot.ConfigFW
             { "BAL_CFW_FLAG_CHARIOT_DESC", "각 막에서 [gold]엘리트 방[/gold] [blue]1[/blue]개를 표시합니다.\n해당 방의 적이 처음으로 방어도로 막지 못한 피해를 준 후, 추가로 [gold]취약[/gold] [blue]1[/blue]을 부여합니다.\n표시 [blue]2[/blue]개 완료 시 비활성화되며 [gold]타로 보상[/gold]을 한 번 획득합니다.「개발 중」" },
             { "BAL_CFW_FLAG_STRENGTH_DESC", "각 막에서 [gold]엘리트 방[/gold] [blue]1[/blue]개를 표시합니다.\n해당 방의 적이 처음으로 방어도로 막지 못한 피해를 준 후, 추가로 [gold]약화[/gold] [blue]1[/blue]을 부여합니다.\n표시 [blue]2[/blue]개 완료 시 비활성화되며 [gold]타로 보상[/gold]을 한 번 획득합니다.「개발 중」" },
             { "BAL_CFW_FLAG_HERMIT_DESC", "각 막에서 [gold]엘리트 방[/gold] [blue]1[/blue]개를 표시합니다.\n해당 방의 적이 전투 시작 시 최대 체력의 [blue]10%[/blue]만큼 [gold]은둔자-역방향[/gold]을 얻습니다.\n표시 [blue]2[/blue]개 완료 시 비활성화되며 [gold]타로 보상[/gold]을 한 번 획득합니다.「개발 중」" },
-            { "BAL_CFW_FLAG_WHEELOFFORTUNE_DESC", "점괘-운명의 수레바퀴。「개발 중」" },
+            { "BAL_CFW_FLAG_WHEELOFFORTUNE_DESC", "게임 시작 시 무작위 유물을 [blue]2[/blue]개 얻습니다. 전투 [blue]4[/blue]회를 완료할 때마다 가장 먼저 얻은 일반, 고급 또는 희귀 유물을 [red]잃습니다[/red]." },
             { "BAL_CFW_FLAG_JUSTICE_DESC", "각 막에서 [gold]일반 적 방[/gold] [blue]3[/blue]개를 표시합니다.\n해당 전투에서 매 턴 처음 사용하는 [gold]공격 카드[/gold]가 [gold]소멸[/gold]됩니다.\n표시 [blue]2[/blue]개 완료 시마다 [gold]타로 보상[/gold]을 한 번 획득합니다.「개발 중」" },
             { "BAL_CFW_FLAG_HANGEDMAN_DESC", "각 막에서 [gold]일반 적 방[/gold] [blue]3[/blue]개를 표시합니다.\n해당 전투에서 매 턴 처음 사용하는 [gold]스킬 카드[/gold]가 [gold]소멸[/gold]됩니다.\n표시 [blue]2[/blue]개 완료 시마다 [gold]타로 보상[/gold]을 한 번 획득합니다.「개발 중」" },
             { "BAL_CFW_FLAG_DEATH_DESC", "각 막에서 [gold]일반 적 방[/gold] [blue]3[/blue]개를 표시합니다.\n해당 전투에서 [gold]파워 카드[/gold]를 사용할 때마다 즉시 [red]턴을 종료[/red]합니다.\n표시 [blue]2[/blue]개 완료 시마다 [gold]타로 보상[/gold]을 한 번 획득합니다.「개발 중」" },
@@ -447,6 +490,8 @@ namespace PengoTarot.ConfigFW
 
             // ── 标记占卜动态文本（设置界面动态行 + 地图 hovertip 分状态文本） ──
             { "BAL_CFW_PROGRESS_LINE", "{Expired:비활성화됨.|지금까지 [blue]{Count}[/blue]개 완료.}" },
+            { "BAL_CFW_WHEEL_PROGRESS", "앞으로 전투 [blue]{Count}[/blue]회를 완료하면 [gold]{Relic}[/gold]을(를) [red]잃습니다[/red]." },
+            { "BAL_CFW_WHEEL_NO_RELIC", "현재 제거할 수 있는 유물이 없습니다." },
             { "BAL_CFW_MAP_CHARIOT", "{Expired:이 마커는 비활성화되었습니다.|이 방의 적이 처음으로 방어도로 막지 못한 피해를 준 경우, 추가로 [gold]취약[/gold] [blue]1[/blue]을 부여합니다.{Completed:\n다음 전투를 완료하면 특별한 [gold]타로 보상[/gold]을 한 번 획득합니다.|}}" },
             { "BAL_CFW_MAP_STRENGTH", "{Expired:이 마커는 비활성화되었습니다.|이 방의 적이 처음으로 방어도로 막지 못한 피해를 준 경우, 추가로 [gold]약화[/gold] [blue]1[/blue]을 부여합니다.{Completed:\n다음 전투를 완료하면 특별한 [gold]타로 보상[/gold]을 한 번 획득합니다.|}}" },
             { "BAL_CFW_MAP_HERMIT", "{Expired:이 마커는 비활성화되었습니다.|이 방의 적은 전투 시작 시 최대 체력의 [blue]10%[/blue]만큼 [gold]은둔자-역방향[/gold]을 얻습니다.{Completed:\n다음 전투를 완료하면 특별한 [gold]타로 보상[/gold]을 한 번 획득합니다.|}}" },

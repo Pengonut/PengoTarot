@@ -34,14 +34,14 @@ CHANGELOG_PATH = Path(r"D:\PengoTarot\CHANGELOG.json")
 WORKSHOP_META_PATH = Path(r"D:\PengoTarot\workshop_meta.json")
 WORKSHOP_JSON_PATH = WORKSHOP_DIR / "workshop.json"
 
-# 复制时忽略的顶层文件（README 无实际作用，避免意外覆盖工坊说明文档）
+# 复制时忽略的顶层文件（README 无实际作用；历史 ZIP 是本地备份，不应进入工坊内容）
 IGNORE_TOP_FILES = {"README.md"}
 
 
-def _ignore_readme(src: str, names):
-    """copytree ignore 回调：只忽略顶层 README.md（子目录里的不忽略）。"""
-    if Path(src) == GAME_MODS_DIR and "README.md" in names:
-        return {"README.md"}
+def _ignore_top_files(src: str, names):
+    """copytree ignore 回调：忽略顶层 README 与本地历史 ZIP。"""
+    if Path(src) == GAME_MODS_DIR:
+        return {name for name in names if name in IGNORE_TOP_FILES or name.lower().endswith(".zip")}
     return set()
 
 
@@ -51,11 +51,11 @@ def sync_content(dry_run: bool) -> None:
         sys.exit(f"[错误] 源目录不存在: {GAME_MODS_DIR}")
     print(f"[1/4] 同步内容: {GAME_MODS_DIR} -> {CONTENT_DIR}")
     if dry_run:
-        print("      (dry-run) 将执行 copytree(dirs_exist_ok=True)，忽略顶层 README.md")
+        print("      (dry-run) 将执行 copytree(dirs_exist_ok=True)，忽略顶层 README.md 与 *.zip")
         return
     shutil.copytree(
         GAME_MODS_DIR, CONTENT_DIR,
-        dirs_exist_ok=True, ignore=_ignore_readme,
+        dirs_exist_ok=True, ignore=_ignore_top_files,
     )
     print("      完成（覆盖同名 + 新增，未删除任何文件）")
 
@@ -96,13 +96,15 @@ def update_workshop_json(dry_run: bool) -> tuple[str, str]:
     except json.JSONDecodeError as e:
         sys.exit(f"[错误] workshop.json 不是合法 JSON: {e}")
 
+    ver = changelog.get("current_version")
     desc = (meta.get("description") or "").strip()
     if desc:
+        # 工坊长描述底部版本号始终跟随 CHANGELOG 当前发布块，避免手动维护遗漏。
+        desc = re.sub(r"(?m)^Version:\s*[^\r\n]+$", f"Version: {ver.removeprefix('v')}", desc)
         ws["description"] = desc
     else:
         print("      [警告] workshop_meta.json 的 description 为空，保留 workshop.json 原值（请手动维护）")
 
-    ver = changelog.get("current_version")
     block = (changelog.get("versions") or {}).get(ver)
     if not block:
         sys.exit(f"[错误] CHANGELOG.json 缺少 current_version 对应的块: {ver!r}")

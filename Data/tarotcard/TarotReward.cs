@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Context;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -117,7 +118,10 @@ namespace PengoTarot.Data
                 return false;
 
             var chosenDef = defs[cards.IndexOf(selected)];
-            await TarotEffectExecutor.ExecuteEffectAndEnchant(chosenDef, player, isLocalBuyer: true);
+            // RewardsSetSynchronizer 会在所有 peer 回放 OnSelect；只有奖励拥有者所在端可以执行
+            // “本地执行 + 全量玩家同步”的立即效果，否则远端会以自己的 senderId 发送他人状态。
+            await TarotEffectExecutor.ExecuteEffectAndEnchant(
+                chosenDef, player, isLocalBuyer: LocalContext.IsMe(player));
             return true;
         }
 

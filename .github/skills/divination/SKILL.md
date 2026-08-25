@@ -1,15 +1,48 @@
 ---
 name: divination
-description: '占卜标记系统 + 地图标记视觉 + 全部 6 个标记占卜战斗效果 + 塔罗奖励（divination）：PengoTarot 的「占卜」难度开关体系。含 TarotMarkerSystem（地图节点标记：配置/ApplyMarkers/查询/计数/失效/跨幕保留/序列化）、NMapPointMarkerIconPatch（节点视觉：soul_beam、sparkle、旋转图标、数字角标、逆位图标切换）、TarotReward 自定义奖励栏、以及战车/力量/隐者/正义/倒吊人/死神的战斗 Power/Affliction。Use when: 改 Data/divination/ 或 Patch/divination/ 下的标记/战斗效果/塔罗奖励逻辑、调地图节点特效/角标/逆图、排查塔罗奖励发放与读档重建。'
+description: '占卜系统 + 地图标记视觉 + 战斗效果 + 塔罗奖励（divination）：PengoTarot 的「占卜」难度开关体系。含 TarotMarkerSystem、地图节点视觉、TarotReward、命运之轮遗物机制，以及战车/力量/隐者/正义/倒吊人/死神的战斗 Power。Use when: 改 Data/divination/ 或 Patch/divination/ 下的占卜逻辑、地图视觉、遗物警告、战斗效果、塔罗奖励，或排查相关读档/多人问题。'
 argument-hint: '如：调战车首次易伤、改正义每回合第一张消耗、数字角标位置、塔罗奖励三选一/跳过、失效跨幕保留'
 user-invocable: true
 ---
 
 # divination — 占卜标记系统 + 战斗效果 + 塔罗奖励
 
-PengoTarot 的「占卜」难度开关体系：在地图上**标记房间**（TarotMarkerSystem）→ 节点显示视觉特效（数字角标/逆位图标）→ 进入被标记房间的战斗触发**战斗效果**（Power/Affliction）→ 打完被标记房间**发放塔罗奖励**（TarotReward）。全部 6 个标记占卜（战车/力量/隐者/正义/倒吊人/死神）已实现；恋人=精英标记放大器、命运之轮=已移除标记。
+PengoTarot 的「占卜」难度开关体系：标记类占卜在地图上**标记房间**（TarotMarkerSystem）→ 节点显示视觉特效 → 进入房间触发 **Power** → 胜利后发放**塔罗奖励**（TarotReward）。战车/力量/隐者/正义/倒吊人/死神是标记类；恋人是精英标记放大器；命运之轮不进入地图标记表，使用独立的开局遗物与每四战移除机制。
 
 > ⚠️ 修改本体系先读本 skill + 关键文件；图层/加载/缩放/塔罗奖励序列化都有踩坑。
+
+## 强制审查清单（修改后逐项确认，不得只靠编译）
+
+### 1. 关闭选项必须零副作用
+
+- 每个可选占卜的 Harmony Prefix/Postfix、Godot `_Ready`、Hook 回调都必须在**第一处可执行逻辑**检查对应的 `GetTarFlag`/`IsEnabled`。
+- 门控必须发生在创建 Node/Timer/Tween、订阅事件、启动 Task、注册运行期回调、修改模型/历史/存档、发送网络消息之前。
+- 禁止“先创建后台对象，再在定时回调里判断是否启用”。隐藏视觉不等于没有副作用。
+- 必测关闭路径：进入单人和多人对局、打开暂停菜单、切换房间、退出对局；节点树、模型状态、消息与任务数量都不应因该选项发生变化。
+
+### 2. 不得破坏原版节点容器不变量
+
+- 向任何原版 `Container`/`FlowContainer`/列表节点 `AddChild` 前，必须查看两个游戏版本中该父节点的源码，搜索 `GetChild<T>`、子节点遍历、索引和数量假设。
+- 不得把 `Timer`、普通 `Node` 等非 UI 节点直接加入只接受 `Control` 的容器；也不得用不可见 `Control` 冒充，因为它仍可能参与布局和计数。
+- 辅助计时器应挂到不参与布局的中立节点（当前命运之轮挂 SceneTree Root），视觉节点则挂到真正需要跟随的目标节点。
+- 新增节点/事件/计时器必须有对称生命周期清理：目标 `_ExitTree`/`TreeExiting` 时停止、退订、恢复视觉并 `QueueFree`。
+
+### 3. Harmony 与 API 必须验证真实运行目标
+
+- 修改 API 或 Harmony target 前，必须同时核对 `STS2v0.107` 与 `STS2v0.111` 源码中的声明、可见性、参数和返回类型。
+- 不能根据 Godot 回调名称推测托管类一定声明了对应方法；Harmony 只能 patch 实际存在的托管 `MethodBase`。例如 `NHandCardHolder` 没有声明 `_Process`，对它 patch 会使 `PatchAll` 整体失败。
+- 双版本 `dotnet build` 只证明引用和签名可编译，不证明 Harmony 能找到目标，也不证明节点树和生命周期安全；至少还要检查启动初始化日志和实际触发路径。
+
+### 4. 多人和状态所有权
+
+- 模型变更必须在双方确定性执行，或由主机通过可序列化消息/Action 同步；视觉可本地化，但不得反向修改模型。
+- 禁止把同步所需状态只保存在 Power 私有字段、UI 节点、Timer 或 `LocalContext.IsMe` 分支中；优先从同步战斗历史推导，或使用明确的权威快照。
+- 必测矩阵：选项关闭/开启 × 单人/主机/客机 × 新局/读档/重连；涉及 UI 时加空列表、非空列表、暂停菜单和场景退出。
+
+### 5. 实现与注释必须一致
+
+- 写下“不会影响布局”“仅视觉”“关闭时不生效”等结论前，必须沿实际调用路径验证；注释不能替代约束。
+- 完成后用源码搜索确认没有旁路入口，并检查日志中最早的异常，后续 Tween/Task/存档错误可能只是连锁反应。
 
 ## 何时使用
 
@@ -21,19 +54,21 @@ PengoTarot 的「占卜」难度开关体系：在地图上**标记房间**（Ta
 
 | 文件 | 职责 |
 |------|------|
-| `Data/divination/TarotMarkerSystem.cs` | 标记核心：`Configs` 配置、`MarkState{ActIndex,Coords,CompletedCount,RewardsAwarded,Expired}`、`ApplyMarkers`、查询接口、`OnMarkedCombatVictory` 发放、序列化 |
+| `Data/divination/TarotMarkerSystem.cs` | 标记核心：`Configs` 配置、`MarkState{ActIndex,Coords,CompletedCount,RewardsAwarded,Expired}`、`ApplyMarkers`、查询接口、`OnMarkedCombatVictory` 发放、序列化；换幕/胜利后触发主机权威快照 |
+| `network/TarotMarkerStateMessage.cs` | 局内主机权威标记完整快照（可靠、按 RunLocation 缓冲；客户端只接受真实主机） |
 | `Patch/divination/DivinationMarkerPatch.cs` | `Hook.ModifyGeneratedMapLate` Postfix → 每幕地图生成后应用标记 |
 | `Patch/divination/NMapPointMarkerIconPatch.cs` | 节点视觉：sparkle + 连接线 + 旋转图标 + **数字角标** + **失效切逆图** + 总览 |
 | `Patch/divination/EliteDivinationPowerPatch.cs` | `Hook.BeforeCombatStart` → 战车/力量/隐者给**敌人**挂 Power |
 | `Data/divination/EliteDivinationSharedState.cs` | 战车/力量**房间级共享计数**（CWT 按 ICombatState，战斗结束回收） |
 | `Patch/divination/NormalDivinationPowerPatch.cs` | `Hook.BeforeCombatStart` → 正义/倒吊人/死神给**玩家**挂 Power |
+| `Patch/divination/TarWheelOfFortuneDivinationPatch.cs` | 命运之轮开局遗物、每四战移除最早合格遗物及遗物栏警告视觉 |
 | `Patch/divination/AfterCombatVictoryTarotRewardPatch.cs` | `Hook.AfterCombatVictory` Postfix → `OnMarkedCombatVictory` 发放塔罗奖励 |
 | `Patch/divination/RewardFromSerializableTarotPatch.cs` | `Reward.FromSerializable` Prefix 重建 TarotReward（读档） |
 | `src/Core/Models/Powers/Tar*ReversedPower.cs` | 战车/力量/正义/倒吊人/死神的战斗 Power |
-| `src/Core/Models/Afflictions/Tar*ReversedAffliction.cs` | 正义/倒吊人/死神的侵蚀标记（纯标记，无逻辑） |
+| `Data/divination/NormalDivinationTurnState.cs` | 从同步战斗历史推导正义/倒吊人本回合是否触发，不保存私有回合状态 |
 | `Data/tarotcard/TarotReward.cs` | 自定义奖励栏类型（动态 RewardType + 三选一） |
 | `Data/tarotcard/TarotEffectExecutor.cs` | 塔罗效果执行公共工具（商店与奖励共用） |
-| `Patch/enchantments/HandCardHolder_DivinationIconPatch.cs` | 手牌右上角侵蚀逆图标 + `NHandCardHolder.get_ShouldGlowRed` 红提示 |
+| `Patch/enchantments/HandCardHolder_DivinationIconPatch.cs` | 从 Power/战斗历史派生手牌右上角逆图标 + 死神红提示 |
 | `Patch/enchantments/PowerIconPath_Patch.cs` | Power 图标映射（逆塔罗附魔图标） |
 
 ## 标记系统（TarotMarkerSystem）
@@ -50,6 +85,7 @@ PengoTarot 的「占卜」难度开关体系：在地图上**标记房间**（Ta
   - `IsFlagEnabled`（= GetTarFlag && !Expired）/ `IsExpired` / `GetMarkedCoords` / `RecordCompletion` / `Expire`
 - **发放**：`OnMarkedCombatVictory(coord, room, players)` → 对每个标记占卜 `CompletedCount++` → 精英类完成 `RewardInterval`(2) 个发 1 次 + `Expire`；普通类每完成 `RewardInterval` 个发 1 次（`RewardsAwarded` 防重复，持久化）。`RewardInterval=2` 常量（发放与角标共用）
 - **持久化**：markers 并入 `_pengotarot_cfw.markers`（含 `RewardsAwarded`）
+- **多人权威同步（2026-08-25）**：开局/多人读档由 `ConfigFloatingWindowDataMessage.markerStateJson` 携带完整标记状态；局内生成地图和战斗胜利后由主机发送 `TarotMarkerStateMessage`，客户端只接受 `HostNetId` 的可靠快照。固定种子仅作为消息到达前的显示兜底，不能替代状态同步。
   - **防御性补标已移除（2026-08-08）**：原 `TarotMarkerSystem.TryRemarker` + 新文件 `Patch/divination/AfterCombatRemarkerPatch.cs`（挂 `Hook.AfterCombatVictory` Postfix）已删除——实测无效果且对游戏进程破坏性严重（每次战斗胜利后做地图检查/重标，风险大于收益）。回档丢标记改由「读档恢复 `_pengotarot_cfw.markers`」与 configFW 存档注入自愈（`RunSaveInjectPatch` 无字段时从 JSON 快照恢复）兜底。**勿重新引入「房间完成后检查/重标」逻辑**
 ## 塔罗奖励（TarotReward）
 
@@ -67,15 +103,16 @@ PengoTarot 的「占卜」难度开关体系：在地图上**标记房间**（Ta
 | 战车(7) | 精英敌人 `TarChariotReversedPower` | 敌人对玩家造成**首次**未格挡伤害 → 玩家获得 `VulnerablePower` 1 层（**房间级共享**：所有敌人共享每玩家一次，全玩家触发后移除所有敌人身上 power） |
 | 力量(8) | 精英敌人 `TarStrengthReversedPower` | 同上 → `WeakPower` 1 层（房间级共享） |
 | 隐者(9) | 敌人 `PlatingPower`（游戏自带，无自定义 power） | Amount=MaxHp×10%，自带第 1 回合格挡（**青蛙骑士同款**） |
-| 正义(11) | 玩家 `TarJusticeReversedPower` | **每回合第一张**攻击牌打出后 `CardCmd.Exhaust`；触发后清除其余攻击牌侵蚀（图标消失），`AfterPlayerTurnStart` 重置+重新标记 |
+| 正义(11) | 玩家 `TarJusticeReversedPower` | **每回合第一张**攻击牌打出后 `CardCmd.Exhaust`；是否触发由 `CardPlaysStarted` 历史推导 |
 | 倒吊人(12) | 玩家 `TarHangedManReversedPower` | 同上，技能牌 |
 | 死神(13) | 玩家 `TarDeathReversedPower` | 打出能力牌 → `PlayerCmd.EndTurn(canBackOut:false)`（参照 VoidForm） |
 
-- **Power 通用**：`Type=Buff`（精英，对敌方正面）/`Debuff`（玩家）、`StackType=Single`（不可堆叠）、`ExtraHoverTips` 额外显示关键词（战车/力量→Vulnerable/Weak，正义/倒吊人→Exhaust）
+- **Power 类型**：精英 Power 为 `Type=Buff`；正义/倒吊人/死神是内部状态，`Type=None` + `IsVisibleInternal=false`，不显示且不参与按 Buff/Debuff 分类的 Power 互动；均为 `StackType=Single`
 - **战车/力量房间级共享**（`Data/divination/EliteDivinationSharedState.cs`）：所有敌人共享每玩家一次的触发计数（`ConditionalWeakTable<ICombatState, HashSet<ulong>>`，战斗结束自动回收）；某玩家已触发后其他敌人再打不再触发；**所有玩家都触发过后** → 遍历 `combat.Enemies` 逐个 `PowerCmd.Remove<T>` 移除敌人身上的该 power
-- **挂载**：两个 `BeforeCombatStart` patch（`EliteDivinationPowerPatch` 敌人、`NormalDivinationPowerPatch` 玩家），`ThrowingPlayerChoiceContext` + `async void`（防死锁）；`GetMarkedFlagsAt(coord)` 判断（未失效才生效）
-- **侵蚀 Affliction**（正义/倒吊人/死神）：`Tar*ReversedAffliction` **纯标记**（`CanAfflictCardType` 限制类型、无逻辑、**不提供 overlay** → 卡牌 UI 走默认 overlay，无缺特效报错）；效果逻辑在 Power（AfterCardPlayed）
-- **手牌视觉**：`HandCardHolder_DivinationIconPatch` 在右上角显示正义/倒吊人/死神**逆附魔图标**（`AfflictionChanged`→`Flash` 刷新）；死神标记卡牌 `NHandCardHolder.get_ShouldGlowRed` → 打出提示变红（替换默认蓝色 `playableColor`）
+- **挂载**：两个 `BeforeCombatStart` patch（`EliteDivinationPowerPatch` 敌人、`NormalDivinationPowerPatch` 玩家）以 Harmony `ref Task __result` 包装原任务，并把 Power 应用接入同一可等待链；严禁 `async void` 跨过首回合 checksum。应用前 `GetPower<T>() == null`，重复执行幂等；`GetMarkedFlagsAt(coord)` 判断（未失效才生效）
+- **不占用 Affliction**（正义/倒吊人/死神）：效果与视觉均从玩家 Power、牌类型和确定性战斗历史派生，避免覆盖/阻塞原版侵蚀；不得重新用卡牌唯一的 `Affliction` 槽充当视觉标记
+- **手牌视觉**：`HandCardHolder_DivinationIconPatch` 在 `_Ready`、`UpdateCard`、`SetIndexLabel`、`Flash` 时从上述状态派生正义/倒吊人/死神**逆附魔图标**；不得 patch 未声明的 `NHandCardHolder._Process`；死神能力牌 `NHandCardHolder.get_ShouldGlowRed` → 打出提示变红（替换默认蓝色 `playableColor`）
+- **命运之轮遗物警告计时器**：`NRelicInventory._Ready` 必须先检查 `IsEnabled()`，关闭选项时不得创建任何节点；Timer 不得作为 `NRelicInventory` 的直接子节点，原版 `GetBottomOfInventory` 假定直接子节点均为 `Control`，加入 `Timer` 会在多人 UI 定位时抛 `InvalidCastException`。当前计时器挂在场景树 Root，并随 inventory `TreeExiting` 停止、释放；四战周期内图标闪烁峰值依次为 10%/20%/30%/40%
 
 ## 节点视觉（NMapPointMarkerIconPatch）— 踩坑大全
 
@@ -106,7 +143,6 @@ PengoTarot 的「占卜」难度开关体系：在地图上**标记房间**（Ta
 ## 本地化
 
 - **powers 表**（`local/LocHelper*.cs` 4 语言）：`TAR_<NAME>_REVERSED_POWER` 的 title/description/smartDescription（战车/力量=「首次」、正义/倒吊人=「每回合第一张被消耗」、死神=「能力牌结束回合」）
-- **afflictions 表**：`TAR_<NAME>_REVERSED_AFFLICTION` 的 title/description/extraCardText（死神 extraCardText 对齐 VoidForm「结束你的回合。」）
 - **开关描述**（`configFW/Scripts/ConfigFloatingWindowLoc.cs` `BAL_CFW_FLAG_*_DESC` 4 语言）：恋人=所有精英敌人房间共享塔罗标记（已去「开启后」与具体标记名）、关键词 gold（易伤/虚弱/覆甲/格挡/消耗/能力牌/结束你的回合/塔罗包/Tarot packs/タロットパック/타로 팩）、**所有阿拉伯数字 `[blue]`**（含 `{Count}` 占位符、`10%`、`175~200` 等；中文数词「一次」、日文「一回」、韩文「한 번」等「获得一次」类量词用文字不标）、全句号、保留「开发中」标记；普通类已删「（前3层不出现）」
 - **动态 hovertip 文本（2026-08-06）**：`ConfigFloatingWindowLoc` 的 `IsMarkedDivination`(7/8/9/11/12/13) / `IsEliteDivination`(7/8/9) / `BuildSettingsDescription`(设置界面底部 hint：标记类游戏内追加 `BAL_CFW_PROGRESS_LINE`「当前已完成{Count}。」或精英已完成≥`TarotMarkerSystem.RewardInterval`(2) 时换 `BAL_CFW_EXPIRED_LINE`「已失效。」，非游戏状态 `!RunManager.Instance.IsInProgress` 不显示动态行) / `BuildMapDescriptionKey`(地图 hovertip：精英三态 `BAL_CFW_MAP_<NAME>_0/_1/_EXP` 按 `GetCompletedCount` 0/1/≥2、普通两态 `_0/_1` 按 `GetProgressForDisplay`(重置计数 %2))；接入点：`NConfigFloatingWindow.AddHover`→`FlagHintText`、`NMapPointMarkerIconPatch.ShowIconTip`；动态值用 LocString `{Count}` 占位符 + `Add("Count", n)` 每次 hover 重新求值（游戏原版机制：HoverTip.Description 是固定 string，动态 = 重建 tip，无每帧刷新）
 - **地图 hovertip 词条 tip（2026-08-06）**：`NMapPointMarkerIconPatch.ExtraTipsForFlag` 在动态描述后追加词条 hovertip 堆叠显示——战车→`HoverTipFactory.FromPower<VulnerablePower>()`、力量→`WeakPower`、隐者→`PlatingPower`、正义/倒吊人→`FromKeyword(CardKeyword.Exhaust)`；多 tip 用 `CreateAndShow(icon, IEnumerable<IHoverTip>)` + `TipsWithExtras`；地图奖励句统一「完成下一场战斗后」（`BAL_CFW_MAP_*_1`，4 语言）
@@ -118,11 +154,12 @@ PengoTarot 的「占卜」难度开关体系：在地图上**标记房间**（Ta
 - `CardSelectCmd` 在 `MegaCrit.Sts2.Core.Commands`（勿漏 using）
 - `LocalContext` 在两版本都在 `MegaCrit.Sts2.Core.Context`（不是 GameActions.Multiplayer）
 - `CardModel.AddKeyword/RemoveKeyword` 两版本存在；`AfterPlayerTurnStart(PlayerChoiceContext, Player)` 存在
-- 改跨版本代码核对 `STS2v0.107`/`STS2v0.110` 源码
+- 改跨版本代码核对 `STS2v0.107`/`STS2v0.111` 源码
 
 ## 已完成 / 待办
 
-- ✅ 6 个标记占卜战斗效果 + 塔罗奖励 + 数字角标 + 失效逆图 + 跨幕保留 + 恋人放大器 + 命运之轮移除
+- ✅ 6 个标记占卜战斗效果 + 塔罗奖励 + 数字角标 + 失效逆图 + 跨幕保留 + 恋人放大器
+- ✅ 命运之轮独立机制：开局获得两件普通/罕见遗物，每四场战斗移除最早的合格遗物，并显示目标警告
 - ⏳ 非标记占卜（恶魔 15/星星 17/月亮 18/太阳 19/审判 20/世界 21）仍为「开发中」未实现
-- ⏳ 塔罗奖励多人发放深度：目前按「拥有者执行 + ForceSync」（基础版），RewardsSetSynchronizer 深度集成后续迭代
+- ✅ 塔罗奖励选择由 `RewardsSetSynchronizer` 回放；立即效果仅 `LocalContext.IsMe(Player)` 的拥有者端执行并 ForceSync，远端不得以自身 senderId 发送他人状态
 

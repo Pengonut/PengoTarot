@@ -550,20 +550,6 @@ namespace PengoTarot
                 { "TICK_TACK_POWER.smartDescription", "After [blue]{Amount}[/blue] seconds, [red]your turn is forced to end[/red]." },
             });
 
-            var afflictionsTable = loc.GetTable("afflictions");
-            afflictionsTable.MergeWith(new Dictionary<string, string>
-            {
-                { "TAR_JUSTICE_REVERSED_AFFLICTION.title", "Justice - Reversed" },
-                { "TAR_JUSTICE_REVERSED_AFFLICTION.description", "The first Attack you play each turn is [gold]Exhausted[/gold]." },
-
-                { "TAR_HANGED_MAN_REVERSED_AFFLICTION.title", "Hanged Man - Reversed" },
-                { "TAR_HANGED_MAN_REVERSED_AFFLICTION.description", "The first Skill you play each turn is [gold]Exhausted[/gold]." },
-
-                { "TAR_DEATH_REVERSED_AFFLICTION.title", "Death - Reversed" },
-                { "TAR_DEATH_REVERSED_AFFLICTION.description", "Ends your turn immediately when played." },
-                { "TAR_DEATH_REVERSED_AFFLICTION.extraCardText", "End your turn." },
-            });
-
             var gameplayUiTable = loc.GetTable("gameplay_ui");
             gameplayUiTable.MergeWith(new Dictionary<string, string>
             {

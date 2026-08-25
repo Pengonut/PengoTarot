@@ -26,6 +26,8 @@ namespace PengoTarot.ConfigFW
         private static int _tarotPriceMax = 200;
         /// <summary>塔罗包整体价格偏移（本局动态累计：塔罗包默认购买后 +50，女祭司购买后 -50 抵消）。</summary>
         private static int _tarotPriceOffset;
+        /// <summary>命运之轮占卜累计完成的战斗数。</summary>
+        private static int _wheelOfFortuneCombatCount;
         private static readonly bool[] _flags = CreateDefaultFlags();
 
         static ConfigFloatingWindowRunData()
@@ -54,6 +56,7 @@ namespace PengoTarot.ConfigFW
         public static int TarotPriceMin => _tarotPriceMin;
         public static int TarotPriceMax => _tarotPriceMax;
         public static int TarotPriceOffset => _tarotPriceOffset;
+        public static int WheelOfFortuneCombatCount => _wheelOfFortuneCombatCount;
 
         public static bool GetTarFlag(int index)
             // 塔罗总开关未启用时，右侧全部难度（含愚者）不生效
@@ -69,6 +72,7 @@ namespace PengoTarot.ConfigFW
             _tarotPriceMax = Math.Max(0, ConfigFloatingWindowConfig.TarotBasePriceMax);
             // 新局从基础价开始，避免上一局购买偏移（默认+50 / 女祭司-50）残留污染
             _tarotPriceOffset = 0;
+            _wheelOfFortuneCombatCount = 0;
             for (int i = 0; i < _flags.Length; i++)
                 _flags[i] = ConfigFloatingWindowConfig.GetDifficultyFlag(i);
             // 占卜标记：新局起点清空
@@ -83,6 +87,7 @@ namespace PengoTarot.ConfigFW
             _tarotPriceMin = 175;
             _tarotPriceMax = 200;
             _tarotPriceOffset = 0;
+            _wheelOfFortuneCombatCount = 0;
             Array.Clear(_flags);
             // 愚者~教皇 6 项默认开启
             for (int i = 0; i < ConfigFloatingWindowConfig.DefaultEnabledFlagCount && i < _flags.Length; i++)
@@ -100,6 +105,7 @@ namespace PengoTarot.ConfigFW
             _tarotPriceMax = Math.Max(0, priceMax);
             // 配置分发发生在选人界面/新局阶段，购买偏移归零，避免客机跨局残留
             _tarotPriceOffset = 0;
+            _wheelOfFortuneCombatCount = 0;
             if (flags != null)
             {
                 for (int i = 0; i < _flags.Length; i++)
@@ -114,6 +120,14 @@ namespace PengoTarot.ConfigFW
         {
             _tarotPriceOffset += delta;
         }
+
+        /// <summary>记录命运之轮的一场战斗胜利，并返回新的累计数。</summary>
+        public static int RecordWheelOfFortuneCombat()
+            => ++_wheelOfFortuneCombatCount;
+
+        /// <summary>应用主机同步的命运之轮战斗计数。</summary>
+        public static void SetWheelOfFortuneCombatCount(int count)
+            => _wheelOfFortuneCombatCount = Math.Max(0, count);
 
         // ── 选人界面编辑（同时写 JSON 默认值 + 广播） ───────────
         public static void SetTarotEnabled(bool value) => _tarotEnabled = value;
@@ -168,6 +182,7 @@ namespace PengoTarot.ConfigFW
                 ["run"] = new JsonObject
                 {
                     ["poff"] = _tarotPriceOffset,
+                    ["wheelCombats"] = _wheelOfFortuneCombatCount,
                     ["markers"] = TarotMarkerSystem.ToJson(),
                 },
             };
@@ -196,6 +211,7 @@ namespace PengoTarot.ConfigFW
                 if (obj["run"] is JsonObject run)
                 {
                     _tarotPriceOffset = TryGet(run["poff"], 0);
+                    _wheelOfFortuneCombatCount = Math.Max(0, TryGet(run["wheelCombats"], 0));
                     TarotMarkerSystem.FromJson(run["markers"] as JsonObject);
                 }
                 return;
@@ -206,6 +222,7 @@ namespace PengoTarot.ConfigFW
             _tarotPriceMin = Math.Max(0, TryGet(obj["pmin"], 175));
             _tarotPriceMax = Math.Max(0, TryGet(obj["pmax"], 200));
             _tarotPriceOffset = TryGet(obj["poff"], 0);
+            _wheelOfFortuneCombatCount = Math.Max(0, TryGet(obj["wheelCombats"], 0));
             if (obj["flags"] is JsonArray legacyFlags)
             {
                 for (int i = 0; i < _flags.Length; i++)

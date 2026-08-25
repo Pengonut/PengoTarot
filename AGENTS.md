@@ -47,6 +47,7 @@
 - **本地化**：通过 Harmony 补丁 `LocManager.GetTable` 按语言注入（`zhs` / `jpn` / `kor` / 其他→英语）。新增文案需同步更新各 `LocHelper_<Lang>.cs`。
 - **多人同步**：改卡牌/附魔运行逻辑时需评估 `network/` 同步。`pack.ps1` 会在版本号加构建时间戳哈希，防止 DLL 不一致导致联机 desync。
 - **Harmony 惯例**：`[HarmonyPatch]` + 静态嵌套类 + 静态 `Prefix` / `Postfix` / `Transpiler`。私有字段用 `Traverse` 访问，无需 Publicizer（参考 `Patch/hover/` 的 RandomForeseer 模式：Prefix+Postfix+ConditionalWeakTable）。
+- **Changelog**：完成任何用户可感知的新功能、修复或行为调整后，必须主动更新 `CHANGELOG.json` 的当前未发布版本；纯重构、注释或内部维护且不改变用户体验的改动无需记录。不要等用户提醒，也不要擅自创建新版本号。
 
 ## 参考源码（只读，勿改）
 

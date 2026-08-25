@@ -2,6 +2,7 @@
 
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Commands;
@@ -61,7 +62,7 @@ public static class AscendersBaneTowerPatch
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // Patch 2: 修改卡牌描述文本 —— 移除 Unplayable + 追加「消耗时消耗所有手牌」
+    // Patch 2: 修改卡牌描述文本 —— 追加「消耗时消耗所有手牌」
     // 目标：public string GetDescriptionForPile(PileType, Creature?)
     // ═══════════════════════════════════════════════════════════════
 
@@ -70,21 +71,9 @@ public static class AscendersBaneTowerPatch
     public static class CardModel_GetDescriptionForPile_TowerPatch
     {
         /// <summary>
-        /// 生成描述前，对可变实例用原版 API 移除 Unplayable 词条（幂等）。
-        /// 这样描述（及 HoverTip）自动不含「不可打出」。
-        /// canonical 实例不可变会抛异常，跳过（仅处理战斗中/牌组查看的 mutable 实例）。
+        /// 描述只追加高塔说明，不得修改卡牌模型。旧实现曾在此移除 Unplayable，
+        /// 导致「看过牌面的一端」与「未渲染牌面的一端」关键词集合不同。
         /// </summary>
-        [HarmonyPrefix]
-        static void Prefix(CardModel __instance)
-        {
-            if (__instance is not AscendersBane || !ShouldApply())
-                return;
-            if (!__instance.IsMutable)
-                return;
-
-            __instance.RemoveKeyword(CardKeyword.Unplayable);
-        }
-
         [HarmonyPostfix]
         static void Postfix(CardModel __instance, ref string __result)
         {
@@ -100,6 +89,29 @@ public static class AscendersBaneTowerPatch
             {
                 __result += "\n" + extraText;
             }
+        }
+    }
+
+    /// <summary>
+    /// 真正的可打出裁决重载。保留 canonical Unplayable 关键词，使所有 peer 的模型/序列化一致，
+    /// 只在规则裁决结果中清除该原因；费用 -1 的资源限制也由高塔规则一并放行。
+    /// </summary>
+    [HarmonyPatch]
+    public static class CardModel_CanPlayReason_TowerPatch
+    {
+        static MethodBase TargetMethod() => AccessTools.Method(typeof(CardModel), "CanPlay",
+            new[] { typeof(UnplayableReason).MakeByRefType(), typeof(AbstractModel).MakeByRefType() });
+
+        [HarmonyPostfix]
+        static void Postfix(CardModel __instance, ref bool __result,
+            ref UnplayableReason reason, ref AbstractModel? preventer)
+        {
+            if (__instance is not AscendersBane || !ShouldApply())
+                return;
+
+            reason = UnplayableReason.None;
+            preventer = null;
+            __result = true;
         }
     }
 

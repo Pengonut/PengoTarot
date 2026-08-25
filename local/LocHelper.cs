@@ -512,20 +512,6 @@ namespace PengoTarot
                 { "TICK_TACK_POWER.smartDescription", "[blue]{Amount}[/blue]秒后，[red]强制结束你的回合[/red]。" },
             });
 
-            var afflictionsTable = loc.GetTable("afflictions");
-            afflictionsTable.MergeWith(new Dictionary<string, string>
-            {
-                { "TAR_JUSTICE_REVERSED_AFFLICTION.title", "正义-逆" },
-                { "TAR_JUSTICE_REVERSED_AFFLICTION.description", "每回合打出的第一张攻击牌被[gold]消耗[/gold]。" },
-
-                { "TAR_HANGED_MAN_REVERSED_AFFLICTION.title", "倒吊人-逆" },
-                { "TAR_HANGED_MAN_REVERSED_AFFLICTION.description", "每回合打出的第一张技能牌被[gold]消耗[/gold]。" },
-
-                { "TAR_DEATH_REVERSED_AFFLICTION.title", "死神-逆" },
-                { "TAR_DEATH_REVERSED_AFFLICTION.description", "打出后立即结束你的回合。" },
-                { "TAR_DEATH_REVERSED_AFFLICTION.extraCardText", "结束你的回合。" },
-            });
-
             var gameplayUiTable = loc.GetTable("gameplay_ui");
             gameplayUiTable.MergeWith(new Dictionary<string, string>
             {

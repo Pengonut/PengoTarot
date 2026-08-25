@@ -1,6 +1,7 @@
 #nullable enable
 
 using HarmonyLib;
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -14,8 +15,8 @@ namespace PengoTarot.Patches
 {
     /// <summary>
     /// 普通房间标记占卜的战斗效果（进入被标记普通房间的战斗时生效）：
-    /// - 正义(11)：给每个玩家挂 <see cref="TarJusticeReversedPower"/>（攻击牌获得侵蚀，打出后消耗）
-    /// - 倒吊人(12)：给每个玩家挂 <see cref="TarHangedManReversedPower"/>（技能牌获得侵蚀，打出后消耗）
+    /// - 正义(11)：给每个玩家挂 <see cref="TarJusticeReversedPower"/>（每回合第一张攻击牌打出后消耗）
+    /// - 倒吊人(12)：给每个玩家挂 <see cref="TarHangedManReversedPower"/>（每回合第一张技能牌打出后消耗）
     /// - 死神(13)：给每个玩家挂 <see cref="TarDeathReversedPower"/>（打出能力牌立即结束回合）
     ///
     /// 挂在 <see cref="Hook.BeforeCombatStart"/> Postfix：此时玩家已加入 combatState、战斗未开始，
@@ -31,8 +32,16 @@ namespace PengoTarot.Patches
         private const int DeathFlag = 13;
 
         [HarmonyPostfix]
-        static async void Postfix(IRunState runState, ICombatState? combatState)
+        static void Postfix(IRunState runState, ICombatState? combatState, ref Task __result)
         {
+            // 与原版 BeforeCombatStart 共用同一条可等待任务链，避免异步挂载跨过首回合校验。
+            __result = ApplyAfterOriginalAsync(__result, runState, combatState);
+        }
+
+        private static async Task ApplyAfterOriginalAsync(
+            Task originalTask, IRunState runState, ICombatState? combatState)
+        {
+            await originalTask;
             if (!RunManager.Instance.IsInProgress) return;
             if (combatState == null) return;
             if (runState.CurrentMapCoord is not { } coord) return;
@@ -49,11 +58,20 @@ namespace PengoTarot.Patches
             foreach (var player in combatState.Players)
             {
                 if (justice)
-                    await PowerCmd.Apply<TarJusticeReversedPower>(context, player.Creature, 1m, player.Creature, null);
+                {
+                    if (player.Creature.GetPower<TarJusticeReversedPower>() == null)
+                        await PowerCmd.Apply<TarJusticeReversedPower>(context, player.Creature, 1m, player.Creature, null);
+                }
                 if (hanged)
-                    await PowerCmd.Apply<TarHangedManReversedPower>(context, player.Creature, 1m, player.Creature, null);
+                {
+                    if (player.Creature.GetPower<TarHangedManReversedPower>() == null)
+                        await PowerCmd.Apply<TarHangedManReversedPower>(context, player.Creature, 1m, player.Creature, null);
+                }
                 if (death)
-                    await PowerCmd.Apply<TarDeathReversedPower>(context, player.Creature, 1m, player.Creature, null);
+                {
+                    if (player.Creature.GetPower<TarDeathReversedPower>() == null)
+                        await PowerCmd.Apply<TarDeathReversedPower>(context, player.Creature, 1m, player.Creature, null);
+                }
             }
         }
     }

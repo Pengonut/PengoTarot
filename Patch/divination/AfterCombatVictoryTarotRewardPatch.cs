@@ -26,6 +26,8 @@ namespace PengoTarot.Patches
 
             var players = runState.Players.ToList();
             TarotMarkerSystem.OnMarkedCombatVictory(coord, runState.CurrentActIndex, room, players);
+            // 完成数、奖励次数和失效状态由主机快照收敛；客户端调用不会反向广播。
+            ModInitializer.TarotSync?.BroadcastMarkerState();
         }
     }
 }

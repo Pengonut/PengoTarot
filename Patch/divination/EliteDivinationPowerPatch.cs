@@ -1,6 +1,7 @@
 #nullable enable
 
 using HarmonyLib;
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -35,8 +36,17 @@ namespace PengoTarot.Patches
         private const decimal HermitPlatingRatio = 0.1m;
 
         [HarmonyPostfix]
-        static async void Postfix(IRunState runState, ICombatState? combatState)
+        static void Postfix(IRunState runState, ICombatState? combatState, ref Task __result)
         {
+            // Hook.BeforeCombatStart 本身会被 CombatManager await。把附加逻辑并入返回 Task，
+            // 保证双方都在首回合/首次 checksum 前完成 Power 挂载；禁止 async void 越过同步边界。
+            __result = ApplyAfterOriginalAsync(__result, runState, combatState);
+        }
+
+        private static async Task ApplyAfterOriginalAsync(
+            Task originalTask, IRunState runState, ICombatState? combatState)
+        {
+            await originalTask;
             if (!RunManager.Instance.IsInProgress) return;
             if (combatState == null) return;
             if (runState.CurrentMapCoord is not { } coord) return;
@@ -53,12 +63,21 @@ namespace PengoTarot.Patches
             foreach (var enemy in combatState.Enemies)
             {
                 if (chariot)
-                    await PowerCmd.Apply<TarChariotReversedPower>(context, enemy, 1m, enemy, null);
+                {
+                    if (enemy.GetPower<TarChariotReversedPower>() == null)
+                        await PowerCmd.Apply<TarChariotReversedPower>(context, enemy, 1m, enemy, null);
+                }
                 if (strength)
-                    await PowerCmd.Apply<TarStrengthReversedPower>(context, enemy, 1m, enemy, null);
+                {
+                    if (enemy.GetPower<TarStrengthReversedPower>() == null)
+                        await PowerCmd.Apply<TarStrengthReversedPower>(context, enemy, 1m, enemy, null);
+                }
                 if (hermit)
-                    await PowerCmd.Apply<TarHermitReversedPower>(
-                        context, enemy, decimal.Round(enemy.MaxHp * HermitPlatingRatio), enemy, null);
+                {
+                    if (enemy.GetPower<TarHermitReversedPower>() == null)
+                        await PowerCmd.Apply<TarHermitReversedPower>(
+                            context, enemy, decimal.Round(enemy.MaxHp * HermitPlatingRatio), enemy, null);
+                }
             }
         }
     }

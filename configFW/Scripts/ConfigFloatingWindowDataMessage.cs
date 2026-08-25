@@ -3,6 +3,8 @@
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Multiplayer.Serialization;
 using MegaCrit.Sts2.Core.Multiplayer.Transport;
+using System.Text.Json.Nodes;
+using PengoTarot.Data.Divination;
 
 namespace PengoTarot.ConfigFW
 {
@@ -18,7 +20,10 @@ namespace PengoTarot.ConfigFW
         public bool planet;
         public int priceMin;
         public int priceMax;
+        public int wheelCombatCount;
         public bool[] flags;
+        /// <summary>多人读档/开局前分发的标记完整快照。</summary>
+        public string markerStateJson;
 
         public bool ShouldBroadcast => true;
         public NetTransferMode Mode => NetTransferMode.Reliable;
@@ -32,10 +37,12 @@ namespace PengoTarot.ConfigFW
             writer.WriteBool(planet);
             writer.WriteInt(priceMin);
             writer.WriteInt(priceMax);
+            writer.WriteInt(wheelCombatCount);
             int count = flags?.Length ?? 0;
             writer.WriteInt(count, 8);
             for (int i = 0; i < count; i++)
                 writer.WriteBool(flags![i]);
+            writer.WriteString(markerStateJson ?? "{}");
         }
 
         public void Deserialize(PacketReader reader)
@@ -45,10 +52,12 @@ namespace PengoTarot.ConfigFW
             planet = reader.ReadBool();
             priceMin = reader.ReadInt();
             priceMax = reader.ReadInt();
+            wheelCombatCount = reader.ReadInt();
             int count = reader.ReadInt(8);
             flags = new bool[count];
             for (int i = 0; i < count; i++)
                 flags[i] = reader.ReadBool();
+            markerStateJson = reader.ReadString();
         }
 
         /// <summary>从运行时配置构建。</summary>
@@ -65,7 +74,9 @@ namespace PengoTarot.ConfigFW
                 planet = ConfigFloatingWindowRunData.PlanetEnabled,
                 priceMin = ConfigFloatingWindowRunData.TarotPriceMin,
                 priceMax = ConfigFloatingWindowRunData.TarotPriceMax,
+                wheelCombatCount = ConfigFloatingWindowRunData.WheelOfFortuneCombatCount,
                 flags = flags,
+                markerStateJson = TarotMarkerSystem.ToJson().ToJsonString(),
             };
         }
 
@@ -73,6 +84,15 @@ namespace PengoTarot.ConfigFW
         public void ApplyToRunData()
         {
             ConfigFloatingWindowRunData.Apply(tarot, planet, priceMin, priceMax, flags);
+            ConfigFloatingWindowRunData.SetWheelOfFortuneCombatCount(wheelCombatCount);
+            try
+            {
+                TarotMarkerSystem.FromJson(JsonNode.Parse(markerStateJson) as JsonObject);
+            }
+            catch
+            {
+                // 配置仍可应用；标记状态等待局内主机快照覆盖。
+            }
         }
     }
 }

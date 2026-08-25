@@ -529,20 +529,6 @@ namespace PengoTarot
                 { "TICK_TACK_POWER.smartDescription", "[blue]{Amount}[/blue]초 후, [red]턴이 강제 종료됩니다[/red]." },
             });
 
-            var afflictionsTable = loc.GetTable("afflictions");
-            afflictionsTable.MergeWith(new Dictionary<string, string>
-            {
-                { "TAR_JUSTICE_REVERSED_AFFLICTION.title", "정의 - 역방향" },
-                { "TAR_JUSTICE_REVERSED_AFFLICTION.description", "매 턴 처음 사용하는 공격 카드가 [gold]소멸[/gold]됩니다." },
-
-                { "TAR_HANGED_MAN_REVERSED_AFFLICTION.title", "매달린 남자 - 역방향" },
-                { "TAR_HANGED_MAN_REVERSED_AFFLICTION.description", "매 턴 처음 사용하는 스킬 카드가 [gold]소멸[/gold]됩니다." },
-
-                { "TAR_DEATH_REVERSED_AFFLICTION.title", "죽음 - 역방향" },
-                { "TAR_DEATH_REVERSED_AFFLICTION.description", "사용 후 즉시 턴을 종료합니다." },
-                { "TAR_DEATH_REVERSED_AFFLICTION.extraCardText", "내 턴을 종료합니다." },
-            });
-
             var gameplayUiTable = loc.GetTable("gameplay_ui");
             gameplayUiTable.MergeWith(new Dictionary<string, string>
             {

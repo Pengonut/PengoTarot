@@ -228,6 +228,9 @@ namespace PengoTarot.Data.Divination
                 st.ActIndex = actIndex;
                 st.Coords = PickCoords(map, actIndex, cfg);
             }
+
+            // 生成/换幕后由主机发布最终坐标；客户端的本地确定性结果只作为消息到达前的显示兜底。
+            ModInitializer.TarotSync?.BroadcastMarkerState();
         }
 
         private static List<MapCoord> PickCoords(ActMap map, int actIndex, MarkerConfig cfg)

@@ -1,5 +1,5 @@
 {
-  "current_version": "v1.4.13",
+  "current_version": "v1.4.15",
   "versions": {
     "v1.4.10": {
       "released": "2026-08-14",
@@ -31,11 +31,34 @@
       ]
     },
     "v1.4.13": {
-      "released": null,
+      "released": "2026-08-24",
       "changes": [
         "made Minty rest HP preview account for the Devil uncapped heal",
         "included Downfall gem socket overlay in 3D tilt",
-        "kept Runesmith2 EnhanceTabContainer out of 3D tilt to avoid reparent conflict"
+        "kept Runesmith2 EnhanceTabContainer out of 3D tilt to avoid reparent conflict",
+        "fixed stale divination icon event handlers crashing combat after hand card holders were freed"
+      ]
+    },
+    "v1.4.14": {
+      "released": "2026-08-25",
+      "changes": [
+        "fixed multiplayer state divergence when marked-room reversed Powers were applied before combat",
+        "added host-authoritative synchronization for divination marker coordinates, progress, rewards, and expiration",
+        "fixed multiplayer run loading not restoring divination marker state on clients",
+        "fixed remote tarot reward playback potentially syncing state to the wrong player",
+        "fixed viewing Ascenders Bane mutating its gameplay state and causing multiplayer divergence",
+        "reworked Justice, Hanged Man, and Death markers as hidden internal Powers to avoid native Affliction conflicts, Power interactions, and reconnect desyncs",
+        "implemented the Wheel of Fortune divination: gain two random Common or Uncommon relics at run start, then lose the oldest eligible relic after every four combats",
+        "added a fly-out animation when relics are removed from the local relic inventory",
+        "added a same-layer flashing warning below the next relic targeted by Wheel of Fortune, with an urgent red relic flash before the fourth combat",
+        "added a live Wheel of Fortune config hint showing the next relic to be removed and the number of combats remaining"
+      ]
+    },
+    "v1.4.15": {
+      "released": null,
+      "changes": [
+        "fixed the Wheel of Fortune warning timer being created while the option was disabled and breaking multiplayer relic inventory layout and pause menu positioning",
+        "reduced the Wheel of Fortune relic warning icon opacity to progressively cap at 10%, 20%, 30%, and 40%"
       ]
     }
   }

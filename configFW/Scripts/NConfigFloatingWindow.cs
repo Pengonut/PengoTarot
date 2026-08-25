@@ -527,7 +527,7 @@ namespace PengoTarot.ConfigFW
                 {
                     if (string.Equals(FlagNames[i], upper, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (ConfigFloatingWindowLoc.IsMarkedDivination(i))
+                        if (ConfigFloatingWindowLoc.HasDynamicSettingsDescription(i))
                             return ConfigFloatingWindowLoc.BuildSettingsDescription(i);
                         break;
                     }
