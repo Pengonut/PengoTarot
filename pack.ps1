@@ -11,7 +11,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 # ===== Mod metadata (bump this when releasing a new version) =====
-$ModVersion = "v1.4.14"
+$ModVersion = "v1.4.16"
 $ModAuthor = "Pengo"
 $ModDescription = "Adds 44 Tarot cards and 40 new enchantments.`nAuthor: Pengo | QQ: 3411737922"
 

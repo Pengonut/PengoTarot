@@ -1,5 +1,5 @@
 {
-  "current_version": "v1.4.15",
+  "current_version": "v1.4.16",
   "versions": {
     "v1.4.10": {
       "released": "2026-08-14",
@@ -55,11 +55,15 @@
       ]
     },
     "v1.4.15": {
-      "released": null,
+      "released": "2026-08-25",
       "changes": [
         "fixed the Wheel of Fortune warning timer being created while the option was disabled and breaking multiplayer relic inventory layout and pause menu positioning",
         "reduced the Wheel of Fortune relic warning icon opacity to progressively cap at 10%, 20%, 30%, and 40%"
       ]
+    },
+    "v1.4.16": {
+      "released": null,
+      "changes": []
     }
   }
 }
