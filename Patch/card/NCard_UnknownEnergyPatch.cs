@@ -12,12 +12,12 @@ namespace PengoTarot.Patch.Card
     /// <summary>
     /// 卡牌未遇到（未解锁）时，游戏会在左上角显示 "?" 能量图标
     /// （见 <see cref="NCard.UpdateEnergyCostVisuals"/> 的 Visibility != Visible 分支）。
-    /// 我们 mod 的塔罗牌 (TarCard) / 星球牌 (PlantCard) 基础能量为 -1（无能量消耗），
+    /// 我们 mod 的塔罗牌 (TarCard) / 星球牌 (PlanetCard) 基础能量为 -1（无能量消耗），
     /// 此时再显示 "?" 会误导玩家以为存在隐藏费用，因此对这类卡隐藏 "?" 能量显示。
     ///
     /// 生效条件（三者同时满足）：
     ///   - 卡牌处于未解锁状态（Visibility != ModelVisibility.Visible）
-    ///   - 卡牌来自本 mod（TarCard / PlantCard）
+    ///   - 卡牌来自本 mod（TarCard / PlanetCard）
     ///   - 卡牌基础能量 Canonical 为 -1
     ///
     /// 实现：隐藏 _energyIcon，并将 _energyLabel 文本置空（与游戏自身隐藏星费用
@@ -37,7 +37,7 @@ namespace PengoTarot.Patch.Card
                 if (__instance.Visibility == ModelVisibility.Visible) return;
 
                 var model = __instance.Model;
-                if (model is not (TarCard or PlantCard)) return;
+                if (model is not (TarCard or PlanetCard)) return;
                 if (model.EnergyCost.Canonical >= 0) return; // 基础能量不是 -1 的卡不处理
 
                 var energyIcon = Traverse.Create(__instance).Field("_energyIcon").GetValue<TextureRect>();

@@ -8,7 +8,7 @@ using PengoTarot.Enchantments;
 
 namespace PengoTarot.Cards;
 
-public sealed class PlanetJupiter : PlantCard
+public sealed class PlanetJupiter : PlanetCard
 {
     public PlanetJupiter() : base(CardType.Attack)
     {

@@ -8,12 +8,12 @@ using MegaCrit.Sts2.Core.Models;
 
 namespace PengoTarot.Cards
 {
-    public abstract class PlantCard : CardModel
+    public abstract class PlanetCard : CardModel
     {
         protected override int CanonicalEnergyCost => -1;
         public override IEnumerable<CardKeyword> CanonicalKeywords => Enumerable.Empty<CardKeyword>();
 
-        protected PlantCard(CardType type) : base(0, type, CardRarity.Ancient, TargetType.None)
+        protected PlanetCard(CardType type) : base(0, type, CardRarity.Ancient, TargetType.None)
         {
         }
 

@@ -55,7 +55,7 @@ namespace PengoTarot.Patch.VisualVanilla
                 : null;
             var cards = visibleCards?.ToList();
             bool allTarot = cards != null && cards.Count > 0 && cards.All(c => c is TarCard);
-            bool allPlanet = cards != null && cards.Count > 0 && cards.All(c => c is PlantCard);
+            bool allPlanet = cards != null && cards.Count > 0 && cards.All(c => c is PlanetCard);
             bool isModPool = allTarot || allPlanet;
 
             CurrentIsTarot = allTarot;

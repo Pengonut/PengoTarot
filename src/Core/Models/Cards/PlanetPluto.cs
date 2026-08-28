@@ -8,7 +8,7 @@ using PengoTarot.Enchantments;
 
 namespace PengoTarot.Cards;
 
-public sealed class PlanetPluto : PlantCard
+public sealed class PlanetPluto : PlanetCard
 {
     public PlanetPluto() : base(CardType.Skill)
     {

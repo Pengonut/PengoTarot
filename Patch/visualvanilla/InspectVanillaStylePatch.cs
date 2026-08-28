@@ -29,7 +29,7 @@ namespace PengoTarot.Patch.VisualVanilla
 
             var model = ____cards[index];
             bool isTarot = model is TarCard;
-            bool isPlanet = model is PlantCard;
+            bool isPlanet = model is PlanetCard;
             bool isModCard = isTarot || isPlanet;
             _currentIsTarot = isTarot;
             _currentIsPlanet = isPlanet;
@@ -117,7 +117,7 @@ namespace PengoTarot.Patch.VisualVanilla
         {
             if (node is NCard card && card.Model != null)
             {
-                bool match = isTarot ? card.Model is TarCard : card.Model is PlantCard;
+                bool match = isTarot ? card.Model is TarCard : card.Model is PlanetCard;
                 if (match)
                     card.UpdateVisuals(PileType.None, CardPreviewMode.Normal);
             }

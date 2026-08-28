@@ -21,7 +21,7 @@ namespace PengoTarot.Patch.Card;
 ///   - 逆位 (Reversed): 隐藏 TypePlaque, 灰底旋转 180° 移到上半,
 ///                       DescriptionLabel 移到上半靠下对齐
 ///   公共: 横幅+标题上移 9px + 左移 1px
-/// 星球牌 (PlantCard):   隐藏 TypePlaque, 灰底扩大+下移, 文本下移
+/// 星球牌 (PlanetCard):   隐藏 TypePlaque, 灰底扩大+下移, 文本下移
 ///
 /// Patches both Reload and UpdateVisuals: Reload handles initial setup,
 /// UpdateVisuals re-applies after layout (fixes pool reuse timing issues).
@@ -73,21 +73,21 @@ public static class NCard_VisualPatches
         if (model == null) return;
 
         // Always reset ZIndex to prevent pollution when a card transitions
-        // between TarCard/PlantCard and regular cards in the library grid.
+        // between TarCard/PlanetCard and regular cards in the library grid.
         // TODO: re-enable after fixing text layer issue in card library
         // ResetTextZIndex(__instance);
 
-        // Only touch TarCard / PlantCard — leave regular cards untouched
+        // Only touch TarCard / PlanetCard — leave regular cards untouched
         // to avoid overwriting other mods' layout changes.
         if (model is TarCard)
         {
             ResetPengoTarotVisuals(__instance);
             ApplyTarCard(__instance, model);
         }
-        else if (model is PlantCard)
+        else if (model is PlanetCard)
         {
             ResetPengoTarotVisuals(__instance);
-            ApplyPlantCard(__instance);
+            ApplyPlanetCard(__instance);
         }
     }
 
@@ -312,7 +312,7 @@ public static class NCard_VisualPatches
         // ApplyTextShadow(__instance);
     }
 
-    private static void ApplyPlantCard(NCard __instance)
+    private static void ApplyPlanetCard(NCard __instance)
     {
         bool isVanilla = VanillaStyleConfig.PlanetVanilla;
 
@@ -396,7 +396,7 @@ public static class NCard_VisualPatches
         if (desc != null) desc.ZIndex = z;
     }
 
-    /// <summary>White outline + shadow for DescriptionLabel on TarCard/PlantCard.</summary>
+    /// <summary>White outline + shadow for DescriptionLabel on TarCard/PlanetCard.</summary>
     private static void ApplyTextShadow(NCard __instance)
     {
         var descLabel = __instance.FindChild("DescriptionLabel", recursive: true, owned: false) as RichTextLabel;
@@ -418,7 +418,7 @@ public static class NCard_VisualPatches
         if (card == null || !GodotObject.IsInstanceValid(card) || card.Model == null) return;
 
         var model = card.Model;
-        if (model is TarCard || model is PlantCard)
+        if (model is TarCard || model is PlanetCard)
         {
             ResetPengoTarotVisuals(card);
         }
