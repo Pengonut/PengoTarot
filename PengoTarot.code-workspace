@@ -5,10 +5,6 @@
 			"path": "."
 		},
 		{
-			"name": "STS2-RitsuLib-0.4.62",
-			"path": "../[Download] Edge/STS2-RitsuLib-0.4.62"
-		},
-		{
 			"name": "[Tool] Godot",
 			"path": "../[Tool] Godot"
 		},
