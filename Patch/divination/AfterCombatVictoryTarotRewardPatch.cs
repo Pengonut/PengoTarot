@@ -4,6 +4,7 @@ using System.Linq;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Hooks;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using PengoTarot.Data.Divination;
@@ -24,10 +25,14 @@ namespace PengoTarot.Patches
             if (runState.CurrentMapCoord is not { } coord)
                 return;
 
+            Log.Info($"[PengoTarot] [DivinationReward] victory peer={RunManager.Instance.NetService.Type} " +
+                     $"act={runState.CurrentActIndex} coord={coord} room={room.RoomType}");
+
             var players = runState.Players.ToList();
             TarotMarkerSystem.OnMarkedCombatVictory(coord, runState.CurrentActIndex, room, players);
-            // 完成数、奖励次数和失效状态由主机快照收敛；客户端调用不会反向广播。
-            ModInitializer.TarotSync?.BroadcastMarkerState();
+            // 战斗胜利由所有 peer 确定性复现。此处若广播递增后的主机快照，
+            // 客机可能先应用快照、随后又执行本地 Postfix，导致同一场战斗计数两次。
+            // 主机快照只用于地图初始化、读档和重连等非战斗恢复路径。
         }
     }
 }

@@ -97,10 +97,10 @@ namespace PengoTarot.Data
             var selected = await ShowTarotSelection(player, canSkip: true);
             if (selected == null) return false;
 
-            if (goldCost > 0 && !ignoreCost)
-                await PlayerCmd.LoseGold(goldCost, player, GoldLossType.Spent);
-
-            await TarotEffectExecutor.ExecuteEffectAndEnchant(_pendingMap![selected], player, isLocalBuyer: true);
+            bool committed = await TarotEffectExecutor.ExecuteEffectAndEnchant(
+                _pendingMap![selected], player, isLocalBuyer: true,
+                onConfirmed: () => SpendGold(player, goldCost, ignoreCost));
+            if (!committed) return false;
 
             ClearPending();
             return true;
@@ -153,10 +153,10 @@ namespace PengoTarot.Data
             if (selected == null)
                 return false;
 
-            if (isLocalBuyer && goldCost > 0 && !ignoreCostThis)
-                await PlayerCmd.LoseGold(goldCost, player, GoldLossType.Spent);
-
-            await TarotEffectExecutor.ExecuteEffectAndEnchant(_pendingMap![selected], player, isLocalBuyer);
+            bool committed = await TarotEffectExecutor.ExecuteEffectAndEnchant(
+                _pendingMap![selected], player, isLocalBuyer,
+                onConfirmed: isLocalBuyer ? () => SpendGold(player, goldCost, ignoreCostThis) : null);
+            if (!committed) return false;
 
             ClearPending();
             return true;
@@ -211,17 +211,22 @@ namespace PengoTarot.Data
             if (selected == null)
                 return false;
 
-            if (isLocalBuyer && goldCost > 0)
-                await PlayerCmd.LoseGold(goldCost, player, GoldLossType.Spent);
-
-            await TarotEffectExecutor.ExecuteEffectAndEnchant(pendingMap[selected], player, isLocalBuyer);
-            return true;
+            return await TarotEffectExecutor.ExecuteEffectAndEnchant(
+                pendingMap[selected], player, isLocalBuyer,
+                onConfirmed: isLocalBuyer ? () => SpendGold(player, goldCost, ignoreCost: false) : null);
         }
 
         private async Task<CardModel?> ShowTarotSelection(Player player, bool canSkip)
         {
             var context = new SilentPlayerChoiceContext();
             return await CardSelectCmd.FromChooseACardScreen(context, _pendingCards!, player, canSkip);
+        }
+
+        private static Task SpendGold(Player player, int goldCost, bool ignoreCost)
+        {
+            return goldCost > 0 && !ignoreCost
+                ? PlayerCmd.LoseGold(goldCost, player, GoldLossType.Spent)
+                : Task.CompletedTask;
         }
 
         // 塔罗效果执行已提取到 TarotEffectExecutor（Data/tarotcard/TarotEffectExecutor.cs），商店与塔罗奖励共用。

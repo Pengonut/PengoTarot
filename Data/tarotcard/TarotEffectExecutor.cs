@@ -29,7 +29,8 @@ namespace PengoTarot.Data
         /// - 立即效果（命运之轮/高塔等）或 SUB 附魔变换：仅本地购买者（isLocalBuyer）执行，随后发全量同步；
         /// - 普通附魔效果：选出目标卡并附魔（多端一致，CardCmd.Enchant 自带同步）。
         /// </summary>
-        public static async Task ExecuteEffectAndEnchant(TarotDef def, Player player, bool isLocalBuyer)
+        public static async Task<bool> ExecuteEffectAndEnchant(
+            TarotDef def, Player player, bool isLocalBuyer, Func<Task>? onConfirmed = null)
         {
             if (def.IsImmediateEffect)
             {
@@ -38,7 +39,7 @@ namespace PengoTarot.Data
                 {
                     var prefs = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, 1, def.CardsToEnchant)
                     {
-                        Cancelable = false,
+                        Cancelable = true,
                         RequireManualConfirmation = true
                     };
 
@@ -64,7 +65,10 @@ namespace PengoTarot.Data
 
                     var chosenCards = await CardSelectCmd.FromDeckForTransformation(player, prefs, BuildTransformation);
                     if (chosenCards == null || !chosenCards.Any())
-                        return;
+                        return false;
+
+                    if (onConfirmed != null)
+                        await onConfirmed();
 
                     if (isLocalBuyer)
                     {
@@ -78,13 +82,20 @@ namespace PengoTarot.Data
                         }
                         NotifyStateChange(player);
                     }
+
+                    return true;
                 }
                 // 其余立即效果：仅本地购买者执行
-                else if (isLocalBuyer)
+                else
                 {
-                    var rng = player.PlayerRng.Shops;
-                    switch (def.Id)
+                    if (onConfirmed != null)
+                        await onConfirmed();
+
+                    if (isLocalBuyer)
                     {
+                        var rng = player.PlayerRng.Shops;
+                        switch (def.Id)
+                        {
                         case "WHEEL_OF_FORTUNE_UPRIGHT":
                             var allRelics = player.Relics.Where(r => r.Rarity != RelicRarity.Ancient).ToList();
                             RelicModel? targetRelic = null;
@@ -127,7 +138,10 @@ namespace PengoTarot.Data
                             await TarotImmediateEffects.TowerReversed(player);
                             NotifyStateChange(player);
                             break;
+                        }
                     }
+
+                    return true;
                 }
             }
             else
@@ -138,19 +152,24 @@ namespace PengoTarot.Data
                 int minSelect = (def.Id is "LOVERS_UPRIGHT" or "LOVERS_REVERSED") ? targetCount : 1;
                 var prefs = new CardSelectorPrefs(CardSelectorPrefs.EnchantSelectionPrompt, minSelect, targetCount)
                 {
-                    Cancelable = false,
+                    Cancelable = true,
                     RequireManualConfirmation = true
                 };
                 var chosenCards = await CardSelectCmd.FromDeckForEnchantment(player, enchantment, targetCount, prefs);
-                if (chosenCards != null)
+                if (chosenCards == null || !chosenCards.Any())
+                    return false;
+
+                if (onConfirmed != null)
+                    await onConfirmed();
+
+                foreach (var card in chosenCards)
                 {
-                    foreach (var card in chosenCards)
-                    {
-                        CardCmd.Enchant(enchantment.ToMutable(), card, 1m);
-                        if (LocalContext.IsMe(player))
-                            CardCmd.Preview(card);
-                    }
+                    CardCmd.Enchant(enchantment.ToMutable(), card, 1m);
+                    if (LocalContext.IsMe(player))
+                        CardCmd.Preview(card);
                 }
+
+                return true;
             }
         }
 

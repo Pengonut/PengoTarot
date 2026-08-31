@@ -99,10 +99,10 @@ public static class HandCardHolder_DivinationIconPatch
             icon.Texture = path switch
             {
                 "res://images/enchantments/tar_justice_reversed_enchantment.png"
-                    => _justiceTexture ??= GD.Load<Texture2D>(path),
+                    => GetValidTexture(ref _justiceTexture, path),
                 "res://images/enchantments/tar_hanged_man_reversed_enchantment.png"
-                    => _hangedManTexture ??= GD.Load<Texture2D>(path),
-                _ => _deathTexture ??= GD.Load<Texture2D>(path),
+                    => GetValidTexture(ref _hangedManTexture, path),
+                _ => GetValidTexture(ref _deathTexture, path),
             };
             icon.Visible = true;
         }
@@ -110,6 +110,18 @@ public static class HandCardHolder_DivinationIconPatch
         {
             icon.Visible = false;
         }
+    }
+
+    /// <summary>
+    /// 游戏切换房间时会主动卸载未命中的资源缓存。此时 C# 静态字段仍非 null，
+    /// 但其 Godot 原生纹理可能已经释放，必须重新加载而不能只依赖 null 判断。
+    /// </summary>
+    private static Texture2D GetValidTexture(ref Texture2D? texture, string path)
+    {
+        if (texture == null || !GodotObject.IsInstanceValid(texture))
+            texture = GD.Load<Texture2D>(path);
+
+        return texture;
     }
 
     [HarmonyPatch(typeof(NHandCardHolder), nameof(NHandCardHolder.SetIndexLabel)), HarmonyPostfix]

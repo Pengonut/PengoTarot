@@ -317,7 +317,7 @@ namespace PengoTarot
                 { "TAR_DEATH_UPRIGHT_ENCHANTMENT.description", "이 카드는 비용 [blue]0[/blue]으로 사용할 수 있습니다. 이 카드를 사용한 후, 턴을 종료합니다." },
                 { "TAR_DEATH_UPRIGHT_ENCHANTMENT.title", "죽음" },
                 { "TAR_DEATH_UPRIGHT_ENCHANTMENT.extraCardText", "사용 후 턴을 종료합니다." },
-                { "TAR_DEATH_REVERSED_ENCHANTMENT.description", "이 카드는 비용 [blue]0[/blue]으로 사용할 수 있습니다. 이 카드가 [gold]손패[/gold]에 있는 동안 카드를 뽑을 수 없습니다.\n이 카드는 사용 시 카드를 뽑을 수 있습니다." },
+                { "TAR_DEATH_REVERSED_ENCHANTMENT.description", "이 카드는 비용 [blue]0[/blue]으로 사용할 수 있습니다. 이 카드가 [gold]손패[/gold]에 있는 동안 카드를 뽑을 수 없습니다.\n이 카드를 사용하는 동안에는 카드 뽑기 효과를 방해하지 않습니다." },
                 { "TAR_DEATH_REVERSED_ENCHANTMENT.title", "죽음" },
                 { "TAR_DEATH_REVERSED_ENCHANTMENT.extraCardText", "죽음이 당신을 지켜봅니다." },
 
@@ -537,6 +537,7 @@ namespace PengoTarot
                 { "PLANET_VENUS_SELECTION_PROMPT", "아군의 버린 카드 더미 위에서 손패로 되돌릴 카드를 원하는 만큼 선택하세요" },
                 { "VANILLA_STYLE_TAROT", "타로 카드 클래식" },
                 { "VANILLA_STYLE_PLANET", "행성 카드 클래식" },
+                { "PENGO_TAROT_RETURN_BUTTON", "돌아가기" },
             });
 
             var roomTable = loc.GetTable("merchant_room");

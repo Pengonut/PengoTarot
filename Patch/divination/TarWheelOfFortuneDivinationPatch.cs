@@ -1,261 +1,266 @@
 #nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Godot;
 using HarmonyLib;
-using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Commands;
-using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Relics;
-using MegaCrit.Sts2.Core.Factories;
-using MegaCrit.Sts2.Core.Helpers;
+using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Hooks;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.Nodes.Relics;
-using MegaCrit.Sts2.Core.Rooms;
+using MegaCrit.Sts2.Core.Nodes.Cards;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
+using MegaCrit.Sts2.Core.Nodes.Screens.Shops;
 using MegaCrit.Sts2.Core.Runs;
-using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 using PengoTarot.ConfigFW;
 
 namespace PengoTarot.Patches;
 
 /// <summary>
-/// 命运之轮占卜：新局获得两件普通/罕见遗物；每完成四场战斗，
-/// 移除当前持有的、最早获得的普通/罕见/稀有/商店遗物。
+/// 命运之轮占卜：每主动往牌组加入四张牌，额外复制第四张。
+/// 额外复制本身不推进计数；开局构筑初始牌组时也不计数。
 /// </summary>
 public static class TarWheelOfFortuneDivinationPatch
 {
     private const int FlagIndex = 10;
-    private const int CombatInterval = 4;
-    private const string WarningIconPath = "res://images/ui/language_warning.png";
-    private const float WarningIconSize = 24f;
+    // 复制牌本身也会经过五轮书式 Hook 并计数，因此内部使用 5 周期；
+    // 每名玩家新局从 1 开始，对玩家而言仍是每主动加入 4 张触发一次。
+    private const int CardInterval = 5;
+    private const string ShadowName = "PengoTarotWheelCardShadow";
+    private static readonly Vector2 ShadowOffset = new(33f, -44f);
 
-    private sealed class WarningState
+    private sealed class SelectionState
     {
-        public Timer Timer = null!;
-        public TextureRect? WarningIcon;
-        public NRelicInventoryHolder? Target;
+        public readonly List<CardModel> SelectionOrder = new();
     }
 
-    private static readonly ConditionalWeakTable<NRelicInventory, WarningState> WarningStates = new();
+    private static readonly ConditionalWeakTable<NSimpleCardSelectScreen, SelectionState> SelectionStates = new();
 
     private static bool IsEnabled()
-        => ConfigFloatingWindowRunData.GetTarFlag(FlagIndex);
+        => RunManager.Instance.IsInProgress
+           && ConfigFloatingWindowRunData.GetTarFlag(FlagIndex);
 
-    [HarmonyPatch(typeof(RunManager), nameof(RunManager.SetUpNewSingleplayer))]
-    private static class SetUpNewSingleplayerPatch
+    [HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardChangedPiles))]
+    private static class AfterCardChangedPilesPatch
     {
         [HarmonyPostfix]
-        private static void Postfix(RunState state)
-            => GrantStartingRelics(state);
-    }
-
-    [HarmonyPatch(typeof(RunManager), nameof(RunManager.SetUpNewMultiplayer))]
-    private static class SetUpNewMultiplayerPatch
-    {
-        [HarmonyPostfix]
-        private static void Postfix(RunState state, StartRunLobby lobby)
-            => GrantStartingRelics(state);
-    }
-
-    private static void GrantStartingRelics(RunState state)
-    {
-        if (!IsEnabled())
-            return;
-
-        var obtainTasks = new List<Task>();
-        foreach (var player in state.Players)
+        private static void Postfix(CardModel card, ref Task __result)
         {
-            for (int i = 0; i < 2; i++)
-            {
-                // 单独掷普通/罕见（各 50%），明确不进入稀有与商店遗物池。
-                var rarity = player.PlayerRng.Rewards.NextBool()
-                    ? RelicRarity.Common
-                    : RelicRarity.Uncommon;
-                var relic = RelicFactory.PullNextRelicFromFront(
-                    player,
-                    rarity,
-                    candidate => candidate.Rarity == rarity).ToMutable();
-                obtainTasks.Add(RelicCmd.Obtain(relic, player));
-            }
-        }
-
-        // Obtain 在首次 await 前已同步加入遗物栏；继续追踪 AfterObtained，避免吞掉异步异常。
-        TaskHelper.RunSafely(Task.WhenAll(obtainTasks));
-    }
-
-    [HarmonyPatch(typeof(Hook), nameof(Hook.AfterCombatVictory))]
-    private static class AfterCombatVictoryPatch
-    {
-        [HarmonyPostfix]
-        private static void Postfix(IRunState runState, ICombatState? combatState,
-            CombatRoom room, ref Task __result)
-        {
-            __result = ResolveAfterVictory(__result, runState);
+            __result = ResolvePileChange(__result, card);
         }
     }
 
-    private static async Task ResolveAfterVictory(Task originalTask, IRunState runState)
+    private static async Task ResolvePileChange(Task originalTask, CardModel card)
     {
         await originalTask;
-        if (!RunManager.Instance.IsInProgress || !IsEnabled())
+        // 严格采用原版五轮书的判定：Hook 结束时牌位于该玩家的 Deck 即计数。
+        // 复制牌也会推进一次计数（4 -> 5），因此不会形成递归触发。
+        if (card.Owner.Creature.IsDead
+            || card.Pile?.Type != PileType.Deck || !IsEnabled())
             return;
 
-        int completedCombats = ConfigFloatingWindowRunData.RecordWheelOfFortuneCombat();
-        if (completedCombats % CombatInterval != 0)
-            return;
-
-        foreach (var player in runState.Players)
+        int count = ConfigFloatingWindowRunData.RecordWheelOfFortuneCard(card.Owner.NetId);
+        Log.Info($"[PengoTarot] [WheelOfFortune] player={card.Owner.NetId} " +
+                 $"card={card.Id} count={count}");
+        if (count % CardInterval == 0)
         {
-            // Relics 保持获得顺序；Starting/Ancient/Event 等不会进入候选。
-            // Shop 虽是独立 rarity，但按需求允许被命运之轮移除。
-            var oldestEligible = player.Relics.FirstOrDefault(IsRemovableRarity);
-            if (oldestEligible != null)
-                await RelicCmd.Remove(oldestEligible);
+            CardModel copy = card.Owner.RunState.CloneCard(card);
+            // 原版宾邦也通过 clonedBy 标记复制来源，并展示入牌预览。
+            CardPileAddResult result = await CardPileCmd.Add(
+                copy, PileType.Deck, CardPilePosition.Bottom, card);
+            CardCmd.PreviewCardPileAdd(result);
+            Log.Info($"[PengoTarot] [WheelOfFortune] copied={result.cardAdded.Id} " +
+                     $"success={result.success}");
         }
+
+        RefreshVisibleChoiceShadows();
     }
 
-    private static bool IsRemovableRarity(RelicModel relic)
-        => relic.Rarity is RelicRarity.Common
-            or RelicRarity.Uncommon
-            or RelicRarity.Rare
-            or RelicRarity.Shop;
-
-    /// <summary>为本地遗物栏添加命运之轮倒计时警告，不影响原版 FlowContainer 布局。</summary>
-    [HarmonyPatch(typeof(NRelicInventory), nameof(NRelicInventory._Ready))]
-    private static class NRelicInventoryReadyPatch
+    [HarmonyPatch(typeof(NCardRewardSelectionScreen), nameof(NCardRewardSelectionScreen.RefreshOptions))]
+    private static class RewardScreenRefreshPatch
     {
         [HarmonyPostfix]
-        private static void Postfix(NRelicInventory __instance)
+        private static void Postfix(NCardRewardSelectionScreen __instance)
+            => Callable.From(() => UpdateRewardScreen(__instance)).CallDeferred();
+    }
+
+    [HarmonyPatch(typeof(NMerchantCard), nameof(NMerchantCard.FillSlot))]
+    private static class MerchantCardFillSlotPatch
+    {
+        [HarmonyPostfix]
+        private static void Postfix(NMerchantCard __instance)
+            => Callable.From(() => UpdateMerchantCard(__instance)).CallDeferred();
+    }
+
+    [HarmonyPatch(typeof(NSimpleCardSelectScreen), "OnCardClicked")]
+    private static class SimpleSelectionClickedPatch
+    {
+        [HarmonyPostfix]
+        private static void Postfix(NSimpleCardSelectScreen __instance, CardModel card)
         {
-            // 命运之轮未启用时不得创建任何计时器或视觉节点。
-            // 开关是开局配置，局内不会从关闭切换为开启。
-            if (!IsEnabled())
+            // 只有 CardCreationResult 网格才表示“选中后加入牌组”；普通牌组选择不显示。
+            if (Traverse.Create(__instance).Field("_cardResults").GetValue() == null)
                 return;
 
-            if (WarningStates.TryGetValue(__instance, out _))
-                return;
-
-            var state = new WarningState
+            var selected = Traverse.Create(__instance).Field("_selectedCards")
+                .GetValue<HashSet<CardModel>>();
+            var state = SelectionStates.GetOrCreateValue(__instance);
+            if (selected.Contains(card))
             {
-                Timer = new Timer
-                {
-                    Name = "PengoTarotWheelRelicWarningTimer",
-                    WaitTime = 0.05,
-                    OneShot = false,
-                    Autostart = true,
-                },
-            };
-            WarningStates.Add(__instance, state);
-            state.Timer.Timeout += () => UpdateWarning(__instance, state);
-            __instance.TreeExiting += () => CleanupWarning(state);
-
-            // NRelicInventory 是 FlowContainer，原版 GetBottomOfInventory 假定它的所有直接子节点
-            // 都是 Control 类型的遗物 holder。Timer 若挂在 inventory 下会破坏该不变量，
-            // 在多人状态栏定位时触发 Timer -> Control 的 InvalidCastException。
-            __instance.GetTree().Root.AddChild(state.Timer);
-        }
-    }
-
-    private static void CleanupWarning(WarningState state)
-    {
-        HideWarning(state);
-        if (!GodotObject.IsInstanceValid(state.Timer))
-            return;
-
-        state.Timer.Stop();
-        state.Timer.QueueFree();
-    }
-
-    private static void UpdateWarning(NRelicInventory inventory, WarningState state)
-    {
-        if (!GodotObject.IsInstanceValid(inventory) || !IsEnabled())
-        {
-            HideWarning(state);
-            return;
-        }
-
-        var target = inventory.RelicNodes.FirstOrDefault(
-            holder => GodotObject.IsInstanceValid(holder)
-                      && IsRemovableRarity(holder.Relic.Model));
-        if (target == null)
-        {
-            HideWarning(state);
-            return;
-        }
-
-        EnsureWarningIcon(state, target);
-        if (state.WarningIcon == null)
-            return;
-
-        int remainder = ConfigFloatingWindowRunData.WheelOfFortuneCombatCount % CombatInterval;
-        int combatsRemaining = CombatInterval - remainder;
-        double elapsedSeconds = Time.GetTicksMsec() / 1000.0;
-        float pulse = (float)((1.0 - System.Math.Cos(
-            elapsedSeconds * System.Math.Tau / combatsRemaining)) * 0.5);
-        // 四战周期内依次将警告图标峰值限制为 10% / 20% / 30% / 40%，
-        // 保留渐强提示但避免持续抢占玩家注意力。
-        float maxOpacity = (remainder + 1) * 0.1f;
-
-        state.WarningIcon.Visible = true;
-        state.WarningIcon.Modulate = new Color(1f, 1f, 1f, pulse * maxOpacity);
-
-        // 只在还剩一场时让遗物本身同步闪红；SelfModulate 不覆盖原版状态灰度。
-        target.Relic.Icon.SelfModulate = combatsRemaining == 1
-            ? Colors.White.Lerp(StsColors.redGlow, pulse)
-            : Colors.White;
-    }
-
-    private static void EnsureWarningIcon(WarningState state, NRelicInventoryHolder target)
-    {
-        bool iconInvalid = state.WarningIcon == null
-                           || !GodotObject.IsInstanceValid(state.WarningIcon);
-        if (iconInvalid)
-        {
-            var texture = ResourceLoader.Load<Texture2D>(WarningIconPath);
-            if (texture == null)
-                return;
-
-            state.WarningIcon = new TextureRect
+                if (!state.SelectionOrder.Contains(card))
+                    state.SelectionOrder.Add(card);
+            }
+            else
             {
-                Name = "PengoTarotWheelRelicWarning",
-                Texture = texture,
-                MouseFilter = Control.MouseFilterEnum.Ignore,
-                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
-                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
-                Size = Vector2.One * WarningIconSize,
-            };
-            target.AddChild(state.WarningIcon);
+                state.SelectionOrder.Remove(card);
+            }
+            state.SelectionOrder.RemoveAll(candidate => !selected.Contains(candidate));
+            UpdateSimpleSelectionScreen(__instance, state);
         }
-        else if (state.Target != target)
-        {
-            RestoreTargetColor(state);
-            state.WarningIcon!.Reparent(target, keepGlobalTransform: false);
-        }
-
-        state.Target = target;
-        state.WarningIcon!.Position = new Vector2(
-            (target.Size.X - WarningIconSize) * 0.5f,
-            target.Size.Y - 8f);
     }
 
-    private static void HideWarning(WarningState state)
+    [HarmonyPatch(typeof(NSimpleCardSelectScreen), "ConnectSignalsAndInitGrid")]
+    private static class SimpleSelectionReadyPatch
     {
-        if (state.WarningIcon != null && GodotObject.IsInstanceValid(state.WarningIcon))
-            state.WarningIcon.Visible = false;
-        RestoreTargetColor(state);
-        state.Target = null;
+        [HarmonyPostfix]
+        private static void Postfix(NSimpleCardSelectScreen __instance)
+            => Callable.From(() => UpdateSimpleSelectionScreen(
+                __instance, SelectionStates.GetOrCreateValue(__instance))).CallDeferred();
     }
 
-    private static void RestoreTargetColor(WarningState state)
+    [HarmonyPatch(typeof(NCardGridSelectionScreen), nameof(NCardGridSelectionScreen.CardsSelected))]
+    private static class PreserveSimpleSelectionOrderPatch
     {
-        if (state.Target != null
-            && GodotObject.IsInstanceValid(state.Target)
-            && GodotObject.IsInstanceValid(state.Target.Relic.Icon))
+        [HarmonyPostfix]
+        private static void Postfix(NCardGridSelectionScreen __instance,
+            ref Task<IEnumerable<CardModel>> __result)
         {
-            state.Target.Relic.Icon.SelfModulate = Colors.White;
+            if (__instance is NSimpleCardSelectScreen simple
+                && SelectionStates.TryGetValue(simple, out var state))
+            {
+                __result = ReorderSelectedCards(__result, state);
+            }
         }
+    }
+
+    private static async Task<IEnumerable<CardModel>> ReorderSelectedCards(
+        Task<IEnumerable<CardModel>> originalTask, SelectionState state)
+    {
+        var selected = (await originalTask).ToHashSet();
+        return state.SelectionOrder.Where(selected.Contains).ToList();
+    }
+
+    private static void UpdateRewardScreen(NCardRewardSelectionScreen screen)
+    {
+        if (!GodotObject.IsInstanceValid(screen)) return;
+        var cardRow = Traverse.Create(screen).Field("_cardRow").GetValue<Control>();
+        var holders = cardRow?.GetChildren().OfType<NGridCardHolder>().ToList();
+        if (holders == null) return;
+        if (holders.Count == 0) return;
+        ulong netId = holders[0].CardModel.Owner.NetId;
+        bool show = IsEnabled()
+                    && (ConfigFloatingWindowRunData.GetWheelOfFortuneCardCount(netId) + 1) % CardInterval == 0;
+        foreach (var holder in holders)
+            SetShadow(holder, show);
+    }
+
+    private static void UpdateSimpleSelectionScreen(NSimpleCardSelectScreen screen, SelectionState state)
+    {
+        if (!GodotObject.IsInstanceValid(screen)) return;
+        if (Traverse.Create(screen).Field("_cardResults").GetValue() == null)
+            return;
+        var grid = Traverse.Create(screen).Field("_grid").GetValue<NCardGrid>();
+        var holders = grid?.CurrentlyDisplayedCardHolders.ToList();
+        if (holders == null || holders.Count == 0) return;
+
+        int baseCount = ConfigFloatingWindowRunData.GetWheelOfFortuneCardCount(
+            holders[0].CardModel.Owner.NetId);
+        var fixedShadows = new HashSet<CardModel>();
+        int simulatedCount = baseCount;
+        foreach (CardModel selectedCard in state.SelectionOrder)
+        {
+            simulatedCount++;
+            if (simulatedCount % CardInterval != 0) continue;
+            fixedShadows.Add(selectedCard);
+            simulatedCount++; // 触发后复制牌也像五轮书一样推进计数。
+        }
+        bool nextSelectionCopies = (simulatedCount + 1) % CardInterval == 0;
+
+        foreach (var holder in holders)
+        {
+            bool selected = state.SelectionOrder.Contains(holder.CardModel);
+            bool show = IsEnabled()
+                        && (fixedShadows.Contains(holder.CardModel)
+                            || (nextSelectionCopies && !selected));
+            SetShadow(holder, show);
+        }
+    }
+
+    private static void SetShadow(NGridCardHolder holder, bool visible)
+        => SetShadow(holder, holder.CardNode, holder.CardModel, visible);
+
+    private static void UpdateMerchantCard(NMerchantCard merchantCard)
+    {
+        if (!GodotObject.IsInstanceValid(merchantCard)) return;
+        var traverse = Traverse.Create(merchantCard);
+        var holder = traverse.Field("_cardHolder").GetValue<Control>();
+        var cardNode = traverse.Field("_cardNode").GetValue<NCard>();
+        if (holder == null || cardNode?.Model == null) return;
+
+        bool show = IsEnabled()
+                    && (ConfigFloatingWindowRunData.GetWheelOfFortuneCardCount(
+                            cardNode.Model.Owner.NetId) + 1) % CardInterval == 0;
+        SetShadow(holder, cardNode, cardNode.Model, show);
+    }
+
+    private static void SetShadow(Node holder, NCard? cardNode, CardModel? cardModel, bool visible)
+    {
+        var existing = holder.GetNodeOrNull<NCard>(ShadowName);
+        if (!visible)
+        {
+            existing?.QueueFree();
+            return;
+        }
+        if (existing != null && existing.Model == cardModel)
+            return;
+        if (existing != null)
+        {
+            holder.RemoveChild(existing);
+            existing.QueueFree();
+        }
+
+        if (cardNode == null || cardModel == null) return;
+        NCard? shadow = NCard.Create(cardModel);
+        if (shadow == null) return;
+        shadow.Name = ShadowName;
+        IgnoreMouseRecursively(shadow);
+        shadow.Modulate = new Color(0.7f, 0.7f, 0.7f, 1f);
+        shadow.Position = cardNode.Position + ShadowOffset;
+        holder.AddChild(shadow);
+        holder.MoveChild(shadow, 0);
+        shadow.UpdateVisuals(PileType.None, CardPreviewMode.Normal);
+    }
+
+    private static void IgnoreMouseRecursively(Node node)
+    {
+        if (node is Control control)
+            control.MouseFilter = Control.MouseFilterEnum.Ignore;
+        foreach (Node child in node.GetChildren())
+            IgnoreMouseRecursively(child);
+    }
+
+    private static void RefreshVisibleChoiceShadows()
+    {
+        var tree = Engine.GetMainLoop() as SceneTree;
+        if (tree?.Root == null) return;
+        foreach (var node in tree.Root.FindChildren("NCardRewardSelectionScreen", "", true, false))
+            if (node is NCardRewardSelectionScreen rewardScreen) UpdateRewardScreen(rewardScreen);
+        foreach (var node in tree.Root.FindChildren("*", "", true, false))
+            if (node is NMerchantCard merchantCard) UpdateMerchantCard(merchantCard);
     }
 }

@@ -327,7 +327,7 @@ namespace PengoTarot
                 { "TAR_DEATH_UPRIGHT_ENCHANTMENT.title", "Death" },
                 { "TAR_DEATH_UPRIGHT_ENCHANTMENT.extraCardText", "End your turn after playing this." },
                 
-                { "TAR_DEATH_REVERSED_ENCHANTMENT.description", "This card costs 0 to play. While in your hand, you cannot draw cards.\nThis card draws cards when played." },
+                { "TAR_DEATH_REVERSED_ENCHANTMENT.description", "This card costs 0 to play. While in your hand, you cannot draw cards.\nWhile this card is being played, it does not block card draw effects." },
                 { "TAR_DEATH_REVERSED_ENCHANTMENT.title", "XIII" },
                 { "TAR_DEATH_REVERSED_ENCHANTMENT.extraCardText", "Death watches over you." },
 
@@ -558,6 +558,7 @@ namespace PengoTarot
                 { "PLANET_VENUS_SELECTION_PROMPT", "Choose any number of cards from the top of your ally's discard pile to return to their hand" },
                 { "VANILLA_STYLE_TAROT", "Vanilla Style Tarots" },
                 { "VANILLA_STYLE_PLANET", "Vanilla Style Planets" },
+                { "PENGO_TAROT_RETURN_BUTTON", "Return" },
             });
 
             var roomTable = loc.GetTable("merchant_room");

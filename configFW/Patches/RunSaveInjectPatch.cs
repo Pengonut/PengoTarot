@@ -153,6 +153,10 @@ namespace PengoTarot.ConfigFW
         {
             public static void Postfix(RunSaveManager __instance, ReadSaveResult<SerializableRun> __result)
             {
+                // LoadRunSave 也可能被继续游戏以外的查询路径调用。局内运行数据已是最新真相，
+                // 不得再用磁盘上一次保存的旧快照覆盖；真正继续游戏由上面的
+                // SetUpSavedSingleplayer Prefix 显式调用 ExtractFromSave。
+                if (RunManager.Instance.IsInProgress) return;
                 ExtractFromSave(__instance, __result.Success && __result.SaveData != null, RunSaveManager.runSaveFileName);
             }
         }
@@ -162,6 +166,8 @@ namespace PengoTarot.ConfigFW
         {
             public static void Postfix(RunSaveManager __instance, ReadSaveResult<SerializableRun> __result)
             {
+                // 同单机：真正多人继续游戏由 SetUpSavedMultiplayer Prefix 恢复。
+                if (RunManager.Instance.IsInProgress) return;
                 ExtractFromSave(__instance, __result.Success && __result.SaveData != null, RunSaveManager.multiplayerRunSaveFileName);
             }
         }

@@ -129,7 +129,7 @@ PengoTarot 的「占卜」难度开关体系：标记类占卜在地图上**标�
 - **加载游戏本体场景必须 `GD.Load<PackedScene>`，不用 `PreloadManager.Cache.GetScene`**（Cache 只缓存启动预加载，非预加载返回 null，特效全不显示）
 - **sparkle**（`card_sparkles_vfx.tscn`）：必须 `LocalCoords=true`（否则粒子世界空间模拟，地图滚动滞留）
 - **soul_beam**（`kin_priest_beam_vfx.tscn`）：不调 `Fire()`，自己控制 `BeamHolder.Visible/Scale` + `StaticParticles`；**必须反向补偿 `%IconContainer` 的原版呼吸缩放**（`NNormalMapPoint._Process` 里 `Sin*0.25+1.2`）→ `vfx.Scale = 1/container.Scale`，否则光束随节点放大/缩小
-- **图层置底用 `MoveChild(vfx,0)`，不用 `ZIndex=-1`**（同父级 ZIndex 均 0，靠置入顺序）
+- **项目级禁止使用 `ZIndex`/`ZAsRelative` 调整图层**，也不得与节点顺序混用作“保险”；同父节点内使用 `MoveChild` 调整兄弟顺序，跨父节点则调整挂载位置或建立专用容器。确实无法通过节点树结构实现时，必须先说明原因并取得用户明确许可
 - **图标缩放用 `Sprite2D`**（pivot 默认中心），`TextureRect.PivotOffset` 在全局层不可靠
 - **总览模式**：`NConfigFloatingWindowEntryButton` 的 `BeginDrag()` → `SetOverview(true)`；`DockIn()` → `SetOverview(false)`（不要以贴边状态切换触发）
 - **数字角标**：`OrbitItem.Badge`（Label，白字 + 黑描边 `outline_size` 5、`font_size` 17、**无底框**、右下角 `Position(IconSize-18, IconSize-22)`）；`OnProcess` 每帧检查 `GetProgressForDisplay` 变化刷新 + 失效时 `ApplyReversedTexture` 切逆图并隐藏角标；**与图标绑死同中心缩放**：`PivotOffset = 图标中心 − Position`（`new Vector2(IconSize/2,IconSize/2) - label.Position`，注意 PivotOffset 是相对角标左上角、必须补偿 Position 才等于图标中心）+ `Badge.Scale=iconScale*hov` 跟随 Sprite，绕图标中心同节奏放大/缩小

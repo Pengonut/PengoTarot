@@ -1,5 +1,5 @@
 {
-  "current_version": "v1.4.16",
+  "current_version": "v1.4.18",
   "versions": {
     "v1.4.10": {
       "released": "2026-08-14",
@@ -62,6 +62,24 @@
       ]
     },
     "v1.4.16": {
+      "released": "2026-08-31",
+      "changes": [
+        "fixed cached divination icon textures being reused after Godot unloaded them, causing repeated combat errors",
+        "changed the Tarot and Planet choice screen skip button label to a localized return label",
+        "fixed multiplayer divination rewards being counted twice when a host state snapshot arrived before the client's local victory replay",
+        "reworked the Wheel of Fortune divination to copy every fourth card added to the deck, with a dark card shadow preview on card selection screens"
+      ]
+    },
+    "v1.4.17": {
+      "released": "2026-08-31",
+      "changes": [
+        "added a long-hover preview showing cards that cannot receive the selected Tarot or Planet enchantment",
+        "fixed Death and Sun reversed free-play effects being overridden by later cost increases such as Modded",
+        "clarified in all supported languages that Death reversed only stops blocking draw effects while its card is being played",
+        "made Tarot and Stargaze enchantment target screens cancelable and delayed gold, relic charge, and rest-site action consumption until target confirmation"
+      ]
+    },
+    "v1.4.18": {
       "released": null,
       "changes": []
     }

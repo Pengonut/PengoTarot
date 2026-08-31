@@ -46,6 +46,17 @@ public sealed class TarSunReversedEnchantment : EnchantmentModel
         return Task.CompletedTask;
     }
 
+    public override bool TryModifyEnergyCostInCombatLate(CardModel card, decimal originalCost, out decimal modifiedCost)
+    {
+        modifiedCost = originalCost;
+        if (card != base.Card)
+            return false;
+
+        // “免费打出”应是最终费用裁定，而不只是按时序添加一条 0 费修改。
+        modifiedCost = 0m;
+        return true;
+    }
+
     public override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay? cardPlay)
     {
 if (base.Card?.Owner == null) return;

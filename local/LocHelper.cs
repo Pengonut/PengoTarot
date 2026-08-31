@@ -295,7 +295,7 @@ namespace PengoTarot
                 { "TAR_DEATH_UPRIGHT_ENCHANTMENT.title", "死神-正" },
                 { "TAR_DEATH_UPRIGHT_ENCHANTMENT.extraCardText", "结束你的回合。" },
                 
-                { "TAR_DEATH_REVERSED_ENCHANTMENT.description", "这张牌可以免费打出。\n这张牌在[gold]手牌[/gold]中时，你[red]无法抽牌[/red]。\n这张牌打出时，本身可以抽牌。" },
+                { "TAR_DEATH_REVERSED_ENCHANTMENT.description", "这张牌可以免费打出。\n这张牌在[gold]手牌[/gold]中时，你[red]无法抽牌[/red]。\n这张牌正在打出时，不会阻拦抽牌效果。" },
                 { "TAR_DEATH_REVERSED_ENCHANTMENT.title", "死神-逆" },
                 { "TAR_DEATH_REVERSED_ENCHANTMENT.extraCardText", "死神注视着你。" },
                 
@@ -520,6 +520,7 @@ namespace PengoTarot
                 { "PLANET_VENUS_SELECTION_PROMPT", "为你的盟友选择任意张来自其弃牌堆顶的牌，被选中的牌会被放回其手牌" },
                 { "VANILLA_STYLE_TAROT", "塔罗牌经典样式" },
                 { "VANILLA_STYLE_PLANET", "星球牌经典样式" },
+                { "PENGO_TAROT_RETURN_BUTTON", "返回" },
             });
 
             

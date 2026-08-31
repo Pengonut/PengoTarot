@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
 using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
@@ -170,8 +171,14 @@ namespace PengoTarot.Data.Divination
                 if (st.ActIndex != actIndex || !st.Coords.Contains(coord)) continue;
                 if (!IsFlagEnabled(cfg.FlagIndex)) continue;
 
+                int countBefore = st.CompletedCount;
+                int awardedBefore = st.RewardsAwarded;
                 st.CompletedCount++;
                 AwardTarotReward(cfg, st, room, players);
+                Log.Info($"[PengoTarot] [DivinationReward] peer={RunManager.Instance.NetService.Type} " +
+                         $"flag={cfg.FlagIndex} act={actIndex} coord={coord} " +
+                         $"count={countBefore}->{st.CompletedCount} awarded={awardedBefore}->{st.RewardsAwarded} " +
+                         $"rewardAdded={st.RewardsAwarded > awardedBefore}");
             }
         }
 

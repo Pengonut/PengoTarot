@@ -20,7 +20,7 @@ namespace PengoTarot.ConfigFW
         public bool planet;
         public int priceMin;
         public int priceMax;
-        public int wheelCombatCount;
+        public string wheelCardCountsJson;
         public bool[] flags;
         /// <summary>多人读档/开局前分发的标记完整快照。</summary>
         public string markerStateJson;
@@ -37,7 +37,7 @@ namespace PengoTarot.ConfigFW
             writer.WriteBool(planet);
             writer.WriteInt(priceMin);
             writer.WriteInt(priceMax);
-            writer.WriteInt(wheelCombatCount);
+            writer.WriteString(wheelCardCountsJson ?? "{}");
             int count = flags?.Length ?? 0;
             writer.WriteInt(count, 8);
             for (int i = 0; i < count; i++)
@@ -52,7 +52,7 @@ namespace PengoTarot.ConfigFW
             planet = reader.ReadBool();
             priceMin = reader.ReadInt();
             priceMax = reader.ReadInt();
-            wheelCombatCount = reader.ReadInt();
+            wheelCardCountsJson = reader.ReadString();
             int count = reader.ReadInt(8);
             flags = new bool[count];
             for (int i = 0; i < count; i++)
@@ -74,7 +74,7 @@ namespace PengoTarot.ConfigFW
                 planet = ConfigFloatingWindowRunData.PlanetEnabled,
                 priceMin = ConfigFloatingWindowRunData.TarotPriceMin,
                 priceMax = ConfigFloatingWindowRunData.TarotPriceMax,
-                wheelCombatCount = ConfigFloatingWindowRunData.WheelOfFortuneCombatCount,
+                wheelCardCountsJson = ConfigFloatingWindowRunData.GetWheelOfFortuneCardCountsJson().ToJsonString(),
                 flags = flags,
                 markerStateJson = TarotMarkerSystem.ToJson().ToJsonString(),
             };
@@ -84,7 +84,15 @@ namespace PengoTarot.ConfigFW
         public void ApplyToRunData()
         {
             ConfigFloatingWindowRunData.Apply(tarot, planet, priceMin, priceMax, flags);
-            ConfigFloatingWindowRunData.SetWheelOfFortuneCombatCount(wheelCombatCount);
+            try
+            {
+                ConfigFloatingWindowRunData.SetWheelOfFortuneCardCounts(
+                    JsonNode.Parse(wheelCardCountsJson) as JsonObject);
+            }
+            catch
+            {
+                ConfigFloatingWindowRunData.SetWheelOfFortuneCardCounts(null);
+            }
             try
             {
                 TarotMarkerSystem.FromJson(JsonNode.Parse(markerStateJson) as JsonObject);

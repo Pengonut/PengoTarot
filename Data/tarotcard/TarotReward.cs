@@ -120,9 +120,8 @@ namespace PengoTarot.Data
             var chosenDef = defs[cards.IndexOf(selected)];
             // RewardsSetSynchronizer 会在所有 peer 回放 OnSelect；只有奖励拥有者所在端可以执行
             // “本地执行 + 全量玩家同步”的立即效果，否则远端会以自己的 senderId 发送他人状态。
-            await TarotEffectExecutor.ExecuteEffectAndEnchant(
+            return await TarotEffectExecutor.ExecuteEffectAndEnchant(
                 chosenDef, player, isLocalBuyer: LocalContext.IsMe(player));
-            return true;
         }
 
         /// <summary>收集可选塔罗：来源占卜的正位 + 逆位（availabilityCheck 过滤），全无则兜底命运之轮正（强制）。</summary>

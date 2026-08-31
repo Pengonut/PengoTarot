@@ -327,7 +327,7 @@ namespace PengoTarot
                 { "TAR_DEATH_UPRIGHT_ENCHANTMENT.title", "死神-正" },
                 { "TAR_DEATH_UPRIGHT_ENCHANTMENT.extraCardText", "プレイ後、ターンを終了する。" },
                 
-                { "TAR_DEATH_REVERSED_ENCHANTMENT.description", "このカードは0コストでプレイできる。手札にある間、カードを引くことができない。\nこのカードはプレイ時にカードを引くことができる。" },
+                { "TAR_DEATH_REVERSED_ENCHANTMENT.description", "このカードは0コストでプレイできる。手札にある間、カードを引くことができない。\nこのカードのプレイ中は、カードを引く効果を妨げない。" },
                 { "TAR_DEATH_REVERSED_ENCHANTMENT.title", "死神-逆" },
                 { "TAR_DEATH_REVERSED_ENCHANTMENT.extraCardText", "死神が見つめている。" },
 
@@ -558,6 +558,7 @@ namespace PengoTarot
                 { "PLANET_VENUS_SELECTION_PROMPT", "味方の捨て札の上から、手札に戻すカードを任意の枚数選んでください" },
                 { "VANILLA_STYLE_TAROT", "タロット：クラシック" },
                 { "VANILLA_STYLE_PLANET", "プラネット：クラシック" },
+                { "PENGO_TAROT_RETURN_BUTTON", "戻る" },
             });
 
             

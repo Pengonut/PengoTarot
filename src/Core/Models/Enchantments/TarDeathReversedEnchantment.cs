@@ -42,6 +42,18 @@ public sealed class TarDeathReversedEnchantment : EnchantmentModel
         return Task.CompletedTask;
     }
 
+    public override bool TryModifyEnergyCostInCombatLate(CardModel card, decimal originalCost, out decimal modifiedCost)
+    {
+        modifiedCost = originalCost;
+        if (card != base.Card)
+            return false;
+
+        // 对标原版 FreeAttackPower / FreeSkillPower / FreePowerPower：
+        // 在 Late 阶段裁定最终费用，避免模组改造等后续相对加费覆盖“免费”。
+        modifiedCost = 0m;
+        return true;
+    }
+
     public override Task OnPlay(PlayerChoiceContext choiceContext, CardPlay? cardPlay)
     {
         return Task.CompletedTask;

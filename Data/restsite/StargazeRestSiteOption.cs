@@ -58,9 +58,6 @@ namespace PengoTarot.RestSite
             if (selected == null)
                 return false;
 
-            // Consume one charge from StargazerKit when a planet card is confirmed
-            player.GetRelic<StargazerKit>()?.UseCharge();
-
             var selectedDef = pendingMap[selected];
             var enchantment = selectedDef.Enchantment!;
             int targetCount = selectedDef.CardsToEnchant; 
@@ -71,7 +68,7 @@ namespace PengoTarot.RestSite
                 minSelect,
                 targetCount)
             {
-                Cancelable = false,
+                Cancelable = true,
                 RequireManualConfirmation = true
             };
 
@@ -80,6 +77,9 @@ namespace PengoTarot.RestSite
 
             if (chosenCards == null || !chosenCards.Any())
                 return false;
+
+            // 与原版移除卡牌服务一致：确认最终目标牌后才结算观星次数和火堆行动。
+            player.GetRelic<StargazerKit>()?.UseCharge();
 
             foreach (var card in chosenCards)
             {

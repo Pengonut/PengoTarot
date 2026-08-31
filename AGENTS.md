@@ -39,6 +39,7 @@
 
 ## 关键约定与陷阱
 
+- **禁止使用 ZIndex 调整图层（项目级硬约束）**：任何 `.cs`、`.tscn`、shader/视觉特效代码以及运行时创建的节点，都不得通过 `ZIndex`、`ZAsRelative` 或等价的 Z 轴排序属性改变绘制层级；不得把它们与节点顺序混用作“保险”。同一父节点内统一使用场景树的兄弟顺序（如 `MoveChild`）控制前后关系；跨父节点时应调整节点挂载位置或建立合适的专用容器。修改视觉层级后必须搜索改动范围，确认没有新增或改写上述禁用属性。只有确实无法通过节点树结构实现时，才可在说明原因并取得用户明确许可后例外使用。
 - **变体 DLL 的 Godot 脚本注册**：变体 DLL 经 `AssemblyLoadContext` 加载后，Godot ScriptManager 不会自动识别其中的 C# 场景类（如 `NBalatroInspectScreen`），`loader/Bootstrap.cs` 通过反射调用 `LookupScriptsInAssembly` 注册。新增/修改 Godot 派生场景脚本后要检查该注册逻辑。
 - **序列化缓存**：`loader/ModelIdSerializationCacheRebuildPatch.cs` 确保 Mod 模型 ID 进入 `ModelIdSerializationCache`。
 - **csproj 排除项**：`Compile Remove` 排除了 `loader/**`、`src/Core/Nodes/GodotExtensions/**`、`src/Core/Helpers/**`、`src/Core/Assets/**` 及 `balatroeffect/Scripts/ShaderController_new.cs`。这些仅供 .tscn 预览或属于子项目，**不要**让主 DLL 的代码依赖它们。
